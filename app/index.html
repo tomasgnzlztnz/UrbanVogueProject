@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Vogue | Tienda Online</title>
+    <link rel="shortcut icon" href="img/logotype/logo_urbanvogue_black.svg" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Bebas Neue -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- CENTERED LOGOTYPE -->
+    <header class="text-center py-4">
+        <div class="header-menu">
+            <img src="img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon" style="max-width:400px;">
+        </div>
+    </header>
+
+    <!-- NAVBAR RESPONSIVE -->
+    <nav class="navbar navbar-expand-lg navbar-light border-top border-bottom bg-white shadow-sm">
+        <div class="container">
+
+            <!-- DEPLYED MENU -->
+            <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- MENÚ -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav text-uppercase fw-semibold">
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Novedades</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Ropa</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Accesorios</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Rebajas</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Sobre Nosotros</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+
+
+    <main>
+        <!--  BANNER PPAL ¿?SLIDER¿? -->
+        <section class="hero-section text-center container-fluid d-flex align-items-center justify-content-center">
+            <div class="text-center text-white">
+                <h1 class="fw-bold mb-3">Nueva Colección 2025</h1>
+                <p class="lead">
+                    Estilo urbano, materiales sostenibles y diseño minimalista.<br>
+                    Explora la nueva temporada de UrbanVogue.
+                </p>
+                <div class="mt-4">
+                    <a href="#" class="btn btn-light me-2 px-4">Comprar ahora</a>
+                    <a href="#" class="btn btn-outline-light px-4">Ver catálogo</a>
+                </div>
+            </div>
+        </section>
+
+        <br>
+        <hr>
+        <!-- PRODUCTS SECTIOON -->
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5 fw-semibold">Productos Destacados</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+
+                    <!-- PRODUCTS -->
+                    <div class="col">
+                        <div class="card shadow-sm border-0">
+                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
+                                class="card-img-top" alt="Producto 1">
+                            <div class="card-body text-center">
+                                <h5 class="fw-bold">Camiseta Essential</h5>
+                                <p class="text-muted mb-1">Algodón 100%</p>
+                                <p class="fw-semibold mb-3">19,99 €</p>
+                                <button class="btn btn-dark w-100">Agregar al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm border-0">
+                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
+                                class="card-img-top" alt="Producto 1">
+                            <div class="card-body text-center">
+                                <h5 class="fw-bold">Camiseta Essential</h5>
+                                <p class="text-muted mb-1">Algodón 100%</p>
+                                <p class="fw-semibold mb-3">19,99 €</p>
+                                <button class="btn btn-dark w-100">Agregar al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow-sm border-0">
+                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
+                                class="card-img-top" alt="Producto 1">
+                            <div class="card-body text-center">
+                                <h5 class="fw-bold">Camiseta Essential</h5>
+                                <p class="text-muted mb-1">Algodón 100%</p>
+                                <p class="fw-semibold mb-3">19,99 €</p>
+                                <button class="btn btn-dark w-100">Agregar al carrito</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <!-- FOOTER -->
+    <footer class=" text-white pt-5 pb-3 mt-5">
+        <div class="container text-center">
+            <h5 class="mb-3 text-uppercase">Suscríbete y recibe notificaciones al instante</h5>
+            <form class="d-flex justify-content-center mb-4">
+                <input type="email" class="form-control w-50 me-2" placeholder="E-mail">
+                <button class="btn btn-outline-light px-4" type="submit">Enviar</button>
+            </form>
+            <div class="d-flex flex-column flex-md-row justify-content-center mb-3 small">
+                <a href="#" class="text-white text-decoration-none mx-3" >Política de Cookies</a>
+                <a href="#" class="text-white text-decoration-none mx-3">Condiciones de Venta</a>
+                <a href="#" class="text-white text-decoration-none mx-3">Política de Privacidad</a>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+                <div class="d-flex justify-content-center mb-2">
+                    <a href="#" class="text-white mx-2 fs-5"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white mx-2 fs-5"><i class="bi bi-instagram"></i></a>
+                </div>
+                <div class="header-menu">
+                    <img src="img/logotype/logo_urbanvogue_white.svg" alt="logotype-icon" class="header-menu-icon" style="max-width:300px;">
+                </div>
+                <small>España | ES</small>
+            </div>
+
+        </div>
+    </footer>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

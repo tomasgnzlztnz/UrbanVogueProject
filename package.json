@@ -1,0 +1,19 @@
+{
+  "name": "urbanvogue_2.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mysql2": "^3.15.2"
+  }
+}
