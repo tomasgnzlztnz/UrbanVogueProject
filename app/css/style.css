@@ -1,7 +1,21 @@
 body {
   font-family: 'Poppins', sans-serif;
 }
-
+.header-style{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-flow: row nowrap;
+  padding: 1rem;
+}
+.icons-header {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
 /* Logo */
 .header-menu-icon {
   max-width: 220px;
@@ -14,7 +28,7 @@ body {
   transition: color 0.2s ease;
 }
 .navbar-nav .nav-link:hover {
-  color: #FC00C6; /* dorado suave */
+  color: #FC00C6; 
 }
 
 /* Ajustes del botón hamburguesa */
@@ -24,11 +38,14 @@ body {
 .navbar-toggler:focus {
   box-shadow: none;
 }
+.bx {
+  font-size: 1.6rem;
+  color: #111;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
 /*FUENTES*/
-
-
-
 main{
   font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
