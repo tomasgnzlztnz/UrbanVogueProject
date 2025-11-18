@@ -1,0 +1,61 @@
+    <!-- navbar.html-->
+     <!-- CENTERED LOGOTYPE -->
+    <header class="header-style">
+        <div></div>
+        <div class="header-menu">
+            <img src="img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon" style="max-width:400px;">
+        </div>
+
+        <div class="header-icons">
+
+            <!-- BUSCADOR -->
+            <i class='bx bx-search'></i>
+
+            <!-- CARRITO -->
+            <i class='bx bxs-cart' id="iconCart"></i>
+
+            <!-- LOGIN / PERFIL -->
+            <a href="#" id="iconUser">
+                <i class='bx bxs-user'></i>
+            </a>
+
+            <!-- LOGOUT (oculto al inicio) -->
+             <li class="nav-item mx-3 d-none" id="btnLogout">
+                <a class="nav-link" href="#" onclick="logout()">Cerrar sesión</a>
+            </li>
+
+        </div>
+    </header>
+
+    <!-- NAVBAR RESPONSIVE -->
+    <nav class="navbar navbar-expand-lg navbar-light border-top border-bottom bg-white shadow-sm">
+        <div class="container">
+
+            <!-- DEPLOY MENU -->
+            <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- MENÚ -->
+             <!-- !!!!!! USE ABSOLUTE PATH ON ALL LINKS ¡¡¡¡¡¡ -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+
+                <ul class="navbar-nav text-uppercase fw-semibold">
+
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Novedades</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Ropa</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Accesorios</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Rebajas</a></li>
+                    <li class="nav-item mx-3"><a class="nav-link" href="#">Sobre Nosotros</a></li>
+
+                    <!-- ADMIN (oculto al inicio) -->
+                    <li class="nav-item mx-3 d-none" id="navAdminItem">
+                        <a class="nav-link" href="/pages/admin.html">Administración</a> 
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+    </nav>

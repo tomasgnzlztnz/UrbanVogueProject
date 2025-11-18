@@ -17,8 +17,7 @@
     <main class="login-register-container bebas-neue-regular">
         <header class="text-center py-4">
             <div class="header-menu">
-                <img src="../img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon"
-                    style="max-width:400px;">
+                <img src="../img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon" style="max-width:400px;">
             </div>
         </header>
         <div class="login-register-box">
@@ -26,21 +25,29 @@
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">Correo electrónico</label>
-                    <input type="email" class="form-control" id="email" placeholder="urbanvogue@urbanvogue.com"
-                        required>
+                    <input type="email" class="form-control" id="email" placeholder="urbanvogue@urbanvogue.com" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="password" placeholder="••••••••" minlength="8"
-                        required>
+                    <input type="password" class="form-control" id="password" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn btn-dark">Iniciar sesión</button>
 
             </form>
             <button type="button" class="btn btn-white"><a href="register.html">Registrate</a></button>
+            <p id="loginError"></p>
         </div>
     </main>
+
+    <!-- JavaScript -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts propios -->
+    <!-- Primero auth.js y después login.js, porque login.js va a usar la función login() que definimos en auth.js -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/login.js"></script>
+
 </body>
 
 </html>
