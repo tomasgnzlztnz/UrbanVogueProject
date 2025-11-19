@@ -46,10 +46,10 @@ body {
   transition: 0.3s;
 }
 
-
-
-
-
+li#navAdminItem > a{
+  color: red;
+  text-decoration: underline;
+}
 
 
 main{
@@ -114,3 +114,6 @@ footer a:hover {
   color: #a67c52; /* dorado suave */
   transition: color 0.3s ease;
 }
+
+
+

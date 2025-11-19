@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ropa | Urban Vogue</title>
+
+    <link rel="shortcut icon" href="/img/logotype/logo_urbanvogue_black.svg" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/pages/ropa.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR DINÁMICA -->
+    <div id="navbarContainer"></div>
+
+    <main class="container py-5">
+
+        <h1 class="text-center mb-4">Ropa</h1>
+        <p class="text-center text-muted mb-5">Elige una categoría</p>
+
+        <div class="row justify-content-center g-4">
+
+            <!-- CAMISETAS -->
+            <div class="col-10 col-md-4">
+                <a href="/pages/categoria.html?cat=camisetas" class="text-decoration-none">
+                    <div class="category-card p-4 shadow-sm text-center rounded">
+                        <i class='bx bx-t-shirt fs-1 mb-3'></i>
+                        <h4 class="fw-bold">Camisetas</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- SUDADERAS -->
+            <div class="col-10 col-md-4">
+                <a href="/pages/categoria.html?cat=sudaderas" class="text-decoration-none">
+                    <div class="category-card p-4 shadow-sm text-center rounded">
+                        <i class='bx bxs-hoodie fs-1 mb-3'></i>
+                        <h4 class="fw-bold">Sudaderas</h4>
+                    </div>
+                </a>
+            </div>
+
+            <!-- PANTALONES -->
+            <div class="col-10 col-md-4">
+                <a href="/pages/categoria.html?cat=pantalones" class="text-decoration-none">
+                    <div class="category-card p-4 shadow-sm text-center rounded">
+                        <i class='bx bxs-pants fs-1 mb-3'></i>
+                        <h4 class="fw-bold">Pantalones</h4>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footerContainer"></div>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbarLoader.js"></script>
+    <script src="/js/footerLoader.js"></script>
+</body>
+</html>
