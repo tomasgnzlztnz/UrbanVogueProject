@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Novedades | UrbanVogue</title>
+    <link rel="shortcut icon" href="/img/logotype/logo_urbanvogue_black.svg" type="image/x-icon">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Iconos -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- CSS propio -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR reutilizable -->
+    <div id="navbarContainer"></div>
+
+    <main class="container py-5">
+
+        <h1 class="text-center mb-4">Novedades</h1>
+        <p class="text-center text-muted mb-4">
+            Descubre los últimos productos añadidos a UrbanVogue.
+        </p>
+
+        <!-- Mensaje de error -->
+        <div id="novedadesError" class="alert alert-danger d-none"></div>
+
+        <!-- Contenedor de productos -->
+        <div id="novedadesLista" class="row g-4">
+            <!-- Aquí se insertarán las cards con JS -->
+        </div>
+
+    </main>
+
+    <!-- FOOTER reutilizable -->
+    <div id="footerContainer"></div>
+
+    <!-- JS Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS de la app -->
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbarLoader.js"></script>
+    <script src="/js/footerLoader.js"></script>
+    <script src="/js/novedades.js"></script>
+
+</body>
+</html>

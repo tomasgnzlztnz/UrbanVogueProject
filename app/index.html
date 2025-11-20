@@ -24,7 +24,7 @@
     <div id="navbarContainer"></div>
 
     <main>
-        <!--  BANNER PPAL ¿?SLIDER¿? -->
+        <!--  BANNER PPAL-->
         <section class="hero-section text-center container-fluid d-flex align-items-center justify-content-center">
             <div class="text-center text-white">
                 <h1 class="fw-bold mb-3">Nueva Colección 2025</h1>
@@ -33,61 +33,27 @@
                     Explora la nueva temporada de UrbanVogue.
                 </p>
                 <div class="mt-4">
-                    <a href="#" class="btn btn-light me-2 px-4">Comprar ahora</a>
-                    <a href="#" class="btn btn-outline-light px-4">Ver catálogo</a>
+                    <a href="/pages/novedades.html" class="btn btn-light me-2 px-4">Comprar ahora</a>
+                    <a href="/pages/ropa.html" class="btn btn-outline-light px-4">Ver catálogo</a>
                 </div>
             </div>
         </section>
 
         <br>
         <hr>
-        <!-- PRODUCTS SECTIOON -->
+        <!-- PRODUCTS SECTION -->
         <div class="album py-5 bg-light">
-            <div class="container">
-                <h2 class="text-center mb-5 fw-semibold">Productos Destacados</h2>
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-
-                    <!-- PRODUCTS -->
-                    <div class="col">
-                        <div class="card shadow-sm border-0">
-                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
-                                class="card-img-top" alt="Producto 1">
-                            <div class="card-body text-center">
-                                <h5 class="fw-bold">Camiseta Essential</h5>
-                                <p class="text-muted mb-1">Algodón 100%</p>
-                                <p class="fw-semibold mb-3">19,99 €</p>
-                                <button class="btn btn-dark w-100">Agregar al carrito</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm border-0">
-                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
-                                class="card-img-top" alt="Producto 1">
-                            <div class="card-body text-center">
-                                <h5 class="fw-bold">Camiseta Essential</h5>
-                                <p class="text-muted mb-1">Algodón 100%</p>
-                                <p class="fw-semibold mb-3">19,99 €</p>
-                                <button class="btn btn-dark w-100">Agregar al carrito</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow-sm border-0">
-                            <img src="https://teamheretics.com/es/3877-large_default/champions-jersey-special-edition.jpg"
-                                class="card-img-top" alt="Producto 1">
-                            <div class="card-body text-center">
-                                <h5 class="fw-bold">Camiseta Essential</h5>
-                                <p class="text-muted mb-1">Algodón 100%</p>
-                                <p class="fw-semibold mb-3">19,99 €</p>
-                                <button class="btn btn-dark w-100">Agregar al carrito</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+        <div class="container">
+            <h2 class="text-center mb-5 fw-semibold">Productos Destacados</h2>
+            <div
+            id="destacadosContainer"
+            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"
+            >
+            <!-- Aquí se insertarán las cards con JS -->
             </div>
         </div>
+        </div>
+
     </main>
 
     <!-- FOOTER -->
@@ -100,6 +66,7 @@
     <script src="js/auth.js"></script> 
     <script src="js/navbarLoader.js"></script>
     <script src="/js/footerLoader.js"></script>
+    <script src="js/destacados.js"></script>
 
 </body>
 

@@ -1,0 +1,46 @@
+[
+	{
+		"id" : 1,
+		"nombre" : "Camiseta Hombre",
+		"descripcion" : "Camiseta básica de algodón",
+		"precio" : 15.99,
+		"stock" : 10,
+		"talla" : "M",
+		"color" : "Negro",
+		"imagen" : "camiseta_hombre.jpg",
+		"id_categoria" : 1
+	},
+	{
+		"id" : 2,
+		"nombre" : "Pantalón Mujer",
+		"descripcion" : "Pantalón vaquero ajustado",
+		"precio" : 29.99,
+		"stock" : 40,
+		"talla" : "S",
+		"color" : "Azul",
+		"imagen" : "pantalon_mujer.jpg",
+		"id_categoria" : 2
+	},
+	{
+		"id" : 3,
+		"nombre" : "Sudadera UrbanVogue Premium",
+		"descripcion" : "Sudadera de algodón orgánico",
+		"precio" : 19.99,
+		"stock" : 50,
+		"talla" : null,
+		"color" : null,
+		"imagen" : null,
+		"id_categoria" : 1
+	},
+	{
+		"id" : 4,
+		"nombre" : "Anillo Hombre",
+		"descripcion" : "Anillo color plata",
+		"precio" : 19.00,
+		"stock" : 10,
+		"talla" : "S",
+		"color" : "plata",
+		"imagen" : null,
+		"id_categoria" : 4
+	}
+]

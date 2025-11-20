@@ -22,7 +22,7 @@ const params = new URLSearchParams(window.location.search);
 const categoriaSlug = params.get("cat"); // camisetas, sudaderas, pantalones
 
 const tituloEl = document.getElementById("categoriaTitulo");
-const listaEl  = document.getElementById("listaProductos");
+const listaEl = document.getElementById("listaProductos");
 
 // Si no hay categoría en la URL, mostramos algo genérico
 if (!categoriaSlug) {
@@ -54,15 +54,21 @@ async function addToCart(productId) {
             return;
         }
 
+        if (!res.ok) {
+            // Por si viene error 400 con mensaje de stock
+            const data = await res.json().catch(() => ({}));
+            showAlert(data.error || "No se pudo añadir al carrito.", "danger");
+            return;
+        }
 
         const data = await res.json();
-        console.log("Respuesta carrito:", data);
 
-        if (data.success) {
-            alert("Producto añadido al carrito ✅");
-        } else {
-            alert(data.error || "No se pudo añadir al carrito.");
+        if (!data.success) {
+            showAlert(data.error || "No se pudo añadir al carrito.", "danger");
+            return;
         }
+
+        showAlert("Producto añadido al carrito ✅", "success");
 
     } catch (err) {
         console.error("Error en addToCart():", err);
