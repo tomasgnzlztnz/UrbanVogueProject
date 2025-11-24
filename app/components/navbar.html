@@ -1,59 +1,80 @@
-    <!-- navbar.html-->
-    <!-- CENTERED LOGOTYPE -->
-    <header class="header-style">
-        <div></div>
-        <div class="header-menu">
-            <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon" style="max-width:400px;">
-        </div>
+<!-- navbar.html-->
+<!-- CENTERED LOGOTYPE -->
+<header class="header-style">
 
-        <div class="header-icons">
+    <!-- ICONO SEARCH SOLO EN DESKTOP -->
+    <div class="header-search-desktop d-none d-lg-flex">
+        <i class='bx bx-search' id="iconSearchDesktop" style="cursor:pointer;"></i>
+    </div>
+
+    <!-- LOGO -->
+    <div class="header-menu">
+        <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon"
+             class="header-menu-icon" style="max-width:400px;">
+    </div>
+
+    <!-- ICONOS DESKTOP -->
+    <div class="header-icons d-none d-lg-flex">
+        <i class='bx bx-home-alt' id="iconHome"></i>
+        <i class='bx bxs-cart' id="iconCart"></i>
+        <a href="#" id="iconUser" class="header-icon-link">
+            <i class='bx bxs-user'></i>
+        </a>
+        <a href="#" id="logoutIcon" class="header-icon-link d-none">
+            <i class='bx bx-door-open'></i>
+        </a>
+    </div>
+
+</header>
+
+
+<!-- NAVBAR RESPONSIVE -->
+<nav class="navbar navbar-expand-lg navbar-light border-top border-bottom bg-white shadow-sm">
+    <div class="container align-items-center">
+
+        <!-- BOTÓN HAMBURGUESA -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- ICONOS MÓVIL (solo < lg) -->
+        <div class="d-flex d-lg-none ms-auto align-items-center gap-2">
+            <!-- HOME -->
+            <i class='bx bx-home-alt' id="iconHomeMobile" style="cursor:pointer;"></i>
 
             <!-- BUSCADOR -->
             <i class='bx bx-search'></i>
 
             <!-- CARRITO -->
-            <i class='bx bxs-cart' id="iconCart"></i>
+            <i class='bx bxs-cart' id="iconCartMobile" style="cursor:pointer;"></i>
 
             <!-- LOGIN / PERFIL -->
-            <a href="#" id="iconUser">
-                <i class='bx bxs-user'></i>
-            </a>
+            <i class='bx bxs-user' id="iconUserMobile" style="cursor:pointer;"></i>
 
             <!-- LOGOUT (oculto al inicio) -->
-             <li class="nav-item mx-3 d-none" id="btnLogout">
-                <a class="nav-link" href="#" onclick="logout()">Cerrar sesión</a>
-            </li>
+            <i class='bx bx-door-open d-none' id="logoutIconMobile" style="cursor:pointer; font-size: 1.5rem;"
+                title="Cerrar sesión"></i>
         </div>
-    </header>
 
-    <!-- NAVBAR RESPONSIVE -->
-    <nav class="navbar navbar-expand-lg navbar-light border-top border-bottom bg-white shadow-sm">
-        <div class="container">
+        <!-- MENÚ -->
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav text-uppercase fw-semibold">
 
-            <!-- DEPLOY MENU -->
-            <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <li class="nav-item mx-3"><a class="nav-link" href="/pages/novedades.html">Novedades</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/pages/ropa.html">Ropa</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/pages/categoria.html?cat=accesorios">Accesorios</a>
+                </li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/pages/rebajas.html">Rebajas</a></li>
+                <li class="nav-item mx-3"><a class="nav-link" href="/pages/sobre_nosotros.html">Sobre Nosotros</a></li>
 
-            <!-- MENÚ -->
-            <!-- !!!!!! USE ABSOLUTE PATH ON ALL LINKS ¡¡¡¡¡¡ -->
-            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <!-- ADMIN (oculto al inicio) -->
+                <li class="nav-item mx-3 d-none" id="navAdminItem">
+                    <a class="nav-link" href="/pages/admin.html">Administración</a>
+                </li>
 
-                <ul class="navbar-nav text-uppercase fw-semibold">
-
-                    <li class="nav-item mx-3"><a class="nav-link" href="/pages/novedades.html">Novedades</a></li>
-                    <li class="nav-item mx-3"><a class="nav-link" href="/pages/ropa.html">Ropa</a></li>
-                    <li class="nav-item mx-3"><a class="nav-link" href="/pages/categoria.html?cat=accesorios">Accesorios</a></li>
-                    <li class="nav-item mx-3"><a class="nav-link" href="/pages/rebajas.html">Rebajas</a></li>
-                    <li class="nav-item mx-3"><a class="nav-link" href="#">Sobre Nosotros</a></li>
-
-                    <!-- ADMIN (oculto al inicio) -->
-                    <li class="nav-item mx-3 d-none" id="navAdminItem">
-                        <a class="nav-link" href="/pages/admin.html">Administración</a> 
-                    </li>
-                </ul>
-
-            </div>
-
+            </ul>
         </div>
-    </nav>
+
+    </div>
+</nav>

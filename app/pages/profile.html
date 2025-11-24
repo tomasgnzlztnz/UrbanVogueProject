@@ -11,8 +11,11 @@
     <!-- Iconos (boxicons, etc. si los usas en esta página) -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    <!-- Tu CSS general -->
+    <!-- CSS propios -->
+    <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/footer.css">
+
 </head>
 
 <body>
@@ -27,31 +30,57 @@
         <!-- Bloque de error -->
         <div id="profileError" class="alert alert-danger d-none"></div>
 
+        <!-- Bloque de éxito -->
+        <div id="profileSuccess" class="alert alert-success d-none"></div>
+
         <!-- Tarjeta de perfil -->
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5 class="card-title mb-3">Datos personales</h5>
 
-                <div class="mb-3">
-                    <label class="form-label">Nombre</label>
-                    <p id="profileName" class="form-control-plaintext"></p>
-                </div>
+                <form id="profileForm">
+                    <!-- Nombre (editable) -->
+                    <div class="mb-3">
+                        <label for="profileNombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="profileNombre" required>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Correo electrónico</label>
-                    <p id="profileEmail" class="form-control-plaintext"></p>
-                </div>
+                    <!-- Email (solo lectura) -->
+                    <div class="mb-3">
+                        <label class="form-label">Correo electrónico</label>
+                        <p id="profileEmail" class="form-control-plaintext"></p>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Rol</label>
-                    <p id="profileRole" class="form-control-plaintext"></p>
-                </div>
+                    <!-- Rol (solo lectura) -->
+                    <div class="mb-3">
+                        <label class="form-label">Rol</label>
+                        <p id="profileRole" class="form-control-plaintext"></p>
+                    </div>
 
-                <!-- Aquí más adelante podemos meter:
-                     dirección, teléfono, botón "Editar perfil", etc. -->
+                    <!-- Dirección (editable) -->
+                    <div class="mb-3">
+                        <label for="profileDireccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="profileDireccion" placeholder="Calle, nº, ciudad">
+                    </div>
+
+                    <!-- Teléfono (editable) -->
+                    <div class="mb-3">
+                        <label for="profileTelefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="profileTelefono" placeholder="+34 600 000 000">
+                    </div>
+
+                    <!-- Fecha de registro (solo lectura, opcional) -->
+                    <div class="mb-3">
+                        <label class="form-label">Fecha de registro</label>
+                        <p id="profileFecha" class="form-control-plaintext"></p>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark mt-3">Guardar cambios</button>
+                </form>
             </div>
         </div>
     </main>
+
 
     <!-- FOOTER reutilizable (lo haremos más adelante) -->
     <div id="footerContainer"></div>
@@ -65,4 +94,5 @@
     <script src="/js/profile.js"></script>
 
 </body>
+
 </html>

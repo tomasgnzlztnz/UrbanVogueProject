@@ -1,37 +1,37 @@
-// app/js/novedades.js
+// app/js/ropa.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadNovedades();
+    loadAllProducts();
 });
 
-function showNovedadesError(msg) {
+function showRopaError(msg) {
     const alertEl = document.getElementById('ropaError');
     if (!alertEl) return;
 
     alertEl.textContent = msg || 'Debes iniciar sesión para añadir productos al carrito.';
     alertEl.classList.remove('d-none');
 
+    // Ocultar a los 3 segundos
     setTimeout(() => {
         alertEl.classList.add('d-none');
     }, 3000);
 }
 
-async function loadNovedades() {
-    const container = document.getElementById('novedadesContainer');
+async function loadAllProducts() {
+    const container = document.getElementById('allProductsContainer');
     if (!container) return;
 
     container.innerHTML = `
         <div class="col-12 text-center">
-            <p>Cargando novedades...</p>
+            <p>Cargando productos...</p>
         </div>
     `;
 
     try {
-        // Ajusta esta ruta si en tu server usas otra (/productos/novedades, etc.)
-        const res = await fetch('/productos/novedades');
+        const res = await fetch('/productos');
 
         if (!res.ok) {
-            throw new Error('Error al cargar novedades');
+            throw new Error('Error al cargar productos');
         }
 
         const productos = await res.json();
@@ -39,7 +39,7 @@ async function loadNovedades() {
         if (!productos || productos.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center">
-                    <p>No hay novedades disponibles por ahora.</p>
+                    <p>No hay productos disponibles en este momento.</p>
                 </div>
             `;
             return;
@@ -78,7 +78,7 @@ async function loadNovedades() {
             container.appendChild(col);
         });
 
-        // Delegación de eventos para "Agregar al carrito"
+        // Delegación de eventos: clic en "Agregar al carrito"
         container.addEventListener('click', async (e) => {
             if (!e.target.classList.contains('btn-add-to-cart')) return;
 
@@ -88,7 +88,9 @@ async function loadNovedades() {
             try {
                 const res = await fetch('/api/cart/add', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     credentials: 'include',
                     body: JSON.stringify({
                         productId: productId,
@@ -96,22 +98,25 @@ async function loadNovedades() {
                     })
                 });
 
+                // No logueado → mostramos mensaje y NO redirigimos
                 if (res.status === 401) {
-                    showNovedadesError('Debes iniciar sesión para añadir productos al carrito.');
+                    showRopaError('Debes iniciar sesión para añadir productos al carrito.');
                     return;
                 }
 
                 const data = await res.json();
-                console.log('Agregar desde novedades:', data);
+                console.log('Agregar desde ropa:', data);
 
                 if (!data.success) {
-                    showNovedadesError(data.error || 'No se pudo añadir el producto al carrito.');
+                    showRopaError(data.error || 'No se pudo añadir el producto al carrito.');
                     return;
                 }
 
+                // Si quieres, aquí podrías mostrar un mensaje de éxito discreto
+                // o dejarlo "silencioso".
             } catch (err) {
-                console.error('Error al añadir al carrito desde novedades:', err);
-                showNovedadesError('Ha ocurrido un error al añadir el producto.');
+                console.error('Error al añadir al carrito desde ropa:', err);
+                showRopaError('Ha ocurrido un error al añadir el producto.');
             }
         });
 
@@ -119,7 +124,7 @@ async function loadNovedades() {
         console.error(err);
         container.innerHTML = `
             <div class="col-12 text-center">
-                <p class="text-danger">Error al cargar las novedades.</p>
+                <p class="text-danger">Error al cargar los productos.</p>
             </div>
         `;
     }

@@ -1,61 +1,12 @@
 body {
   font-family: 'Poppins', sans-serif;
 }
-.header-style{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-flow: row nowrap;
-  padding: 1rem;
-  border: solid red 1px;
-}
-.icons-header {
-  display: flex;
-  gap: 1.2rem;
-  align-items: center;
-  right: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-/* Logo */
-.header-menu-icon {
-  max-width: 220px;
-}
 
-/* Navbar */
-.navbar-nav .nav-link {
-  color: #000;
-  font-size: 0.95rem;
-  transition: color 0.2s ease;
-}
-.navbar-nav .nav-link:hover {
-  color: #FC00C6; 
-}
-
-/* Ajustes del botón hamburguesa */
-.navbar-toggler {
-  border: none;
-}
-.navbar-toggler:focus {
-  box-shadow: none;
-}
-.bx {
-  font-size: 1.6rem;
-  color: #111;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-li#navAdminItem > a{
-  color: red;
-  text-decoration: underline;
-}
-
-
-main{
+/* main, hero, cards, etc */
+main {
   font-family: "Bebas Neue", sans-serif;
-    font-weight: 400;
-    font-style: normal;
+  font-weight: 400;
+  font-style: normal;
 }
 
 main h1, main h2 {
@@ -64,7 +15,6 @@ main h1, main h2 {
 
 .card img {
   object-fit: cover;
-  
 }
 
 .card:hover {
@@ -72,9 +22,7 @@ main h1, main h2 {
   transition: all 0.3s ease;
 }
 
-
-
-/* ===== HERO CON IMAGEN DE FONDO ===== */
+/* HERO */
 :root {
   --hero-bg: url('https://objetos-xlk.estaticos-marca.com/uploads/2025/09/17/68ca83450963f.png');
 }
@@ -86,8 +34,6 @@ main h1, main h2 {
   color: #fff;
 }
 
-
-/* Oscurece un poco la imagen para mejorar legibilidad del texto */
 .hero-section::before {
   content: "";
   position: absolute;
@@ -98,22 +44,5 @@ main h1, main h2 {
 
 .hero-section .text-center {
   position: relative;
-  z-index: 2; /* para que quede encima del filtro oscuro */
+  z-index: 2;
 }
-
-
-footer {
-  background-color: #000;
-}
-footer h5 {
-  letter-spacing: 1px;
-  font-weight: 500;
-}
-
-footer a:hover {
-  color: #a67c52; /* dorado suave */
-  transition: color 0.3s ease;
-}
-
-
-

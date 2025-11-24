@@ -282,5 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Cargar carrito al entrar en la página
-    loadCart();
+    //loadCart();
+    if (contentEl) {
+        loadCart();
+    }
 });

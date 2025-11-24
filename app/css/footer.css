@@ -1,0 +1,15 @@
+ /* ===== FOOTER ===== */
+
+footer {
+  background-color: #000;
+}
+
+footer h5 {
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+footer a:hover {
+  color: #a67c52; /* dorado suave */
+  transition: color 0.3s ease;
+}

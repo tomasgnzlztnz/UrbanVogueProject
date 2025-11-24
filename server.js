@@ -5,6 +5,10 @@ const authRoutes = require("./routes/authRoutes");
 const cors = require("cors");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
+
 
 // Configuración de la app
 const app = express();
@@ -31,6 +35,10 @@ app.use(
 
 // Rutas de autenticación
 app.use('/api/auth', authRoutes);
+// Rutas de usuario (perfil)
+app.use('/api/user', userRoutes);
+// Rutas de admin
+app.use('/api/admin', adminRoutes);
 
 // Servir archivos estáticos del frontend (carpeta /app)
 app.use(express.static(path.join(__dirname, 'app')));
@@ -661,8 +669,6 @@ app.post("/api/cart/checkout", (req, res) => {
     });
   });
 });
-
-
 
 // Servidor
 const PORT = 3000;

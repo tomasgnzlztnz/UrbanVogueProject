@@ -1,122 +1,166 @@
 const express = require('express');
+const bcrypt = require("bcrypt");
 const router = express.Router();
 const db = require('../db');
 
-// LOGIN
-router.post('/login', (req, res) => {
+// LOGIN - POST /api/auth/login
+router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(400).json({
             success: false,
-            message: "Faltan campos por rellenar (email y password)",
+            message: "Email y contraseña son obligatorios."
         });
     }
 
-    const sql = "SELECT * FROM usuarios WHERE email = ? LIMIT 1";
+    const sql = `
+        SELECT id, nombre, email, password, rol, direccion, telefono, fecha_registro
+        FROM usuarios
+        WHERE email = ?
+    `;
 
     db.query(sql, [email], (err, results) => {
         if (err) {
             console.error("Error al buscar usuario:", err);
             return res.status(500).json({
                 success: false,
-                message: "Error interno del servidor",
+                message: "Error del servidor."
             });
         }
 
         if (results.length === 0) {
             return res.status(401).json({
                 success: false,
-                message: "El usuario no existe",
+                message: "Credenciales incorrectas."
             });
         }
 
         const user = results[0];
 
-        if (user.password !== password) {
-            return res.status(401).json({
-                success: false,
-                message: "Contraseña incorrecta",
+        // 💡 Aquí usamos bcrypt para comparar la contraseña que escribe el usuario
+        // con el hash guardado en la BD
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) {
+                console.error("Error al comparar contraseña:", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error al validar las credenciales."
+                });
+            }
+
+            if (!isMatch) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Credenciales incorrectas."
+                });
+            }
+
+            // Si la contraseña coincide, guardamos los datos en la sesión
+            req.session.user = {
+                id: user.id,
+                nombre: user.nombre,
+                email: user.email,
+                rol: user.rol,
+                direccion: user.direccion,
+                telefono: user.telefono,
+                fecha_registro: user.fecha_registro
+            };
+
+            return res.json({
+                success: true,
+                message: "Login correcto",
+                usuario: {
+                    id: user.id,
+                    nombre: user.nombre,
+                    email: user.email,
+                    rol: user.rol,
+                    direccion: user.direccion,
+                    telefono: user.telefono,
+                    fecha_registro: user.fecha_registro
+                }
             });
-        }
-
-        // Guardar datos en la sesión
-        req.session.user = {
-            id: user.id,
-            nombre: user.nombre,
-            email: user.email,
-            rol: user.rol
-        };
-
-        // Si llegamos aquí, el login es correcto
-        return res.status(200).json({
-            success: true,
-            message: "Login correcto",
-            usuario: req.session.user
         });
+
     });
 });
 
-// REGISTER
-router.post('/register', (req, res) => {
-    const { nombre, email, password } = req.body;
 
-    // 1) Validar campos
+// REGISTER - POST /api/auth/register
+router.post("/register", (req, res) => {
+    const { nombre, email, password, direccion, telefono } = req.body;
+
+    // Validaciones básicas
     if (!nombre || !email || !password) {
         return res.status(400).json({
             success: false,
-            message: "Faltan campos por rellenar (nombre, email, password)"
+            message: "Nombre, email y contraseña son obligatorios."
         });
     }
 
-    // 2) Comprobar si ya existe un usuario con ese email
-    const checkQuery = "SELECT id FROM usuarios WHERE email = ? LIMIT 1";
+    if (password.length < 6) {
+        return res.status(400).json({
+            success: false,
+            message: "La contraseña debe tener al menos 6 caracteres."
+        });
+    }
 
-    db.query(checkQuery, [email], (err, results) => {
+    // 1) Comprobar si ya existe un usuario con ese email
+    const checkSql = "SELECT id FROM usuarios WHERE email = ?";
+    db.query(checkSql, [email], (err, results) => {
         if (err) {
-            console.error("Error al comprobar email:", err);
+            console.error("Error comprobando email:", err);
             return res.status(500).json({
                 success: false,
-                message: "Error interno del servidor"
+                message: "Error del servidor al comprobar el email."
             });
         }
 
         if (results.length > 0) {
             return res.status(409).json({
                 success: false,
-                message: "Ya existe un usuario con ese email"
+                message: "Ya existe una cuenta con ese correo."
             });
         }
 
-        // 3) Insertar nuevo usuario
-        // De momento guardamos password tal cual (luego lo cambiaremos por un hash)
-        const insertQuery = `
-            INSERT INTO usuarios (nombre, email, password, rol)
-            VALUES (?, ?, ?, 'cliente')
-        `;
-
-        db.query(insertQuery, [nombre, email, password], (err, result) => {
+        // 2) Si no existe, ciframos la contraseña
+        bcrypt.hash(password, 10, (err, hash) => {
             if (err) {
-                console.error("Error al registrar usuario:", err);
+                console.error("Error al cifrar contraseña:", err);
                 return res.status(500).json({
                     success: false,
-                    message: "Error al crear el usuario"
+                    message: "Error del servidor al crear el usuario."
                 });
             }
 
-            return res.status(201).json({
-                success: true,
-                message: "Usuario registrado correctamente",
-                usuario: {
-                    id: result.insertId,
-                    nombre,
-                    email,
-                    rol: 'cliente'
+            // 3) Insertar en la base de datos
+            const insertSql = `
+                INSERT INTO usuarios (nombre, email, password, direccion, telefono, rol)
+                VALUES (?, ?, ?, ?, ?, 'cliente')
+            `;
+
+            db.query(
+                insertSql,
+                [nombre, email, hash, direccion || null, telefono || null],
+                (err, result) => {
+                    if (err) {
+                        console.error("Error al insertar usuario:", err);
+                        return res.status(500).json({
+                            success: false,
+                            message: "Error al registrar el usuario."
+                        });
+                    }
+
+                    return res.status(201).json({
+                        success: true,
+                        message: "Usuario registrado correctamente. Ya puedes iniciar sesión."
+                    });
                 }
-            });
+            );
         });
     });
 });
+
 
 // ROLL USER BACK
 router.get('/me', (req, res) => {

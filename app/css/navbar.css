@@ -1,0 +1,79 @@
+/* ===== NAVBAR / HEADER ===== */
+
+.header-style {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* columnas del header */
+.header-search-desktop,
+.header-menu,
+.header-icons {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* izquierda: buscador */
+.header-search-desktop {
+  justify-content: flex-start;
+}
+
+.header-search-desktop i {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+/* centro: logo */
+.header-menu {
+  justify-content: center;
+}
+
+.header-menu-icon {
+  max-width: 220px;
+}
+
+/* derecha: iconos */
+.header-icons {
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.header-icons i {
+  font-size: 1.6rem;
+  color: #111;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.header-icon-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Links del navbar */
+.navbar-nav .nav-link {
+  color: #000;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #FC00C6;
+}
+
+/* Botón hamburguesa */
+.navbar-toggler {
+  border: none;
+}
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Icono admin en rojo */
+li#navAdminItem > a {
+  color: red;
+  text-decoration: underline;
+}
