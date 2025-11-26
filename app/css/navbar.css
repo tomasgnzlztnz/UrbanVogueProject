@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   padding: 1rem;
+  flex-wrap: nowrap;
 }
 
 /* columnas del header */
@@ -13,6 +14,7 @@
   flex: 1;
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 /* izquierda: buscador */
@@ -68,12 +70,169 @@
 .navbar-toggler {
   border: none;
 }
+
 .navbar-toggler:focus {
   box-shadow: none;
 }
 
 /* Icono admin en rojo */
-li#navAdminItem > a {
+li#navAdminItem>a {
   color: red;
   text-decoration: underline;
+}
+
+/* ===== Buscador móvil en navbar ===== */
+
+.nav-search-mobile {
+  border: 1px solid #000;
+  font-weight: 400;
+  text-align: left;
+  text-align: center;
+  font-size: 0.7rem;
+}
+
+
+/* ===== Barra móvil: buscador + iconos ===== */
+
+.nav-mobile-tools {
+  flex-wrap: nowrap;
+  /* en móviles normales: todo en 1 fila */
+  min-width: 0;
+  /* deja que el contenido se encoja si hace falta */
+}
+
+.nav-mobile-tools .nav-search-mobile {
+  flex: 1 1 auto;
+  /* el input ocupa el espacio sobrante */
+  min-width: 0;
+  /* que pueda encogerse */
+}
+
+/* Si la pantalla es MUY pequeña, apilamos el buscador y los iconos */
+@media (max-width: 400px) {
+  .nav-mobile-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+  }
+
+  .nav-mobile-tools .nav-search-mobile {
+    width: 100%;
+  }
+
+  .nav-mobile-tools i {
+    align-self: flex-end;
+    /* iconos alineados a la derecha debajo del input */
+  }
+}
+
+/* Mini carrito (modal pequeña) 
+#miniCartModal .modal-content {
+  border-radius: 0;
+}
+
+#miniCartModal .modal-body {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#miniCartModal .modal-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+dddddd
+
+.cart-dropdown-container {
+  position: relative;
+}
+
+.mini-cart-dropdown {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  width: 260px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  padding: 12px;
+  z-index: 3000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+}
+
+.mini-cart-dropdown img {
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.mini-cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mini-cart-item-name {
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.mini-cart-item-qty {
+  font-size: .75rem;
+  color: #666;
+}
+    */
+
+    /* ===== Mini carrito global (desktop + móvil) ===== */
+
+.mini-cart-dropdown {
+  position: fixed;
+  right: 12px;
+  top: 70px;               /* ajusta si tu header/nav es más alto o más bajo */
+  max-width: 320px;
+  width: 90%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  padding: 12px;
+  z-index: 3000;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+@media (min-width: 992px) {
+  .mini-cart-dropdown {
+    width: 280px;
+    right: 20px;
+    top: 80px;
+  }
+}
+
+.mini-cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mini-cart-item img {
+  width: 40px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.mini-cart-item-name {
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.mini-cart-item-qty {
+  font-size: .75rem;
+  color: #666;
+}
+
+.dropdown-total {
+  font-size: .85rem;
 }

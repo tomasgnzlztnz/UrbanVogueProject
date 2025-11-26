@@ -1,3 +1,8 @@
+html, body {
+  min-width: 410px;
+}
+
+
 body {
   font-family: 'Poppins', sans-serif;
 }
@@ -9,7 +14,8 @@ main {
   font-style: normal;
 }
 
-main h1, main h2 {
+main h1,
+main h2 {
   letter-spacing: 1px;
 }
 
@@ -45,4 +51,50 @@ main h1, main h2 {
 .hero-section .text-center {
   position: relative;
   z-index: 2;
+}
+
+/* ===== Detalle de producto ===== */
+
+#productDetailCard {
+  /* ya tiene d-flex + justify-content-center en el HTML */
+}
+
+.product-detail-card {
+  max-width: 420px;
+  /* igual que tu diseño original en móvil */
+  width: 100%;
+  border-radius: 0;
+}
+
+.product-detail-image {
+  border-radius: 0;
+  object-fit: cover;
+}
+
+/* Versión escritorio: imagen izquierda, texto derecha, más ancho */
+@media (min-width: 992px) {
+  #productDetailCard {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .product-detail-card {
+    max-width: 100%;
+  }
+
+  .product-detail-card .card-body {
+    text-align: left;
+  }
+
+  .product-detail-card #btnAddToCartDetail {
+    align-self: flex-start;
+    /* botón alineado a la izquierda en desktop */
+  }
+}
+
+@media (max-width: 410px) {
+  html, body {
+    min-width: 410px;
+  }
 }

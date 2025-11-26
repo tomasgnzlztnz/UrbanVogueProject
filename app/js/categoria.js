@@ -1,3 +1,5 @@
+// app/js/categoria.js
+
 function showAlert(message, type = "danger") {
     const alertBox = document.getElementById("alertBox");
     if (!alertBox) return;
@@ -8,14 +10,10 @@ function showAlert(message, type = "danger") {
         </div>
     `;
 
-    // Desvanecer después de 3 segundos
     setTimeout(() => {
         alertBox.innerHTML = "";
     }, 3000);
 }
-
-
-// app/js/categoria.js
 
 // 1. Obtener categoría desde la URL (?cat=camisetas)
 const params = new URLSearchParams(window.location.search);
@@ -39,7 +37,7 @@ async function addToCart(productId) {
             headers: {
                 "Content-Type": "application/json"
             },
-            credentials: "include", // MUY IMPORTANTE para que mande la cookie de sesión
+            credentials: "include",
             body: JSON.stringify({
                 productId: productId,
                 cantidad: 1
@@ -48,14 +46,10 @@ async function addToCart(productId) {
 
         if (res.status === 401) {
             showAlert("Debes iniciar sesión para añadir productos al carrito.", "danger");
-            setTimeout(() => {
-                //window.location.href = "/pages/login.html";
-            }, 3000); // un poquito de tiempo para que vea el mensaje
             return;
         }
 
         if (!res.ok) {
-            // Por si viene error 400 con mensaje de stock
             const data = await res.json().catch(() => ({}));
             showAlert(data.error || "No se pudo añadir al carrito.", "danger");
             return;
@@ -72,8 +66,24 @@ async function addToCart(productId) {
 
     } catch (err) {
         console.error("Error en addToCart():", err);
-        alert("Error al añadir al carrito.");
+        showAlert("Error al añadir al carrito.", "danger");
     }
+}
+
+// Navegación a detalle solo dentro de la lista
+function activarNavegacionDetalle() {
+    const cards = listaEl.querySelectorAll(".product-card");
+
+    cards.forEach(card => {
+        card.addEventListener("click", (e) => {
+            if (e.target.closest(".btn-add-cart")) return;
+
+            const id = card.getAttribute("data-product-id");
+            if (!id) return;
+
+            window.location.href = `/pages/producto.html?id=${id}`;
+        });
+    });
 }
 
 // 2. Llamar al backend para obtener productos de esa categoría
@@ -102,7 +112,7 @@ async function cargarProductosPorCategoria() {
             card.className = "col-12 col-sm-6 col-md-4 col-lg-3";
 
             card.innerHTML = `
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
                     <img src="${prod.imagen || 'https://via.placeholder.com/400x500'}"
                          class="card-img-top"
                          alt="${prod.nombre}">
@@ -120,15 +130,17 @@ async function cargarProductosPorCategoria() {
             listaEl.appendChild(card);
         });
 
-        // Añadimos listeners a todos los botones de "Añadir al carrito"
-        const botones = document.querySelectorAll(".btn-add-cart");
+        // Listeners de "Añadir al carrito" SOLO en esta lista
+        const botones = listaEl.querySelectorAll(".btn-add-cart");
         botones.forEach(btn => {
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation(); // evita que salte el click de la card
                 const productId = btn.getAttribute("data-product-id");
                 addToCart(productId);
             });
         });
 
+        activarNavegacionDetalle();
     } catch (err) {
         console.error("Error cargando productos por categoría:", err);
         listaEl.innerHTML = `

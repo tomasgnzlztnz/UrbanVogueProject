@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showNovedadesError(msg) {
-    const alertEl = document.getElementById('ropaError');
+    const alertEl = document.getElementById('ropaError'); // si usas otro id en novedades, cámbialo aquí
     if (!alertEl) return;
 
     alertEl.textContent = msg || 'Debes iniciar sesión para añadir productos al carrito.';
@@ -14,6 +14,23 @@ function showNovedadesError(msg) {
     setTimeout(() => {
         alertEl.classList.add('d-none');
     }, 3000);
+}
+
+// Navegación a detalle SOLO para las cards de novedades
+function activarNavegacionDetalle(container) {
+    const cards = container.querySelectorAll(".product-card");
+
+    cards.forEach(card => {
+        card.addEventListener("click", (e) => {
+            // IMPORTANTE: aquí usamos la MISMA clase que en el botón
+            if (e.target.closest(".btn-add-cart")) return;
+
+            const id = card.getAttribute("data-product-id");
+            if (!id) return;
+
+            window.location.href = `/pages/producto.html?id=${id}`;
+        });
+    });
 }
 
 async function loadNovedades() {
@@ -27,7 +44,6 @@ async function loadNovedades() {
     `;
 
     try {
-        // Ajusta esta ruta si en tu server usas otra (/productos/novedades, etc.)
         const res = await fetch('/productos/novedades');
 
         if (!res.ok) {
@@ -57,7 +73,7 @@ async function loadNovedades() {
                     : 'https://via.placeholder.com/400x500?text=Sin+imagen';
 
             col.innerHTML = `
-                <div class="card shadow-sm border-0 h-100">
+                <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
                     <img src="${imgSrc}" class="card-img-top" alt="${prod.nombre}">
                     <div class="card-body text-center d-flex flex-column">
                         <h5 class="fw-bold">${prod.nombre}</h5>
@@ -67,7 +83,7 @@ async function loadNovedades() {
                         <p class="fw-semibold mb-3">
                             ${Number(prod.precio).toFixed(2)} €
                         </p>
-                        <button class="btn btn-dark mt-auto w-100 btn-add-to-cart"
+                        <button class="btn btn-dark mt-auto w-100 btn-add-cart"
                                 data-product-id="${prod.id}">
                             Agregar al carrito
                         </button>
@@ -78,11 +94,15 @@ async function loadNovedades() {
             container.appendChild(col);
         });
 
+        // 👉 activar navegación a detalle para estas cards
+        activarNavegacionDetalle(container);
+
         // Delegación de eventos para "Agregar al carrito"
         container.addEventListener('click', async (e) => {
-            if (!e.target.classList.contains('btn-add-to-cart')) return;
+            const btn = e.target.closest('.btn-add-cart');
+            if (!btn) return;
 
-            const productId = e.target.getAttribute('data-product-id');
+            const productId = btn.getAttribute('data-product-id');
             if (!productId) return;
 
             try {
@@ -108,6 +128,8 @@ async function loadNovedades() {
                     showNovedadesError(data.error || 'No se pudo añadir el producto al carrito.');
                     return;
                 }
+
+                // Aquí podrías mostrar un mensaje bonito de éxito si quieres
 
             } catch (err) {
                 console.error('Error al añadir al carrito desde novedades:', err);

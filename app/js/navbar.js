@@ -1,33 +1,139 @@
 // navbar.js
 (async () => {
     // ICONOS DESKTOP
-    const homeDesktop   = document.getElementById('iconHome');
-    const userDesktop   = document.getElementById('iconUser');
-    const cartDesktop   = document.getElementById('iconCart');
+    const homeDesktop = document.getElementById('iconHome');
+    const userDesktop = document.getElementById('iconUser');
+    const cartDesktop = document.getElementById('iconCart');
     const logoutDesktop = document.getElementById('logoutIcon');
 
     // ICONOS MÓVIL
-    const homeMobile    = document.getElementById('iconHomeMobile');
-    const userMobile    = document.getElementById('iconUserMobile');
-    const cartMobile    = document.getElementById('iconCartMobile');
-    const logoutMobile  = document.getElementById('logoutIconMobile');
+    const homeMobile = document.getElementById('iconHomeMobile');
+    const userMobile = document.getElementById('iconUserMobile');
+    const cartMobile = document.getElementById('iconCartMobile');
+    const logoutMobile = document.getElementById('logoutIconMobile');
 
-    const adminItem     = document.getElementById('navAdminItem');
-    const searchDesktop = document.getElementById('iconSearchDesktop');
+    const adminItem = document.getElementById('navAdminItem');
+    const searchDesktop = document.getElementById('iconSearchDesktop'); // de momento sin funcionalidad
 
-if (searchDesktop) {
-    searchDesktop.addEventListener('click', () => {
-        alert("Aquí irá el buscador más adelante :)");
-    });
-}
-
-
-    // Pequeña utilidad para asignar el mismo handler a varios elementos
+    // Utilidad para asignar el mismo handler a varios elementos
     function onClick(elements, handler) {
         elements
             .filter(Boolean)
             .forEach(el => el.addEventListener('click', handler));
     }
+
+    // 🔹 Mini-carrito tipo dropdown (global: desktop + móvil)
+    async function toggleMiniCartDropdown() {
+        const dropdown = document.getElementById('miniCartDropdown');
+        const contentEl = document.getElementById('miniCartContent');
+        const totalEl = document.getElementById('miniCartTotal');
+
+        if (!dropdown || !contentEl || !totalEl) {
+            // Si falta algo, fallback al carrito normal
+            window.location.href = '/pages/cart.html';
+            return;
+        }
+
+        // Toggle visible / oculto
+        const isHidden = dropdown.classList.contains('d-none');
+        if (isHidden) {
+            dropdown.classList.remove('d-none');
+        } else {
+            dropdown.classList.add('d-none');
+            return;
+        }
+
+        // Estado de "cargando"
+        contentEl.innerHTML = `
+            <p class="text-center text-muted mb-0">Cargando carrito...</p>
+        `;
+        totalEl.textContent = '0,00 €';
+
+        try {
+            const res = await fetch('/api/cart', {
+                credentials: 'include'
+            });
+
+            if (res.status === 401) {
+                // Sesión caducada → al login
+                window.location.href = '/pages/login.html';
+                return;
+            }
+
+            if (!res.ok) {
+                throw new Error('Error al obtener el carrito');
+            }
+
+            const data = await res.json();
+            const items = data.items || [];
+            const total = Number(data.total || 0);
+
+            if (items.length === 0) {
+                contentEl.innerHTML = `
+                    <p class="text-center text-muted mb-0">Tu carrito está vacío.</p>
+                `;
+                totalEl.textContent = '0,00 €';
+            } else {
+                let html = '';
+
+                items.forEach(item => {
+                    const nombre = item.nombre || 'Producto';
+                    const cantidad = item.cantidad || 1;
+                    const totalLineaNum = Number(item.total_linea || 0);
+                    const totalLineaTxt = isNaN(totalLineaNum)
+                        ? ''
+                        : totalLineaNum.toFixed(2) + ' €';
+
+                    // Si en /api/cart no llega imagen, usamos una por defecto
+                    const imgSrc = item.imagen && String(item.imagen).trim() !== ''
+                        ? item.imagen
+                        : '/img/clothes/TH-shirt.jpg';
+
+                    html += `
+                        <div class="mini-cart-item">
+                            <img src="${imgSrc}" alt="${nombre}">
+                            <div>
+                                <div class="mini-cart-item-name">${nombre}</div>
+                                <div class="mini-cart-item-qty">x${cantidad}</div>
+                            </div>
+                            <div class="ms-auto small fw-semibold">
+                                ${totalLineaTxt}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                contentEl.innerHTML = html;
+                totalEl.textContent = `${total.toFixed(2)} €`;
+            }
+
+        } catch (err) {
+            console.error('Error cargando mini carrito:', err);
+            contentEl.innerHTML = `
+                <p class="text-center text-danger mb-0">
+                    Error al cargar el carrito.
+                </p>
+            `;
+        }
+    }
+
+    // Cerrar dropdown si se hace click fuera
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('miniCartDropdown');
+        const cartIconDesktop = document.getElementById('iconCart');
+        const cartIconMobile = document.getElementById('iconCartMobile');
+
+        if (!dropdown) return;
+        if (dropdown.classList.contains('d-none')) return;
+
+        const clickInsideDropdown = dropdown.contains(e.target);
+        const clickOnCartDesktop = cartIconDesktop && cartIconDesktop.contains(e.target);
+        const clickOnCartMobile = cartIconMobile && cartIconMobile.contains(e.target);
+
+        if (!clickInsideDropdown && !clickOnCartDesktop && !clickOnCartMobile) {
+            dropdown.classList.add('d-none');
+        }
+    });
 
     // HOME → siempre lleva al inicio
     onClick([homeDesktop, homeMobile], (e) => {
@@ -47,7 +153,7 @@ if (searchDesktop) {
                 window.location.href = '/pages/login.html';
             });
 
-            // carrito → login
+            // carrito → login (desktop y móvil)
             onClick([cartDesktop, cartMobile], (e) => {
                 e.preventDefault();
                 window.location.href = '/pages/login.html';
@@ -72,10 +178,10 @@ if (searchDesktop) {
             window.location.href = '/pages/profile.html';
         });
 
-        // carrito → carrito
-        onClick([cartDesktop, cartMobile], (e) => {
+        // carrito desktop y móvil → mini-carrito dropdown
+        onClick([cartDesktop, cartMobile], async (e) => {
             e.preventDefault();
-            window.location.href = '/pages/cart.html';
+            await toggleMiniCartDropdown();
         });
 
         // mostrar logout

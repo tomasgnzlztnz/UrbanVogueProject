@@ -4,6 +4,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("destacadosContainer");
   if (!contenedor) return;
 
+  // Navegación al detalle solo dentro de este contenedor
+  function activarNavegacionDetalle() {
+    const cards = contenedor.querySelectorAll(".product-card");
+
+    cards.forEach(card => {
+      card.addEventListener("click", (e) => {
+        // Si el clic viene del botón de carrito, no navegamos
+        if (e.target.closest(".btn-add-cart")) return;
+
+        const id = card.getAttribute("data-product-id");
+        if (!id) return;
+
+        window.location.href = `/pages/producto.html?id=${id}`;
+      });
+    });
+  }
+
   async function cargarDestacados() {
     try {
       const res = await fetch("/productos/destacados");
@@ -37,7 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
         col.className = "col";
 
         col.innerHTML = `
-          <div class="card shadow-sm border-0 h-100">
+          <div class="card shadow-sm border-0 h-100 product-card"
+               data-product-id="${prod.id}">
             <img src="${prod.imagen || "https://via.placeholder.com/400x500"}"
                  class="card-img-top"
                  alt="${prod.nombre}">
@@ -59,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Listeners para "Agregar al carrito"
       const botones = contenedor.querySelectorAll(".btn-add-cart");
       botones.forEach((btn) => {
-        btn.addEventListener("click", async () => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation(); // por si acaso, para que no dispare el click de la card
+
           const productId = btn.getAttribute("data-product-id");
 
           try {
@@ -76,9 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (res.status === 401) {
-              alert(
-                "Debes iniciar sesión para añadir productos al carrito."
-              );
+              alert("Debes iniciar sesión para añadir productos al carrito.");
               window.location.href = "/pages/login.html";
               return;
             }
@@ -97,6 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       });
+
+      activarNavegacionDetalle();
     } catch (err) {
       console.error("Error cargando destacados:", err);
     }

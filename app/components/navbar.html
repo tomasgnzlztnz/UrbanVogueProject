@@ -8,15 +8,15 @@
     </div>
 
     <!-- LOGO -->
-    <div class="header-menu">
-        <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon"
-             class="header-menu-icon" style="max-width:400px;">
+    <div class="header-menu" id="iconHomeMobile" style="cursor:pointer;">
+        <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon"
+            style="max-width:400px;">
     </div>
 
     <!-- ICONOS DESKTOP -->
     <div class="header-icons d-none d-lg-flex">
-        <i class='bx bx-home-alt' id="iconHome"></i>
-        <i class='bx bxs-cart' id="iconCart"></i>
+        <!--<i class='bx bx-home-alt' id="iconHome"></i>-->
+        <i class='bx bxs-cart' id="iconCart" style="cursor:pointer;"></i>
         <a href="#" id="iconUser" class="header-icon-link">
             <i class='bx bxs-user'></i>
         </a>
@@ -24,6 +24,7 @@
             <i class='bx bx-door-open'></i>
         </a>
     </div>
+
 
 </header>
 
@@ -39,12 +40,14 @@
         </button>
 
         <!-- ICONOS MÓVIL (solo < lg) -->
-        <div class="d-flex d-lg-none ms-auto align-items-center gap-2">
-            <!-- HOME -->
-            <i class='bx bx-home-alt' id="iconHomeMobile" style="cursor:pointer;"></i>
+        <!-- ICONOS + BUSCADOR MÓVIL (solo < lg) -->
+        <!-- ICONOS + BUSCADOR MÓVIL (solo < lg) -->
+        <div class="d-flex d-lg-none ms-auto align-items-center gap-2 flex-grow-1 nav-mobile-tools">
 
             <!-- BUSCADOR -->
-            <i class='bx bx-search'></i>
+            <div class="flex-grow-1 me-2">
+                <input type="text" class="form-control nav-search-mobile" placeholder="Buscar">
+            </div>
 
             <!-- CARRITO -->
             <i class='bx bxs-cart' id="iconCartMobile" style="cursor:pointer;"></i>
@@ -56,6 +59,8 @@
             <i class='bx bx-door-open d-none' id="logoutIconMobile" style="cursor:pointer; font-size: 1.5rem;"
                 title="Cerrar sesión"></i>
         </div>
+
+
 
         <!-- MENÚ -->
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
@@ -78,3 +83,58 @@
 
     </div>
 </nav>
+
+<!-- MINI CARRITO GLOBAL (desktop + móvil) -->
+<div id="miniCartDropdown" class="mini-cart-dropdown d-none">
+    <div id="miniCartContent">
+        <p class="text-center text-muted mb-0">Tu carrito está vacío.</p>
+    </div>
+
+    <div class="dropdown-total border-top pt-2 mt-2 d-flex justify-content-between">
+        <strong>Total:</strong>
+        <span id="miniCartTotal">0,00 €</span>
+    </div>
+
+    <div class="dropdown-actions mt-3 text-center">
+        <a href="/pages/cart.html" class="btn btn-dark btn-sm w-100">
+            Ver carrito
+        </a>
+    </div>
+</div>
+
+
+<!-- MINI CARRITO (Modal) 
+<div class="modal fade" id="miniCartModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Tu carrito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="miniCartContent">
+          <p class="text-center text-muted mb-0">Cargando carrito...</p>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex justify-content-between align-items-center">
+        <div class="fw-semibold small">
+          Total: <span id="miniCartTotal">0,00 €</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+            Seguir comprando
+          </button>
+          <a href="/pages/cart.html" class="btn btn-dark btn-sm">
+            Ver carrito
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+-->

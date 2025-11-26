@@ -1,7 +1,7 @@
-// rebajas.js (función loadRebajas corregida)
+// app/js/rebajas.js
 
-// Esto asumo que ya lo tienes arriba:
-const cardsContainer = document.getElementById('rebajasContainer'); 
+// Contenedor de cards y alerta reutilizada
+const cardsContainer = document.getElementById('rebajasContainer');
 const ropaError = document.getElementById('ropaError');
 
 // Función para mostrar el mensaje de "debes iniciar sesión"
@@ -14,6 +14,24 @@ function showLoginRequiredMessage() {
         ropaError.classList.add("d-none");
         ropaError.textContent = "";
     }, 3000);
+}
+
+// Navegación a detalle solo dentro de rebajasContainer
+function activarNavegacionDetalle() {
+    if (!cardsContainer) return;
+
+    const cards = cardsContainer.querySelectorAll(".product-card");
+
+    cards.forEach(card => {
+        card.addEventListener("click", (e) => {
+            if (e.target.closest(".btn-add-cart")) return;
+
+            const id = card.getAttribute("data-product-id");
+            if (!id) return;
+
+            window.location.href = `/pages/producto.html?id=${id}`;
+        });
+    });
 }
 
 async function loadRebajas() {
@@ -47,14 +65,14 @@ async function loadRebajas() {
                         : "https://via.placeholder.com/400x500?text=Sin+imagen";
 
                 col.innerHTML = `
-                    <div class="card shadow-sm border-0 h-100">
+                    <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
                         <img src="${imgSrc}" class="card-img-top" alt="${nombre}">
                         <div class="card-body text-center d-flex flex-column">
                             <h6 class="text-muted mb-1">${grupo.categoria}</h6>
                             <h5 class="fw-bold">${nombre}</h5>
                             <p class="text-muted mb-1">${descripcion}</p>
                             <p class="fw-semibold mb-3">${precioTexto}</p>
-                            <button class="btn btn-dark mt-auto w-100 btn-add-to-cart"
+                            <button class="btn btn-dark mt-auto w-100 btn-add-cart"
                                     data-product-id="${prod.id}">
                                 Agregar al carrito
                             </button>
@@ -66,14 +84,15 @@ async function loadRebajas() {
             });
         });
 
-        // Ahora conectamos los botones "Agregar al carrito"
-        const buttons = document.querySelectorAll(".btn-add-to-cart");
+        // Botones "Agregar al carrito" solo dentro de rebajasContainer
+        const buttons = cardsContainer.querySelectorAll(".btn-add-cart");
         buttons.forEach(btn => {
-            btn.addEventListener("click", async () => {
+            btn.addEventListener("click", async (e) => {
+                e.stopPropagation(); // que no dispare la navegación de la card
+
                 const productId = btn.getAttribute("data-product-id");
 
                 try {
-                    // Intentamos añadir al carrito
                     const resAdd = await fetch("/api/cart/add", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -85,7 +104,6 @@ async function loadRebajas() {
                     });
 
                     if (resAdd.status === 401) {
-                        // No logueado → solo mostramos mensaje, NO redirigimos
                         showLoginRequiredMessage();
                         return;
                     }
@@ -96,8 +114,7 @@ async function loadRebajas() {
                     if (!dataAdd.success) {
                         alert(dataAdd.error || "No se pudo añadir al carrito.");
                     } else {
-                        // Aquí si quieres puedes mostrar un mensajito de éxito
-                        // o un toast más adelante
+                        // Aquí puedes mostrar un mensajito de éxito si quieres
                     }
 
                 } catch (err) {
@@ -106,6 +123,8 @@ async function loadRebajas() {
                 }
             });
         });
+
+        activarNavegacionDetalle();
 
     } catch (err) {
         console.error("Error cargando rebajas:", err);
