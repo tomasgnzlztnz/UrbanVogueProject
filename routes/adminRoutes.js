@@ -579,5 +579,33 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
     });
 });
 
+// ===============================
+//  GET - Listado de Newsletter
+// ===============================
+router.get("/newsletter/list", (req, res) => {
+  const sql = `
+        SELECT id, email, fecha_suscripcion
+        FROM newsletter_suscriptores
+        ORDER BY fecha_suscripcion DESC
+    `;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Error obteniendo newsletter:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Error al obtener los suscriptores"
+      });
+    }
+
+    return res.json({
+      success: true,
+      suscriptores: rows
+    });
+  });
+});
+
+
+
 
 module.exports = router;

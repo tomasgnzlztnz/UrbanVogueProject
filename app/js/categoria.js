@@ -15,19 +15,20 @@ function showAlert(message, type = "danger") {
     }, 3000);
 }
 
-// 1. Obtener categoría desde la URL (?cat=camisetas)
+// 1. Obtener categoría desde la URL (?cat=ID)
 const params = new URLSearchParams(window.location.search);
-const categoriaSlug = params.get("cat"); // camisetas, sudaderas, pantalones
+const categoriaId = Number(params.get("cat")); // ahora es un ID numérico
 
 const tituloEl = document.getElementById("categoriaTitulo");
 const listaEl = document.getElementById("listaProductos");
 
-// Si no hay categoría en la URL, mostramos algo genérico
-if (!categoriaSlug) {
-    tituloEl.textContent = "Productos";
+// Si no hay categoría en la URL
+if (!categoriaId || isNaN(categoriaId)) {
+    if (tituloEl) tituloEl.textContent = "Productos";
 } else {
-    tituloEl.textContent = categoriaSlug.toUpperCase();
+    if (tituloEl) tituloEl.textContent = "Cargando categoría...";
 }
+
 
 // Función para llamar a la API de carrito
 async function addToCart(productId) {
@@ -88,17 +89,27 @@ function activarNavegacionDetalle() {
 
 // 2. Llamar al backend para obtener productos de esa categoría
 async function cargarProductosPorCategoria() {
-    if (!categoriaSlug) return;
+    if (!categoriaId || isNaN(categoriaId)) return;
 
     try {
-        const response = await fetch(`/productos/categoria/${categoriaSlug}`);
-        const productos = await response.json();
+        const response = await fetch(`/productos/categoria/${categoriaId}`);
 
+        if (!response.ok) {
+            listaEl.innerHTML = `
+                <div class="col-12">
+                    <p class="text-center text-danger">Error al cargar los productos.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const productos = await response.json();
         console.log("DEBUG productos categoria:", productos);
 
         listaEl.innerHTML = "";
 
         if (!Array.isArray(productos) || productos.length === 0) {
+            if (tituloEl) tituloEl.textContent = "Categoría";
             listaEl.innerHTML = `
                 <div class="col-12">
                     <p class="text-center text-muted">No hay productos en esta categoría.</p>
@@ -106,6 +117,10 @@ async function cargarProductosPorCategoria() {
             `;
             return;
         }
+
+        // Usamos el nombre de categoría que viene del backend
+        const nombreCat = productos[0].categoria_nombre || "Categoría";
+        if (tituloEl) tituloEl.textContent = nombreCat;
 
         productos.forEach(prod => {
             const card = document.createElement("div");
@@ -119,7 +134,7 @@ async function cargarProductosPorCategoria() {
                     <div class="card-body d-flex flex-column text-center">
                         <h5 class="fw-bold">${prod.nombre}</h5>
                         <p class="text-muted small mb-1">${prod.descripcion || ''}</p>
-                        <p class="fw-semibold mb-3">${prod.precio} €</p>
+                        <p class="fw-semibold mb-3">${Number(prod.precio).toFixed(2)} €</p>
                         <button class="btn btn-dark mt-auto w-100 btn-add-cart"
                                 data-product-id="${prod.id}">
                             Añadir al carrito
@@ -130,11 +145,10 @@ async function cargarProductosPorCategoria() {
             listaEl.appendChild(card);
         });
 
-        // Listeners de "Añadir al carrito" SOLO en esta lista
         const botones = listaEl.querySelectorAll(".btn-add-cart");
         botones.forEach(btn => {
             btn.addEventListener("click", (e) => {
-                e.stopPropagation(); // evita que salte el click de la card
+                e.stopPropagation();
                 const productId = btn.getAttribute("data-product-id");
                 addToCart(productId);
             });
@@ -150,6 +164,7 @@ async function cargarProductosPorCategoria() {
         `;
     }
 }
+
 
 // 3. Ejecutar al cargar
 cargarProductosPorCategoria();

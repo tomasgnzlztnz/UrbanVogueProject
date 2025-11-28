@@ -13,7 +13,17 @@
     const logoutMobile = document.getElementById('logoutIconMobile');
 
     const adminItem = document.getElementById('navAdminItem');
-    const searchDesktop = document.getElementById('iconSearchDesktop'); // de momento sin funcionalidad
+
+    // SEARCH (desktop + mobile + overlay)
+    const searchDesktop = document.getElementById('iconSearchDesktop');
+    const searchMobile = document.getElementById('iconSearchMobile'); // asegúrate de poner este id en el icono móvil
+
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchInput = document.getElementById('searchInput');
+    const searchClose = document.getElementById('searchClose');
+    const searchResults = document.getElementById('searchResults');
+    const searchPopularWrapper = document.getElementById('searchPopularWrapper'); // 👈 nuevo
+
 
     // Utilidad para asignar el mismo handler a varios elementos
     function onClick(elements, handler) {
@@ -22,28 +32,22 @@
             .forEach(el => el.addEventListener('click', handler));
     }
 
-    // 🔹 Mini-carrito tipo dropdown (global: desktop + móvil)
-    async function toggleMiniCartDropdown() {
-        const dropdown = document.getElementById('miniCartDropdown');
+    // ==============================
+    //  MINI CARRITO (DESKTOP + MOBIL)
+    // ==============================
+
+    async function openMiniCart() {
+        const modalEl = document.getElementById('miniCartModal');
         const contentEl = document.getElementById('miniCartContent');
         const totalEl = document.getElementById('miniCartTotal');
 
-        if (!dropdown || !contentEl || !totalEl) {
-            // Si falta algo, fallback al carrito normal
+        if (!modalEl || !contentEl || !totalEl) {
+            // Fallback → carrito normal
             window.location.href = '/pages/cart.html';
             return;
         }
 
-        // Toggle visible / oculto
-        const isHidden = dropdown.classList.contains('d-none');
-        if (isHidden) {
-            dropdown.classList.remove('d-none');
-        } else {
-            dropdown.classList.add('d-none');
-            return;
-        }
-
-        // Estado de "cargando"
+        // Estado inicial mientras carga
         contentEl.innerHTML = `
             <p class="text-center text-muted mb-0">Cargando carrito...</p>
         `;
@@ -55,7 +59,7 @@
             });
 
             if (res.status === 401) {
-                // Sesión caducada → al login
+                // Sesión caducada → login
                 window.location.href = '/pages/login.html';
                 return;
             }
@@ -70,39 +74,33 @@
 
             if (items.length === 0) {
                 contentEl.innerHTML = `
-                    <p class="text-center text-muted mb-0">Tu carrito está vacío.</p>
+                    <p class="text-center text-muted mb-0">
+                        Tu carrito está vacío.
+                    </p>
                 `;
                 totalEl.textContent = '0,00 €';
             } else {
-                let html = '';
+                let html = '<ul class="list-unstyled mb-0">';
 
                 items.forEach(item => {
                     const nombre = item.nombre || 'Producto';
                     const cantidad = item.cantidad || 1;
                     const totalLineaNum = Number(item.total_linea || 0);
-                    const totalLineaTxt = isNaN(totalLineaNum)
-                        ? ''
-                        : totalLineaNum.toFixed(2) + ' €';
-
-                    // Si en /api/cart no llega imagen, usamos una por defecto
-                    const imgSrc = item.imagen && String(item.imagen).trim() !== ''
-                        ? item.imagen
-                        : '/img/clothes/TH-shirt.jpg';
 
                     html += `
-                        <div class="mini-cart-item">
-                            <img src="${imgSrc}" alt="${nombre}">
+                        <li class="d-flex justify-content-between align-items-center mb-2">
                             <div>
-                                <div class="mini-cart-item-name">${nombre}</div>
-                                <div class="mini-cart-item-qty">x${cantidad}</div>
+                                <div class="fw-semibold small">${nombre}</div>
+                                <div class="text-muted small">x${cantidad}</div>
                             </div>
-                            <div class="ms-auto small fw-semibold">
-                                ${totalLineaTxt}
+                            <div class="fw-semibold small">
+                                ${isNaN(totalLineaNum) ? '' : totalLineaNum.toFixed(2) + ' €'}
                             </div>
-                        </div>
+                        </li>
                     `;
                 });
 
+                html += '</ul>';
                 contentEl.innerHTML = html;
                 totalEl.textContent = `${total.toFixed(2)} €`;
             }
@@ -115,25 +113,204 @@
                 </p>
             `;
         }
+
+        // Mostrar modal (Bootstrap 5)
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
     }
 
-    // Cerrar dropdown si se hace click fuera
-    document.addEventListener('click', (e) => {
-        const dropdown = document.getElementById('miniCartDropdown');
-        const cartIconDesktop = document.getElementById('iconCart');
-        const cartIconMobile = document.getElementById('iconCartMobile');
+    // ==============================
+    //  SEARCH OVERLAY (front)
+    // ==============================
 
-        if (!dropdown) return;
-        if (dropdown.classList.contains('d-none')) return;
+    let searchTimeout = null;
 
-        const clickInsideDropdown = dropdown.contains(e.target);
-        const clickOnCartDesktop = cartIconDesktop && cartIconDesktop.contains(e.target);
-        const clickOnCartMobile = cartIconMobile && cartIconMobile.contains(e.target);
+    function openSearchOverlay() {
+        if (!searchOverlay) return;
+        searchOverlay.classList.add('search-overlay--visible');
 
-        if (!clickInsideDropdown && !clickOnCartDesktop && !clickOnCartMobile) {
-            dropdown.classList.add('d-none');
+        if (searchInput) {
+            searchInput.value = "";
+            searchInput.focus();
         }
-    });
+
+        if (searchResults) {
+            searchResults.innerHTML = "";
+        }
+
+        // 👇 al abrir, mostramos las búsquedas populares
+        if (searchPopularWrapper) {
+            searchPopularWrapper.classList.remove("d-none");
+        }
+    }
+
+
+    function closeSearchOverlay() {
+        if (!searchOverlay) return;
+        searchOverlay.classList.remove('search-overlay--visible');
+    }
+
+    function renderSearchResults(products, query) {
+        if (!searchResults) return;
+
+        if (!query || query.trim().length === 0) {
+            searchResults.innerHTML = "";
+            return;
+        }
+
+        if (!products || products.length === 0) {
+            searchResults.innerHTML = `
+                <p class="mt-3 text-muted">
+                    No se encontraron resultados para "<strong>${query}</strong>".
+                </p>
+            `;
+            return;
+        }
+
+        let html = `
+            <p class="mt-3">
+                Resultados para "<strong>${query}</strong>":
+            </p>
+            <div class="row g-3 mt-1">
+        `;
+
+        products.forEach(p => {
+            const img = p.imagen && p.imagen.trim() !== ""
+                ? p.imagen
+                : "/img/clothes/TH-shirt.jpg";
+
+            const precio = Number(p.precio || 0).toFixed(2);
+
+            html += `
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="card shadow-sm border-0 h-100 search-result-card"
+                         data-product-id="${p.id}"
+                         style="cursor:pointer;">
+                        <img src="${img}" class="card-img-top" alt="${p.nombre}">
+                        <div class="card-body text-center d-flex flex-column">
+                            <h6 class="fw-bold mb-1">${p.nombre}</h6>
+                            <p class="fw-semibold mb-2">${precio} €</p>
+                            <button class="btn btn-dark btn-sm mt-auto">
+                                Ver detalle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+
+        searchResults.innerHTML = html;
+
+        // Navegación a la página de producto al hacer click en la card
+        const cards = searchResults.querySelectorAll(".search-result-card");
+        cards.forEach(card => {
+            card.addEventListener("click", () => {
+                const id = card.getAttribute("data-product-id");
+                if (!id) return;
+                window.location.href = `/pages/producto.html?id=${id}`;
+            });
+        });
+    }
+
+    async function performSearch(query) {
+        const q = query.trim();
+
+        // Si no hay texto, limpiamos resultados y mostramos populares
+        if (!q || q.length === 0) {
+            renderSearchResults([], q);
+
+            if (searchPopularWrapper) {
+                searchPopularWrapper.classList.remove("d-none");
+            }
+
+            return;
+        }
+
+        // Si hay texto, ocultamos las búsquedas populares
+        if (searchPopularWrapper) {
+            searchPopularWrapper.classList.add("d-none");
+        }
+
+        try {
+            const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+            if (!res.ok) {
+                console.error("Error en /api/search");
+                renderSearchResults([], q);
+                return;
+            }
+
+            const data = await res.json();
+            if (!data.success) {
+                renderSearchResults([], q);
+                return;
+            }
+
+            renderSearchResults(data.results || [], q);
+
+        } catch (err) {
+            console.error("Error realizando búsqueda:", err);
+            renderSearchResults([], q);
+        }
+    }
+
+
+    function setupSearchOverlay() {
+        if (!searchOverlay || !searchInput) return;
+
+        // Abrir overlay con iconos
+        onClick([searchDesktop, searchMobile], (e) => {
+            e.preventDefault();
+            openSearchOverlay();
+        });
+
+        // Cerrar overlay
+        if (searchClose) {
+            searchClose.addEventListener("click", (e) => {
+                e.preventDefault();
+                closeSearchOverlay();
+            });
+        }
+
+        // Cerrar con ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeSearchOverlay();
+            }
+        });
+
+        // Input: debounce de 300ms
+        searchInput.addEventListener("input", (e) => {
+            const value = e.target.value;
+
+            clearTimeout(searchTimeout);
+
+            searchTimeout = setTimeout(() => {
+                performSearch(value);
+            }, 300);
+        });
+
+        // Búsquedas populares: rellenar input y buscar
+        const quickCards = document.querySelectorAll(".search-quick");
+        quickCards.forEach(card => {
+            card.addEventListener("click", () => {
+                const q = card.getAttribute("data-query") || "";
+                if (!searchInput) return;
+
+                searchInput.value = q;
+                searchInput.focus();
+                performSearch(q);
+            });
+        });
+    }
+
+    // Llamamos a la configuración del buscador
+    setupSearchOverlay();
+
+    // ==============================
+    //  NAVEGACIÓN BÁSICA / SESIÓN
+    // ==============================
 
     // HOME → siempre lleva al inicio
     onClick([homeDesktop, homeMobile], (e) => {
@@ -153,7 +330,7 @@
                 window.location.href = '/pages/login.html';
             });
 
-            // carrito → login (desktop y móvil)
+            // carrito → login
             onClick([cartDesktop, cartMobile], (e) => {
                 e.preventDefault();
                 window.location.href = '/pages/login.html';
@@ -178,10 +355,10 @@
             window.location.href = '/pages/profile.html';
         });
 
-        // carrito desktop y móvil → mini-carrito dropdown
+        // carrito → mini-carrito (modal)
         onClick([cartDesktop, cartMobile], async (e) => {
             e.preventDefault();
-            await toggleMiniCartDropdown();
+            await openMiniCart();
         });
 
         // mostrar logout

@@ -2,139 +2,154 @@
 <!-- CENTERED LOGOTYPE -->
 <header class="header-style">
 
-    <!-- ICONO SEARCH SOLO EN DESKTOP -->
-    <div class="header-search-desktop d-none d-lg-flex">
-        <i class='bx bx-search' id="iconSearchDesktop" style="cursor:pointer;"></i>
-    </div>
+  <!-- ICONO SEARCH SOLO EN DESKTOP -->
+  <div class="header-search-desktop d-none d-lg-flex">
+    <i class='bx bx-search' id="iconSearchDesktop" style="cursor:pointer;"></i>
+  </div>
 
-    <!-- LOGO -->
-    <div class="header-menu" id="iconHomeMobile" style="cursor:pointer;">
-        <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon"
-            style="max-width:400px;">
-    </div>
+  <!-- LOGO (clicable, home) -->
+  <div class="header-menu" id="iconHomeMobile" style="cursor:pointer;">
+    <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" class="header-menu-icon"
+      style="max-width:400px;">
+  </div>
 
-    <!-- ICONOS DESKTOP -->
-    <div class="header-icons d-none d-lg-flex">
-        <!--<i class='bx bx-home-alt' id="iconHome"></i>-->
-        <i class='bx bxs-cart' id="iconCart" style="cursor:pointer;"></i>
-        <a href="#" id="iconUser" class="header-icon-link">
-            <i class='bx bxs-user'></i>
-        </a>
-        <a href="#" id="logoutIcon" class="header-icon-link d-none">
-            <i class='bx bx-door-open'></i>
-        </a>
-    </div>
-
+  <!-- ICONOS DESKTOP -->
+  <div class="header-icons d-none d-lg-flex">
+    <!--<i class='bx bx-home-alt' id="iconHome"></i>-->
+    <i class='bx bxs-cart' id="iconCart"></i>
+    <a href="#" id="iconUser" class="header-icon-link">
+      <i class='bx bxs-user'></i>
+    </a>
+    <a href="#" id="logoutIcon" class="header-icon-link d-none">
+      <i class='bx bx-door-open'></i>
+    </a>
+  </div>
 
 </header>
 
 
 <!-- NAVBAR RESPONSIVE -->
 <nav class="navbar navbar-expand-lg navbar-light border-top border-bottom bg-white shadow-sm">
-    <div class="container align-items-center">
+  <div class="container align-items-center">
 
-        <!-- BOTÓN HAMBURGUESA -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <!-- BOTÓN HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <!-- ICONOS MÓVIL (solo < lg) -->
-        <!-- ICONOS + BUSCADOR MÓVIL (solo < lg) -->
-        <!-- ICONOS + BUSCADOR MÓVIL (solo < lg) -->
-        <div class="d-flex d-lg-none ms-auto align-items-center gap-2 flex-grow-1 nav-mobile-tools">
+    <!-- ICONOS MÓVIL (solo < lg) -->
+    <div class="d-flex d-lg-none ms-auto align-items-center gap-2">
 
-            <!-- BUSCADOR -->
-            <div class="flex-grow-1 me-2">
-                <input type="text" class="form-control nav-search-mobile" placeholder="Buscar">
-            </div>
+      <!-- BUSCADOR (abre overlay) -->
+      <i class='bx bx-search' id="iconSearchMobile" style="cursor:pointer;"></i>
 
-            <!-- CARRITO -->
-            <i class='bx bxs-cart' id="iconCartMobile" style="cursor:pointer;"></i>
+      <!-- CARRITO -->
+      <i class='bx bxs-cart' id="iconCartMobile" style="cursor:pointer;"></i>
 
-            <!-- LOGIN / PERFIL -->
-            <i class='bx bxs-user' id="iconUserMobile" style="cursor:pointer;"></i>
+      <!-- LOGIN / PERFIL -->
+      <i class='bx bxs-user' id="iconUserMobile" style="cursor:pointer;"></i>
 
-            <!-- LOGOUT (oculto al inicio) -->
-            <i class='bx bx-door-open d-none' id="logoutIconMobile" style="cursor:pointer; font-size: 1.5rem;"
-                title="Cerrar sesión"></i>
-        </div>
-
-
-
-        <!-- MENÚ -->
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-            <ul class="navbar-nav text-uppercase fw-semibold">
-
-                <li class="nav-item mx-3"><a class="nav-link" href="/pages/novedades.html">Novedades</a></li>
-                <li class="nav-item mx-3"><a class="nav-link" href="/pages/ropa.html">Ropa</a></li>
-                <li class="nav-item mx-3"><a class="nav-link" href="/pages/categoria.html?cat=accesorios">Accesorios</a>
-                </li>
-                <li class="nav-item mx-3"><a class="nav-link" href="/pages/rebajas.html">Rebajas</a></li>
-                <li class="nav-item mx-3"><a class="nav-link" href="/pages/sobre_nosotros.html">Sobre Nosotros</a></li>
-
-                <!-- ADMIN (oculto al inicio) -->
-                <li class="nav-item mx-3 d-none" id="navAdminItem">
-                    <a class="nav-link" href="/pages/admin.html">Administración</a>
-                </li>
-
-            </ul>
-        </div>
-
+      <!-- LOGOUT (oculto al inicio) -->
+      <i class='bx bx-door-open d-none' id="logoutIconMobile" style="cursor:pointer; font-size: 1.5rem;"
+        title="Cerrar sesión"></i>
     </div>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav text-uppercase fw-semibold">
+
+        <li class="nav-item mx-3"><a class="nav-link" href="/pages/novedades.html">Novedades</a></li>
+        <li class="nav-item mx-3"><a class="nav-link" href="/pages/ropa.html">Ropa</a></li>
+        <li class="nav-item mx-3"><a class="nav-link" href="/pages/categoria.html?cat=4">Accesorios</a></li>
+        <li class="nav-item mx-3"><a class="nav-link" href="/pages/rebajas.html">Rebajas</a></li>
+        <li class="nav-item mx-3"><a class="nav-link" href="/pages/sobre_nosotros.html">Sobre Nosotros</a></li>
+
+        <!-- ADMIN (oculto al inicio) -->
+        <li class="nav-item mx-3 d-none" id="navAdminItem">
+          <a class="nav-link" href="/pages/admin.html">Administración</a>
+        </li>
+
+      </ul>
+    </div>
+
+  </div>
 </nav>
 
-<!-- MINI CARRITO GLOBAL (desktop + móvil) -->
-<div id="miniCartDropdown" class="mini-cart-dropdown d-none">
-    <div id="miniCartContent">
-        <p class="text-center text-muted mb-0">Tu carrito está vacío.</p>
-    </div>
 
-    <div class="dropdown-total border-top pt-2 mt-2 d-flex justify-content-between">
-        <strong>Total:</strong>
-        <span id="miniCartTotal">0,00 €</span>
-    </div>
+<!-- ==========================
+     OVERLAY BUSCADOR GLOBAL
+     ========================== -->
+<!-- OVERLAY BUSCADOR GLOBAL -->
+<div id="searchOverlay" class="search-overlay">
+  <div class="container search-overlay-inner">
 
-    <div class="dropdown-actions mt-3 text-center">
-        <a href="/pages/cart.html" class="btn btn-dark btn-sm w-100">
-            Ver carrito
-        </a>
-    </div>
-</div>
+    <!-- Fila superior: logo + input + botón cerrar -->
+    <div class="d-flex justify-content-between align-items-center search-overlay-top">
 
+      <!-- Logo (opcional) -->
+      <div class="d-flex align-items-center">
+        <img src="/img/logotype/logo_urbanvogue_black.svg" alt="UrbanVogue" class="search-overlay-logo-img me-3">
 
-<!-- MINI CARRITO (Modal) 
-<div class="modal fade" id="miniCartModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Tu carrito</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
-      <div class="modal-body">
-        <div id="miniCartContent">
-          <p class="text-center text-muted mb-0">Cargando carrito...</p>
+      <!-- Input -->
+      <div class="search-overlay-input-wrapper mx-auto">
+        <div class="d-flex align-items-center gap-2 search-overlay-input-inner">
+          <i class='bx bx-search'></i>
+          <input type="text" id="searchInput" class="search-overlay-input" placeholder="Busca camisetas, sudaderas..."
+            autocomplete="off">
+        </div>
+        <div class="search-overlay-input-underline"></div>
+      </div>
+
+      <!-- Botón cerrar -->
+      <button type="button" id="searchClose" class="btn btn-link text-decoration-none search-overlay-close-btn">
+        &times;
+      </button>
+    </div>
+
+    <!-- Contenido inferior: populares + resultados -->
+    <div class="mt-4">
+
+      <!-- Búsquedas populares -->
+      <!--<div class="search-overlay-popular mb-4">-->
+      <div id="searchPopularWrapper" class="search-overlay-popular mb-4">
+
+        <p class="search-popular-title mb-3">Búsquedas populares</p>
+
+        <div class="row">
+          <!-- Card 1 -->
+          <div class="col-12 col-md-4 mb-3 text-center">
+            <div class="search-popular-label mb-2">Camisetas</div>
+            <div class="search-popular-card search-quick" data-query="camiseta">
+              <img src="/img/clothes/TH-shirt.jpg" alt="Camisetas">
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="col-12 col-md-4 mb-3 text-center">
+            <div class="search-popular-label mb-2">Sudaderas</div>
+            <div class="search-popular-card search-quick" data-query="sudadera">
+              <img src="/img/clothes/TH-shirt.jpg" alt="Sudaderas">
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="col-12 col-md-4 mb-3 text-center">
+            <div class="search-popular-label mb-2">Pantalones</div>
+            <div class="search-popular-card search-quick" data-query="pantalon">
+              <img src="/img/clothes/TH-shirt.jpg" alt="Pantalones">
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="modal-footer d-flex justify-content-between align-items-center">
-        <div class="fw-semibold small">
-          Total: <span id="miniCartTotal">0,00 €</span>
-        </div>
-        <div class="d-flex gap-2">
-          <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
-            Seguir comprando
-          </button>
-          <a href="/pages/cart.html" class="btn btn-dark btn-sm">
-            Ver carrito
-          </a>
-        </div>
+      <!-- Resultados de la búsqueda -->
+      <div id="searchResults" class="mt-3">
+        <!-- Aquí pintaremos resultados con JS -->
       </div>
 
     </div>
   </div>
 </div>
-
--->

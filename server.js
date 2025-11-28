@@ -7,8 +7,8 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
-
-
+const { sendOrderConfirmationEmail } = require("./mailer");
+const { sendNewsletterWelcomeEmail } = require("./mailer");
 
 // Configuración de la app
 const app = express();
@@ -115,32 +115,24 @@ app.delete("/productos/:id", (req, res) => {
   });
 });
 
-// GET - Obtener productos por categoría
-app.get("/productos/categoria/:slug", (req, res) => {
-  const { slug } = req.params;
+// GET - Obtener productos por categoría (por ID de categoría)
+app.get("/productos/categoria/:idCategoria", (req, res) => {
+  const idCategoria = Number(req.params.idCategoria);
 
-  // Mapa de slugs a nombres de categoría en BD
-  const mapaCategorias = {
-    camisetas: "Camisetas",
-    sudaderas: "Sudaderas",
-    pantalones: "Pantalones",
-    accesorios: "Accesorios",
-  };
-
-  const nombreCategoria = mapaCategorias[slug];
-
-  if (!nombreCategoria) {
+  if (!idCategoria || isNaN(idCategoria)) {
     return res.status(400).json({ error: "Categoría no válida" });
   }
 
   const sql = `
-    SELECT p.*
+    SELECT 
+      p.*,
+      c.nombre AS categoria_nombre
     FROM productos p
     JOIN categorias c ON p.id_categoria = c.id
-    WHERE c.nombre = ?
+    WHERE c.id = ?
   `;
 
-  db.query(sql, [nombreCategoria], (err, results) => {
+  db.query(sql, [idCategoria], (err, results) => {
     if (err) {
       console.error("Error al obtener productos por categoría:", err);
       return res.status(500).send("Error del servidor");
@@ -253,17 +245,15 @@ app.get("/productos/destacados", (req, res) => {
 
 // POST - Añadir producto al carrito del usuario logueado
 app.post("/api/cart/add", (req, res) => {
-  // 1) Comprobar que el usuario está logueado
   if (!req.session.user) {
     return res.status(401).json({ error: "Debes iniciar sesión para usar el carrito." });
   }
 
   const userId = req.session.user.id;
-  const { productId, cantidad } = req.body;
+  const { productId, cantidad, talla } = req.body;
 
   const qty = cantidad && cantidad > 0 ? cantidad : 1;
 
-  // 2) Buscar si ya existe un carrito para este usuario
   const sqlBuscarCarrito = "SELECT id FROM carrito WHERE id_usuario = ? LIMIT 1";
 
   db.query(sqlBuscarCarrito, [userId], (err, results) => {
@@ -275,7 +265,6 @@ app.post("/api/cart/add", (req, res) => {
     let carritoId;
 
     if (results.length === 0) {
-      // 3) Si no hay carrito → crear uno
       const sqlCrearCarrito = "INSERT INTO carrito (id_usuario) VALUES (?)";
       db.query(sqlCrearCarrito, [userId], (err2, result2) => {
         if (err2) {
@@ -284,20 +273,17 @@ app.post("/api/cart/add", (req, res) => {
         }
 
         carritoId = result2.insertId;
-        // Una vez creado el carrito, añadimos el ítem
-        agregarItemCarrito(carritoId, productId, qty, res);
+        agregarItemCarrito(carritoId, productId, qty, talla, res);
       });
     } else {
-      // Ya existe carrito
       carritoId = results[0].id;
-      agregarItemCarrito(carritoId, productId, qty, res);
+      agregarItemCarrito(carritoId, productId, qty, talla, res);
     }
   });
 });
 
 // Función auxiliar para insertar/actualizar el ítem en carrito_items
-function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
-  // 1) Ver stock del producto
+function agregarItemCarrito(idCarrito, idProducto, cantidad, tallaSeleccionada, res) {
   const sqlStock = "SELECT stock FROM productos WHERE id = ?";
 
   db.query(sqlStock, [idProducto], (err, rows) => {
@@ -312,9 +298,8 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
 
     const stockDisponible = rows[0].stock;
 
-    // 2) Ver si ya existe ese producto en el carrito
     const sqlBuscarItem = `
-      SELECT id, cantidad
+      SELECT id, cantidad, talla
       FROM carrito_items
       WHERE id_carrito = ? AND id_producto = ?
       LIMIT 1
@@ -326,8 +311,13 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
         return res.status(500).json({ error: "Error al buscar el producto en el carrito." });
       }
 
+      // Normalizamos la talla: si no viene nada, usamos "M"
+      const tallaFinal = tallaSeleccionada && tallaSeleccionada.trim() !== ""
+        ? tallaSeleccionada.trim()
+        : "M";
+
       if (results.length === 0) {
-        // No existe aún -> queremos insertar cantidad
+        // No existe aún -> insertar
         const nuevaCantidad = cantidad;
 
         if (nuevaCantidad > stockDisponible) {
@@ -338,10 +328,10 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
         }
 
         const sqlInsertItem = `
-          INSERT INTO carrito_items (id_carrito, id_producto, cantidad)
-          VALUES (?, ?, ?)
+          INSERT INTO carrito_items (id_carrito, id_producto, cantidad, talla)
+          VALUES (?, ?, ?, ?)
         `;
-        db.query(sqlInsertItem, [idCarrito, idProducto, nuevaCantidad], (err3) => {
+        db.query(sqlInsertItem, [idCarrito, idProducto, nuevaCantidad, tallaFinal], (err3) => {
           if (err3) {
             console.error("Error al insertar item en carrito:", err3);
             return res.status(500).json({ error: "Error al añadir el producto al carrito." });
@@ -351,7 +341,7 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
         });
 
       } else {
-        // Ya existe → sumamos a la cantidad actual
+        // Ya existe → sumamos cantidad y, si se ha enviado talla, la actualizamos
         const item = results[0];
         const cantidadActual = item.cantidad;
         const nuevaCantidad = cantidadActual + cantidad;
@@ -365,16 +355,17 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, res) {
 
         const sqlUpdateItem = `
           UPDATE carrito_items
-          SET cantidad = ?
+          SET cantidad = ?, talla = ?
           WHERE id = ?
         `;
-        db.query(sqlUpdateItem, [nuevaCantidad, item.id], (err4) => {
+
+        db.query(sqlUpdateItem, [nuevaCantidad, tallaFinal, item.id], (err4) => {
           if (err4) {
             console.error("Error al actualizar cantidad en carrito:", err4);
             return res.status(500).json({ error: "Error al actualizar el producto en el carrito." });
           }
 
-          return res.json({ success: true, message: "Cantidad actualizada en el carrito." });
+          return res.json({ success: true, message: "Cantidad/talla actualizadas en el carrito." });
         });
       }
     });
@@ -410,17 +401,19 @@ app.get("/api/cart", (req, res) => {
 
     // Traemos los items y datos de producto
     const sqlItems = `
-      SELECT 
-        ci.id           AS item_id,
-        p.id            AS product_id,
-        p.nombre        AS nombre,
-        p.precio        AS precio,
-        ci.cantidad     AS cantidad,
-        (p.precio * ci.cantidad) AS total_linea
-      FROM carrito_items ci
-      JOIN productos p ON ci.id_producto = p.id
-      WHERE ci.id_carrito = ?
-    `;
+  SELECT 
+    ci.id           AS item_id,
+    p.id            AS product_id,
+    p.nombre        AS nombre,
+    p.precio        AS precio,
+    ci.cantidad     AS cantidad,
+    ci.talla        AS talla,
+    (p.precio * ci.cantidad) AS total_linea
+  FROM carrito_items ci
+  JOIN productos p ON ci.id_producto = p.id
+  WHERE ci.id_carrito = ?
+`;
+
 
     db.query(sqlItems, [carritoId], (err2, rows) => {
       if (err2) {
@@ -564,7 +557,8 @@ app.post("/api/cart/clear", (req, res) => {
   });
 });
 
-// POST - Checkout: crear pedido a partir del carrito y vaciarlo
+// POST - Checkout: crear pedido a partir del carrito y vaciarlo (CÓDIGO ANTIGUO SIN CONFIRMACIÓN POR EMAIL)
+/*
 app.post("/api/cart/checkout", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -589,11 +583,126 @@ app.post("/api/cart/checkout", (req, res) => {
 
     // 2) Obtener items del carrito
     const sqlItems = `
+  SELECT 
+    ci.id           AS item_id,
+    p.id            AS product_id,
+    p.precio        AS precio,
+    ci.cantidad     AS cantidad,
+    ci.talla        AS talla
+  FROM carrito_items ci
+  JOIN productos p ON ci.id_producto = p.id
+  WHERE ci.id_carrito = ?
+`;
+
+
+    db.query(sqlItems, [carritoId], (err2, items) => {
+      if (err2) {
+        console.error("Error al obtener items para checkout:", err2);
+        return res.status(500).json({ error: "Error al procesar el pedido." });
+      }
+
+      if (items.length === 0) {
+        return res.status(400).json({ error: "Tu carrito está vacío." });
+      }
+
+      const total = items.reduce(
+        (sum, it) => sum + Number(it.precio) * it.cantidad,
+        0
+      );
+
+      // 3) Crear pedido
+      const sqlInsertPedido = `
+        INSERT INTO pedidos (id_usuario, total, estado)
+        VALUES (?, ?, 'pendiente')
+      `;
+
+      db.query(sqlInsertPedido, [userId, total], (err3, resultPedido) => {
+        if (err3) {
+          console.error("Error al crear pedido:", err3);
+          return res.status(500).json({ error: "Error al crear el pedido." });
+        }
+
+        const pedidoId = resultPedido.insertId;
+
+        // 4) Insertar detalle_pedido
+        const sqlDetalle = `
+  INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, talla, precio_unitario)
+  VALUES ?
+`;
+
+        const values = items.map(it => [
+          pedidoId,
+          it.product_id,
+          it.cantidad,
+          it.talla || null,
+          it.precio
+        ]);
+
+
+        db.query(sqlDetalle, [values], (err4) => {
+          if (err4) {
+            console.error("Error al insertar detalle del pedido:", err4);
+            return res.status(500).json({ error: "Error al crear el detalle del pedido." });
+          }
+
+          // 5) Vaciar carrito
+          const sqlVaciar = "DELETE FROM carrito_items WHERE id_carrito = ?";
+
+          db.query(sqlVaciar, [carritoId], (err5) => {
+            if (err5) {
+              console.error("Error al vaciar carrito tras checkout:", err5);
+              return res.status(500).json({ error: "Pedido creado, pero error al vaciar el carrito." });
+            }
+
+            // 6) Respuesta OK
+            res.json({
+              success: true,
+              message: "Pedido creado correctamente.",
+              pedidoId,
+              total
+            });
+          });
+        });
+      });
+    });
+  });
+});
+*/
+
+// POST - Checkout: crear pedido a partir del carrito y vaciarlo + enviar email de confirmación
+app.post("/api/cart/checkout", (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "No has iniciado sesión." });
+  }
+
+  const userId = req.session.user.id;
+  const userEmail = req.session.user.email;
+  const userNombre = req.session.user.nombre;
+
+  // 1) Buscar carrito
+  const sqlCarrito = "SELECT id FROM carrito WHERE id_usuario = ? LIMIT 1";
+
+  db.query(sqlCarrito, [userId], (err, results) => {
+    if (err) {
+      console.error("Error al buscar carrito (checkout):", err);
+      return res.status(500).json({ error: "Error al procesar el pedido." });
+    }
+
+    if (results.length === 0) {
+      return res.status(400).json({ error: "Tu carrito está vacío." });
+    }
+
+    const carritoId = results[0].id;
+
+    // 2) Obtener items del carrito (añadimos nombre y talla si la tuvieras en carrito_items)
+    const sqlItems = `
       SELECT 
         ci.id           AS item_id,
         p.id            AS product_id,
+        p.nombre        AS nombre,
         p.precio        AS precio,
-        ci.cantidad     AS cantidad
+        ci.cantidad     AS cantidad,
+        ci.talla        AS talla   -- si tu tabla carrito_items no tiene talla, quita esta línea
       FROM carrito_items ci
       JOIN productos p ON ci.id_producto = p.id
       WHERE ci.id_carrito = ?
@@ -630,38 +739,75 @@ app.post("/api/cart/checkout", (req, res) => {
 
         // 4) Insertar detalle_pedido
         const sqlDetalle = `
-          INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario)
+          INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, talla, precio_unitario)
           VALUES ?
         `;
 
-        const values = items.map(it => [
+        const values = items.map((it) => [
           pedidoId,
           it.product_id,
           it.cantidad,
-          it.precio
+          it.talla || "M", // talla por defecto si no hubiera
+          it.precio,
         ]);
 
-        db.query(sqlDetalle, [values], (err4) => {
+        db.query(sqlDetalle, [values], async (err4) => {
           if (err4) {
             console.error("Error al insertar detalle del pedido:", err4);
-            return res.status(500).json({ error: "Error al crear el detalle del pedido." });
+            return res
+              .status(500)
+              .json({ error: "Error al crear el detalle del pedido." });
           }
 
           // 5) Vaciar carrito
           const sqlVaciar = "DELETE FROM carrito_items WHERE id_carrito = ?";
 
-          db.query(sqlVaciar, [carritoId], (err5) => {
+          db.query(sqlVaciar, [carritoId], async (err5) => {
             if (err5) {
-              console.error("Error al vaciar carrito tras checkout:", err5);
-              return res.status(500).json({ error: "Pedido creado, pero error al vaciar el carrito." });
+              console.error(
+                "Error al vaciar carrito tras checkout:",
+                err5
+              );
+              return res.status(500).json({
+                error:
+                  "Pedido creado, pero error al vaciar el carrito.",
+              });
             }
 
-            // 6) Respuesta OK
+            // 6) Intentar enviar el email de confirmación (NO rompemos si falla)
+            try {
+              if (userEmail) {
+                await sendOrderConfirmationEmail({
+                  to: userEmail,
+                  nombre: userNombre,
+                  pedidoId,
+                  total,
+                  items: items.map((it) => ({
+                    nombre: it.nombre,
+                    cantidad: it.cantidad,
+                    talla: it.talla || "M",
+                    precio: it.precio,
+                  })),
+                });
+              } else {
+                console.warn(
+                  "Usuario sin email, no se envía correo de confirmación."
+                );
+              }
+            } catch (emailErr) {
+              console.error(
+                "Error al enviar el correo de confirmación:",
+                emailErr
+              );
+              // NO hacemos return, el pedido ya está creado
+            }
+
+            // 7) Respuesta OK al cliente
             res.json({
               success: true,
               message: "Pedido creado correctamente.",
               pedidoId,
-              total
+              total,
             });
           });
         });
@@ -669,6 +815,188 @@ app.post("/api/cart/checkout", (req, res) => {
     });
   });
 });
+
+// POST - Cambiar talla de un ítem del carrito
+app.post("/api/cart/item/:itemId/size", (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "No has iniciado sesión." });
+  }
+
+  const userId = req.session.user.id;
+  const itemId = req.params.itemId;
+  const { talla } = req.body;
+
+  const tallaFinal = talla && talla.trim() !== "" ? talla.trim() : "M";
+
+  const sql = `
+    UPDATE carrito_items ci
+    JOIN carrito c ON ci.id_carrito = c.id
+    SET ci.talla = ?
+    WHERE ci.id = ? AND c.id_usuario = ?
+  `;
+
+  db.query(sql, [tallaFinal, itemId, userId], (err, result) => {
+    if (err) {
+      console.error("Error al actualizar talla del item:", err);
+      return res.status(500).json({ error: "Error al actualizar la talla del producto." });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Producto no encontrado en tu carrito." });
+    }
+
+    res.json({ success: true, message: "Talla actualizada correctamente." });
+  });
+});
+
+// LISTAR TODAS LAS CATEGORÍAS (público)
+app.get("/categorias", (req, res) => {
+  const sql = `
+    SELECT id, nombre, descripcion
+    FROM categorias
+    ORDER BY nombre ASC
+  `;
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Error al obtener categorías públicas:", err);
+      return res.status(500).json({ error: "Error al obtener las categorías." });
+    }
+
+    res.json(rows); // array de { id, nombre, descripcion }
+  });
+});
+
+
+// ===============================
+//  BÚSQUEDA GLOBAL DE PRODUCTOS
+//  GET /api/search?q=texto
+// ===============================
+app.get("/api/search", (req, res) => {
+  const q = (req.query.q || "").trim();
+
+  // Si la query está vacía, devolvemos lista vacía
+  if (q.length === 0) {
+    return res.json({
+      success: true,
+      results: []
+    });
+  }
+
+  // Búsqueda parcial (LIKE %q%) en nombre y descripción
+  const like = `%${q}%`;
+
+  const sql = `
+    SELECT 
+      id,
+      nombre,
+      descripcion,
+      precio,
+      imagen
+    FROM productos
+    WHERE 
+      nombre LIKE ? 
+      OR (descripcion IS NOT NULL AND descripcion LIKE ?)
+    ORDER BY fecha_creacion DESC
+    LIMIT 20
+  `;
+
+  db.query(sql, [like, like], (err, results) => {
+    if (err) {
+      console.error("Error en búsqueda:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Error al realizar la búsqueda."
+      });
+    }
+
+    return res.json({
+      success: true,
+      results
+    });
+  });
+});
+
+
+// ===============================
+//  NEWSLETTER: SUSCRIPCIÓN
+//  POST /api/newsletter/subscribe
+// ===============================
+app.post("/api/newsletter/subscribe", (req, res) => {
+  const { email } = req.body;
+
+  // Validación básica de email
+  if (!email || typeof email !== "string") {
+    return res.status(400).json({
+      success: false,
+      message: "Debes indicar un correo electrónico."
+    });
+  }
+
+  const emailLimpio = email.trim().toLowerCase();
+
+  // RegEx sencillito, no perfecto pero suficiente para un TFG
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailLimpio)) {
+    return res.status(400).json({
+      success: false,
+      message: "El formato del correo no es válido."
+    });
+  }
+
+  // 1) Comprobar si ya existe ese email
+  const checkSql = "SELECT id FROM newsletter_suscriptores WHERE email = ?";
+
+  db.query(checkSql, [emailLimpio], (err, rows) => {
+    if (err) {
+      console.error("Error comprobando suscriptor:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Error interno al comprobar el correo."
+      });
+    }
+
+    if (rows.length > 0) {
+      // Ya estaba suscrito → no es un error grave
+      return res.json({
+        success: true,
+        message: "Este correo ya estaba suscrito a las novedades."
+      });
+    }
+
+    // 2) Insertar nuevo suscriptor
+    const insertSql = `
+      INSERT INTO newsletter_suscriptores (email)
+      VALUES (?)
+    `;
+
+    db.query(insertSql, [emailLimpio], async (err2, result) => {
+      if (err2) {
+        console.error("Error insertando suscriptor:", err2);
+        return res.status(500).json({
+          success: false,
+          message: "No se pudo registrar el correo."
+        });
+      }
+
+      // 3) Intentamos enviar email de bienvenida (sin bloquear la respuesta)
+      (async () => {
+        try {
+          await sendNewsletterWelcomeEmail(emailLimpio);
+        } catch (errMail) {
+          console.error("Error enviando email de newsletter:", errMail);
+          // No rompemos nada si falla el correo: el usuario ya está guardado
+        }
+      })();
+
+      return res.status(201).json({
+        success: true,
+        message: "Te has suscrito correctamente a las novedades."
+      });
+    });
+  });
+});
+
 
 // Servidor
 const PORT = 3000;

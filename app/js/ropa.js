@@ -1,6 +1,7 @@
 // app/js/ropa.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadCategorias();
     loadAllProducts();
 });
 
@@ -36,6 +37,68 @@ function activarNavegacionDetalle() {
         });
     });
 }
+
+async function loadCategorias() {
+    const container = document.getElementById('categoryList');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="col-12 text-center">
+            <p>Cargando categorías...</p>
+        </div>
+    `;
+
+    try {
+        const res = await fetch('/categorias');
+        if (!res.ok) {
+            throw new Error("Error al cargar categorías");
+        }
+
+        const categorias = await res.json();
+
+        if (!Array.isArray(categorias) || categorias.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">De momento no hay categorías disponibles.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = "";
+
+        categorias.forEach(cat => {
+            // 👇 Omitir la categoría "Accesorios" en la página de Ropa
+            if (cat.nombre && cat.nombre.toLowerCase() === "accesorios") {
+                return; // saltamos esta categoría
+            }
+
+            const col = document.createElement('div');
+            col.className = "col-10 col-md-4";
+
+            col.innerHTML = `
+        <a href="/pages/categoria.html?cat=${cat.id}" class="text-decoration-none">
+            <div class="category-card p-4 shadow-sm text-center rounded">
+                <i class='bx bx-category fs-1 mb-3'></i>
+                <h4 class="fw-bold">${cat.nombre}</h4>
+            </div>
+        </a>
+    `;
+
+            container.appendChild(col);
+        });
+
+
+    } catch (err) {
+        console.error("Error al cargar categorías:", err);
+        container.innerHTML = `
+            <div class="col-12 text-center">
+                <p class="text-danger">Error al cargar las categorías.</p>
+            </div>
+        `;
+    }
+}
+
 
 async function loadAllProducts() {
     const container = document.getElementById('allProductsContainer');

@@ -785,7 +785,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             showAdminSuccess(data.message || "Rol actualizado correctamente.");
-            if (newRol=="cliente") {
+            if (newRol == "cliente") {
                 console.log("Has degradado al usuario con:", id, "a rol:", newRol);
                 window.location.href = "/pages/login.html";
             }
@@ -797,6 +797,65 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // ==============================
+    //   NEWSLETTER – LISTADO
+    // ==============================
+    async function cargarSuscriptores() {
+        const tbody = document.getElementById("newsletterTableBody");
+        const vacio = document.getElementById("newsletterVacio");
+        if (!tbody) return;
+
+        try {
+            const res = await fetch("/api/admin/newsletter/list", {
+                credentials: "include"
+            });
+
+            const text = await res.text();          // <<--- obtenemos texto crudo
+            console.log("RAW NEWSLETTER RESPONSE:", text);
+
+            let data;
+            try {
+                data = JSON.parse(text);            // <<--- Intentamos parsear JSON
+            } catch (err) {
+                console.error("❗La respuesta NO es JSON válido:", err);
+                tbody.innerHTML = "";
+                vacio.classList.remove("d-none");
+                return;
+            }
+
+            if (!data.success) {
+                tbody.innerHTML = "";
+                vacio.classList.remove("d-none");
+                return;
+            }
+
+            const lista = data.suscriptores;
+
+            tbody.innerHTML = "";
+
+            if (lista.length === 0) {
+                vacio.classList.remove("d-none");
+                return;
+            }
+
+            vacio.classList.add("d-none");
+
+            lista.forEach(sub => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${sub.id}</td>
+                <td>${sub.email}</td>
+                <td>${new Date(sub.fecha_suscripcion).toLocaleString("es-ES")}</td>
+            `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (err) {
+            console.error("Error cargando newsletter:", err);
+            tbody.innerHTML = "";
+            vacio.classList.remove("d-none");
+        }
+    }
 
 
 
@@ -837,6 +896,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await cargarProductos();
     // Cargar usuarios en el panel de usuarios
     await cargarUsuarios();
+    await cargarSuscriptores();
 
 
 });

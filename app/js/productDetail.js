@@ -1,16 +1,32 @@
 // app/js/productDetail.js
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const errorBox      = document.getElementById("productDetailError");
+    const errorBox = document.getElementById("productDetailError");
     const loginErrorBox = document.getElementById("productDetailLoginError");
-    const titleEl       = document.getElementById("productTitle");
-    const descEl        = document.getElementById("productDescription");
-    const priceEl       = document.getElementById("productPrice");
-    const imageEl       = document.getElementById("productImage");
-    const btnAdd        = document.getElementById("btnAddToCartDetail");
+    const titleEl = document.getElementById("productTitle");
+    const descEl = document.getElementById("productDescription");
+    const priceEl = document.getElementById("productPrice");
+    const imageEl = document.getElementById("productImage");
+    const btnAdd = document.getElementById("btnAddToCartDetail");
 
     let isLogged = false;
     let currentProduct = null;
+
+    const sizeButtons = document.querySelectorAll(".size-option");
+    let selectedSize = null;
+
+    sizeButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            sizeButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            selectedSize = btn.getAttribute("data-size");
+            console.log("Talla seleccionada:", selectedSize);
+        });
+    });
+
+
+
+
 
     function showError(msg) {
         if (!errorBox) return;
@@ -119,7 +135,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     credentials: "include",
                     body: JSON.stringify({
                         productId: currentProduct.id,
-                        cantidad: 1
+                        cantidad: 1,
+                        talla: selectedSize || "M"
                     })
                 });
 

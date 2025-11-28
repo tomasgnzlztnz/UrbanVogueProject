@@ -59,30 +59,43 @@ document.addEventListener("DOMContentLoaded", () => {
             items.forEach(item => {
                 const tr = document.createElement("tr");
 
-                tr.innerHTML = `
-                                <td>${item.nombre}</td>
-                                <td>${Number(item.precio).toFixed(2)} €</td>
-                                <td>${item.cantidad}</td>
-                                <td>${Number(item.total_linea).toFixed(2)} €</td>
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <button class="btn btn-success btn-inc-item"
-                                                title="Añadir una unidad"
-                                                data-product-id="${item.product_id}">
-                                            Añadir
-                                        </button>
-                                        <button class="btn btn-danger btn-dec-item"
-                                                title="Quitar una unidad"
-                                                data-item-id="${item.item_id}">
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </td>
-                            `;
+                const tallaActual = item.talla || "M";
 
+                tr.innerHTML = `
+        <td>${item.nombre}</td>
+
+        <td>
+            <select class="form-select form-select-sm cart-size-select"
+                    data-item-id="${item.item_id}">
+                <option value="S"  ${tallaActual === "S" ? "selected" : ""}>S</option>
+                <option value="M"  ${tallaActual === "M" ? "selected" : ""}>M</option>
+                <option value="L"  ${tallaActual === "L" ? "selected" : ""}>L</option>
+                <option value="XL" ${tallaActual === "XL" ? "selected" : ""}>XL</option>
+            </select>
+        </td>
+
+        <td>${Number(item.precio).toFixed(2)} €</td>
+        <td>${item.cantidad}</td>
+        <td>${Number(item.total_linea).toFixed(2)} €</td>
+        <td class="text-end">
+            <div class="btn-group btn-group-sm" role="group">
+                <button class="btn btn-success btn-inc-item"
+                        title="Añadir una unidad"
+                        data-product-id="${item.product_id}">
+                    Añadir
+                </button>
+                <button class="btn btn-danger btn-dec-item"
+                        title="Quitar una unidad"
+                        data-item-id="${item.item_id}">
+                    Eliminar
+                </button>
+            </div>
+        </td>
+    `;
 
                 tbodyEl.appendChild(tr);
             });
+
 
 
 
@@ -127,7 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 credentials: "include",
                 body: JSON.stringify({
                     productId: productId,
-                    cantidad: 1
+                    cantidad: 1,
+                    talla: "M"
                 })
             });
 
@@ -180,6 +194,58 @@ document.addEventListener("DOMContentLoaded", () => {
             showError("Error al disminuir la cantidad.");
         }
     }
+
+    // Selects de talla
+    const sizeSelects = document.querySelectorAll(".cart-size-select");
+    sizeSelects.forEach(select => {
+        select.addEventListener("change", () => {
+            const itemId = select.getAttribute("data-item-id");
+            const nuevaTalla = select.value;
+            updateItemSize(itemId, nuevaTalla);
+        });
+    });
+
+    // Cambiar talla de un ítem del carrito
+    async function updateItemSize(itemId, talla) {
+        clearError();
+
+        try {
+            const res = await fetch(`/api/cart/item/${itemId}/size`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ talla })
+            });
+
+            if (res.status === 401) {
+                window.location.href = "/pages/login.html";
+                return;
+            }
+
+            const data = await res.json();
+            console.log("updateItemSize:", data);
+
+            if (!data.success) {
+                showError(data.error || "No se pudo actualizar la talla.");
+                return;
+            }
+
+            // Si quieres recargar el carrito entero (por si cambia algo más)
+            // await loadCart();
+            // De momento, no hace falta recargar porque solo cambia texto/estado del select
+
+        } catch (err) {
+            console.error("Error en updateItemSize:", err);
+            showError("Error al actualizar la talla.");
+        }
+    }
+
+
+
+
+
 
     // Eliminar un item del carrito
     async function removeItem(itemId) {
@@ -275,9 +341,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Go to Purchase Process
     if (btnPay) {
         btnPay.addEventListener("click", () => {
-            checkout();
+            //checkout();
+            window.location.href = "/pages/checkout.html";
         });
     }
 

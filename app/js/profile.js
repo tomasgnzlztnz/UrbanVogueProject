@@ -1,16 +1,19 @@
-// app/js/profile.js
+// /js/profile.js
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const errorEl = document.getElementById("profileError");
+    const errorEl   = document.getElementById("profileError");
     const successEl = document.getElementById("profileSuccess");
 
-    const inputNombre = document.getElementById("profileNombre");
-    const pEmail = document.getElementById("profileEmail");
-    const pRol = document.getElementById("profileRole");
+    const inputNombre    = document.getElementById("profileNombre");
+    const pEmail         = document.getElementById("profileEmail");
+    const pRol           = document.getElementById("profileRole");
     const inputDireccion = document.getElementById("profileDireccion");
-    const inputTelefono = document.getElementById("profileTelefono");
-    const pFecha = document.getElementById("profileFecha");
-    const form = document.getElementById("profileForm");
+    const inputTelefono  = document.getElementById("profileTelefono");
+    const pFecha         = document.getElementById("profileFecha");
+    const form           = document.getElementById("profileForm");
+
+    const ordersEmptyEl     = document.getElementById("ordersEmpty");
+    const ordersAccordionEl = document.getElementById("ordersAccordion");
 
     function showError(msg) {
         if (!errorEl) return;
@@ -35,9 +38,131 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 3000);
     }
 
-    let originalUser = null; // <- añadimos esto
+    let originalUser = null;
 
-    // 1. Cargar datos del usuario logueado
+    // ============================
+    // CARGAR PEDIDOS DEL USUARIO
+    // ============================
+    async function loadOrders() {
+        if (!ordersAccordionEl || !ordersEmptyEl) return;
+
+        try {
+            const res = await fetch("/api/user/orders", {
+                method: "GET",
+                credentials: "include"
+            });
+
+            if (res.status === 401) {
+                window.location.href = "/pages/login.html";
+                return;
+            }
+
+            const data = await res.json();
+            console.log("DEBUG profile → pedidos:", data);
+
+            if (!data.success) {
+                showError(data.message || "No se han podido cargar tus pedidos.");
+                return;
+            }
+
+            const pedidos = data.pedidos || [];
+
+            // Si no hay pedidos
+            if (pedidos.length === 0) {
+                ordersEmptyEl.classList.remove("d-none");
+                ordersAccordionEl.innerHTML = "";
+                return;
+            }
+
+            ordersEmptyEl.classList.add("d-none");
+            ordersAccordionEl.innerHTML = "";
+
+            pedidos.forEach((pedido, index) => {
+                const collapseId = `pedidoCollapse${pedido.id}`;
+                const headingId  = `pedidoHeading${pedido.id}`;
+
+                const fechaStr = (() => {
+                    if (!pedido.fecha) return "";
+                    let raw = pedido.fecha;
+                    if (typeof raw === "string") raw = raw.replace(" ", "T");
+                    const fecha = new Date(raw);
+                    if (isNaN(fecha.getTime())) return "";
+                    return fecha.toLocaleString("es-ES");
+                })();
+
+                const totalNum = Number(pedido.total || 0);
+                const estado   = pedido.estado || "pendiente";
+
+                // Construir listado de productos del pedido
+                let itemsHtml = "";
+                (pedido.items || []).forEach(item => {
+                    const tallaTxt    = item.talla ? ` (Talla ${item.talla})` : "";
+                    const subtotalNum = Number(item.subtotal || 0);
+
+                    itemsHtml += `
+                        <li class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                ${item.imagen ? `
+                                    <img src="${item.imagen}" alt="${item.nombre}"
+                                         style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 0.5rem;">
+                                ` : ""}
+                                <div>
+                                    <div class="fw-semibold small">${item.nombre}${tallaTxt}</div>
+                                    <div class="text-muted small">
+                                        x${item.cantidad} · ${Number(item.precioUnitario).toFixed(2)} €
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fw-semibold small">
+                                ${subtotalNum.toFixed(2)} €
+                            </div>
+                        </li>
+                    `;
+                });
+
+                const itemHtml = `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="${headingId}">
+                            <button class="accordion-button ${index === 0 ? "" : "collapsed"}" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#${collapseId}"
+                                    aria-expanded="${index === 0 ? "true" : "false"}"
+                                    aria-controls="${collapseId}">
+                                <div class="d-flex flex-column flex-md-row w-100 justify-content-between">
+                                    <span>
+                                        Pedido #${pedido.id}
+                                        <span class="text-muted small"> · ${fechaStr}</span>
+                                    </span>
+                                    <span class="small">
+                                        Estado: <strong>${estado}</strong> ·
+                                        Total: <strong>${totalNum.toFixed(2)} €</strong>
+                                    </span>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="${collapseId}" class="accordion-collapse collapse ${index === 0 ? "show" : ""}"
+                             aria-labelledby="${headingId}" data-bs-parent="#ordersAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled mb-0">
+                                    ${itemsHtml}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                ordersAccordionEl.insertAdjacentHTML("beforeend", itemHtml);
+            });
+
+        } catch (err) {
+            console.error("Error cargando pedidos del perfil:", err);
+            showError("Ha ocurrido un error al cargar tus pedidos.");
+        }
+    }
+
+    // ============================
+    // 1. CARGAR DATOS DEL USUARIO
+    // ============================
     try {
         const data = await fetchCurrentUser(); // función de auth.js
 
@@ -52,16 +177,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Guardamos copia original para comparar luego
         originalUser = {
-            nombre: user.nombre || "",
+            nombre:    user.nombre    || "",
             direccion: user.direccion || "",
-            telefono: user.telefono || ""
+            telefono:  user.telefono  || ""
         };
 
-        if (inputNombre) inputNombre.value = originalUser.nombre;
-        if (pEmail) pEmail.textContent = user.email || "";
-        if (pRol) pRol.textContent = user.rol || "";
+        if (inputNombre)    inputNombre.value    = originalUser.nombre;
+        if (pEmail)         pEmail.textContent   = user.email || "";
+        if (pRol)           pRol.textContent     = user.rol   || "";
         if (inputDireccion) inputDireccion.value = originalUser.direccion;
-        if (inputTelefono) inputTelefono.value = originalUser.telefono;
+        if (inputTelefono)  inputTelefono.value  = originalUser.telefono;
         if (pFecha && user.fecha_registro) {
             let raw = user.fecha_registro;
             if (typeof raw === "string") raw = raw.replace(" ", "T");
@@ -77,15 +202,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 2. Guardar cambios al enviar el formulario
+    // ============================
+    // 2. CARGAR PEDIDOS DEL USUARIO
+    // ============================
+    await loadOrders();
+
+    // ============================
+    // 3. GUARDAR CAMBIOS DEL PERFIL
+    // ============================
     if (form) {
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             clearError();
 
-            const nombre = inputNombre ? inputNombre.value.trim() : "";
+            const nombre    = inputNombre    ? inputNombre.value.trim()    : "";
             const direccion = inputDireccion ? inputDireccion.value.trim() : "";
-            const telefono = inputTelefono ? inputTelefono.value.trim() : "";
+            const telefono  = inputTelefono  ? inputTelefono.value.trim()  : "";
 
             // Validación: nombre obligatorio
             if (!nombre) {
@@ -93,7 +225,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // Validación: si no hemos cargado originalUser por lo que sea
             if (!originalUser) {
                 showError("No se han podido validar los cambios del perfil.");
                 return;
@@ -101,9 +232,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // Comprobar si realmente ha cambiado algo
             const hasChanges =
-                nombre !== originalUser.nombre ||
+                nombre    !== originalUser.nombre ||
                 direccion !== originalUser.direccion ||
-                telefono !== originalUser.telefono;
+                telefono  !== originalUser.telefono;
 
             if (!hasChanges) {
                 showError("No has modificado ningún dato.");
