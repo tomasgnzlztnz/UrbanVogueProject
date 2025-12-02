@@ -108,7 +108,28 @@ document.addEventListener("DOMContentLoaded", () => {
               return;
             }
 
-            alert("Producto añadido al carrito ✅");
+            const originalText = btn.textContent;
+            const originalClasses = btn.className;
+
+            btn.disabled = true;
+            btn.textContent = "Añadido correctamente";
+            btn.classList.remove("btn-dark");
+            btn.classList.add("btn-success");
+
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.textContent = originalText;
+              btn.className = originalClasses;
+            }, 2000);
+
+
+
+
+
+
+
+
+            //alert("Producto añadido al carrito ✅");
           } catch (err) {
             console.error("Error al añadir desde destacados:", err);
             alert("Error al añadir al carrito.");

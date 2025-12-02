@@ -24,7 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const data = await login(email, password); // función de auth.js
             console.log('Login OK:', data);
-
+            if (data.rol="admin") {
+                console.log('Redirigiendo a admin...');
+                window.location.href = '/pages/admin.html';
+                return;
+            }
             // Aquí puedes redirigir a la página principal
             window.location.href = '/index.html';
         } catch (err) {

@@ -1,5 +1,3 @@
-// app/js/productDetail.js
-
 document.addEventListener("DOMContentLoaded", async () => {
     const errorBox = document.getElementById("productDetailError");
     const loginErrorBox = document.getElementById("productDetailLoginError");
@@ -8,6 +6,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const priceEl = document.getElementById("productPrice");
     const imageEl = document.getElementById("productImage");
     const btnAdd = document.getElementById("btnAddToCartDetail");
+
+    // 👉 nuevo: contenedor de productos relacionados
+    const relatedContainer = document.getElementById("relatedProducts");
 
     let isLogged = false;
     let currentProduct = null;
@@ -23,10 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.log("Talla seleccionada:", selectedSize);
         });
     });
-
-
-
-
 
     function showError(msg) {
         if (!errorBox) return;
@@ -48,7 +45,73 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 3000);
     }
 
-    // 1. Averiguar el ID de producto desde la URL: ?id=XX
+    // 👉 función auxiliar para pintar productos relacionados
+    function renderRelatedProducts(allProducts, product) {
+        if (!relatedContainer || !product) return;
+
+        // Quitamos el producto actual de la lista
+        const others = allProducts.filter(p => Number(p.id) !== Number(product.id));
+
+        if (others.length === 0) {
+            relatedContainer.innerHTML = `
+                <div class="col-12">
+                    <p class="text-center text-muted mb-0">
+                        No hay más productos por ahora.
+                    </p>
+                </div>
+            `;
+            return;
+        }
+
+        // Mezclamos un poco el array y cogemos 4
+        const shuffled = [...others].sort(() => Math.random() - 0.5);
+        const seleccion = shuffled.slice(0, 4);
+
+        relatedContainer.innerHTML = "";
+
+        seleccion.forEach(prod => {
+            const col = document.createElement("div");
+            col.className = "col";
+
+            const imgSrc = prod.imagen && prod.imagen.trim() !== ""
+                ? prod.imagen
+                : "/img/clothes/TH-shirt.jpg";
+
+            const precio = Number(prod.precio || 0).toFixed(2);
+
+            col.innerHTML = `
+                <div class="card shadow-sm border-0 h-100 product-card"
+                     data-product-id="${prod.id}"
+                     style="cursor:pointer;">
+                    <img src="${imgSrc}" class="card-img-top" alt="${prod.nombre}">
+                    <div class="card-body d-flex flex-column text-center">
+                        <h6 class="fw-bold product-card-title mb-1">
+                            ${prod.nombre}
+                        </h6>
+                        <p class="fw-semibold mb-3">${precio} €</p>
+                        <button class="btn btn-outline-dark btn-sm mt-auto btn-ver-detalle">
+                            Ver producto
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            relatedContainer.appendChild(col);
+        });
+
+        // Click en las cards → ir al detalle
+        const cards = relatedContainer.querySelectorAll(".product-card");
+        cards.forEach(card => {
+            card.addEventListener("click", (e) => {
+                // Permitimos que se haga click en cualquier parte de la card
+                const id = card.getAttribute("data-product-id");
+                if (!id) return;
+                window.location.href = `/pages/producto.html?id=${id}`;
+            });
+        });
+    }
+
+    // 1. ID del producto en la URL
     const params = new URLSearchParams(window.location.search);
     const productId = params.get("id");
 
@@ -57,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 2. Comprobar si hay usuario logueado (para el comportamiento del botón)
+    // 2. Comprobar usuario logueado
     try {
         const data = await fetchCurrentUser(); // de auth.js
         isLogged = !!(data && data.autenticado);
@@ -66,7 +129,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error comprobando usuario:", err);
     }
 
-    // 3. Cargar el producto desde /productos (y filtrar por ID)
+    // 3. Cargar todos los productos y localizar el actual
+    let todosLosProductos = [];
     try {
         clearError();
 
@@ -76,9 +140,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        const productos = await res.json();
+        todosLosProductos = await res.json();
         const idNum = Number(productId);
-        currentProduct = productos.find(p => Number(p.id) === idNum);
+        currentProduct = todosLosProductos.find(p => Number(p.id) === idNum);
 
         if (!currentProduct) {
             showError("Producto no encontrado.");
@@ -100,7 +164,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (imageEl) {
-            // Si el producto tiene ruta de imagen, úsala; si no, usamos la camiseta por defecto
             const imgSrc = currentProduct.imagen && currentProduct.imagen.trim() !== ""
                 ? currentProduct.imagen
                 : "/img/clothes/TH-shirt.jpg";
@@ -109,18 +172,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             imageEl.alt = currentProduct.nombre || "Producto UrbanVogue";
         }
 
+        // 👉 aquí pintamos los productos extra
+        renderRelatedProducts(todosLosProductos, currentProduct);
+
     } catch (err) {
         console.error("Error cargando producto:", err);
         showError("Ha ocurrido un error al cargar el producto.");
         return;
     }
 
-    // 5. Comportamiento del botón "AGREGAR AL CARRITO"
+    // 5. Botón "AGREGAR AL CARRITO"
     if (btnAdd) {
         btnAdd.addEventListener("click", async () => {
             if (!currentProduct) return;
 
-            // Si NO está logueado → mensaje rojo, pero NO redirigir
             if (!isLogged) {
                 showLoginError();
                 return;
@@ -141,7 +206,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
 
                 if (res.status === 401) {
-                    // Por seguridad, si la sesión ha expirado
                     showLoginError();
                     return;
                 }
@@ -154,7 +218,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                // Mini feedback rápido (puedes mejorarlo luego con un toast bonito)
                 alert("Producto añadido al carrito.");
 
             } catch (err) {

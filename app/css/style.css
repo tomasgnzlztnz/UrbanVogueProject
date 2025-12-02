@@ -1,7 +1,43 @@
-html, body {
-  min-width: 410px;
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&display=swap');
+
+:root {
+  /* Colores base */
+  --uv-bg: #ffffff;
+  --uv-black: #111111;
+  --uv-text: #222222;
+  --uv-muted: #666666;
+
+  /* Acentos */
+  --uv-accent: #FC00C6;
+  --uv-accent-dark: #c4009c;
+
+  /* Grises */
+  --uv-gray-50: #fafafa;
+  --uv-gray-100: #f5f5f5;
+  --uv-gray-200: #eeeeee;
+  --uv-gray-300: #e0e0e0;
+
+  /* Sombras / bordes / radios */
+  --uv-shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --uv-shadow-hover: 0 14px 35px rgba(0, 0, 0, 0.12);
+  --uv-radius-sm: 6px;
+  --uv-radius-md: 10px;
+  --uv-radius-lg: 16px;
+
+  /* Tipos */
+  --uv-font-display-1: "Anton", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --uv-font-display-2: "Bebas Neue", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --uv-font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Transiciones */
+  --uv-transition-fast: 0.18s ease-out;
+  --uv-transition-med: 0.25s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
+html,
+body {
+  min-width: 410px;
+}
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -53,6 +89,132 @@ main h2 {
   z-index: 2;
 }
 
+/* ===== ACERCA DE NOSOTROS ===== */
+#section_acercaDe {
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  /* 🔹 móvil: texto arriba, logo debajo */
+  gap: 2rem;
+}
+
+#section_acercaDe>div:first-child {
+  /* bloque de texto */
+  flex: 1;
+}
+
+#logo_acercaDe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#logo_acercaDe img {
+  width: 70%;
+  max-width: 260px;
+  height: auto;
+}
+
+/* =======================================
+   PÁGINA DE PERFIL DE USUARIO
+   ======================================= */
+
+.page-profile main {
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+/* Título "Mi perfil" */
+.page-profile h1 {
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+/* Tarjeta principal */
+.page-profile .card {
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.page-profile .card-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels del formulario */
+.page-profile .form-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #555;
+}
+
+/* Inputs tipo “solo línea inferior” */
+.page-profile .form-control {
+  border: none;
+  border-bottom: 1px solid #ddd;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-shadow: none;
+  font-size: 0.9rem;
+}
+
+.page-profile .form-control:focus {
+  border-bottom-color: #000;
+  box-shadow: none;
+}
+
+/* Campos solo texto (email, rol, fecha) */
+.page-profile .form-control-plaintext {
+  border-bottom: 1px solid #eee;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 0.9rem;
+}
+
+/* Botón guardar */
+.page-profile #profileForm button[type="submit"] {
+  padding-inline: 2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+/* Bloques de alertas un poco más integrados */
+.page-profile #profileError,
+.page-profile #profileSuccess {
+  border-radius: 0;
+  font-size: 0.85rem;
+}
+
+/* Título “Mis pedidos” */
+.page-profile section h2 {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Acordeón de pedidos: más fino */
+.page-profile .accordion-button {
+  font-size: 0.85rem;
+}
+
+.page-profile .accordion-button:not(.collapsed) {
+  background-color: #f8f9fa;
+}
+
+.page-profile .accordion-item {
+  border-radius: 0 !important;
+}
+
+
+
 /* ===== Detalle de producto ===== */
 
 #productDetailCard {
@@ -69,6 +231,271 @@ main h2 {
 .product-detail-image {
   border-radius: 0;
   object-fit: cover;
+}
+
+/* ===== BOTONES GLOBALES ===== */
+
+.btn {
+  border-radius: var(--uv-radius-sm);
+  font-family: var(--uv-font-display-2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 0.55rem 1.4rem;
+  transition:
+    transform var(--uv-transition-fast),
+    box-shadow var(--uv-transition-fast),
+    background-color var(--uv-transition-fast),
+    color var(--uv-transition-fast);
+}
+
+/* Botón principal oscuro (lo usas muchísimo) */
+.btn-dark {
+  background-color: var(--uv-black);
+  border-color: var(--uv-black);
+}
+
+.btn-dark:hover,
+.btn-dark:focus-visible {
+  background-color: #000000;
+  border-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: var(--uv-shadow-soft);
+}
+
+/* Outline dark */
+.btn-outline-dark {
+  border-radius: var(--uv-radius-sm);
+  border-width: 1.5px;
+}
+
+.btn-outline-dark:hover,
+.btn-outline-dark:focus-visible {
+  background-color: var(--uv-black);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: var(--uv-shadow-soft);
+}
+
+/* Estado “success” que usas para “Añadido correctamente” */
+.btn-success {
+  border-radius: var(--uv-radius-sm);
+  box-shadow: var(--uv-shadow-soft);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ===== ROPA HEADERS ===== */
+.textsection-clothes {
+  color: var(--uv-bg);
+  background-color: #024959;
+  opacity: 60%;
+  border-radius: 5px;
+}
+
+/* ===== SECTION REBAJAS =====*/
+#txt_rebajas {
+  color: white;
+  text-transform: uppercase;
+}
+
+#txt_rebajas h1 {
+  background-color: red;
+  padding: 1rem;
+  font-weight: bold;
+
+
+}
+
+/* ===== SECTION PRODUCT DETAILS RECOMENDADOS =====*/
+.related-products-section h3 {
+  font-family: var(--uv-heading-font, "Bebas Neue", system-ui, -apple-system, sans-serif);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+
+/* ===== CARDS DE PRODUCTO ===== */
+.product-card {
+  border-radius: var(--uv-radius-lg);
+  overflow: hidden;
+  border: none;
+  background-color: #ffffff;
+  transition:
+    transform var(--uv-transition-med),
+    box-shadow var(--uv-transition-med);
+}
+
+/* Títulos de productos: máximo 2 líneas, el resto se corta con ... */
+.product-card-title {
+  font-size: 1rem;
+  line-height: 1.2;
+  min-height: 2.4rem;
+  /* 2 líneas de alto (1.2 * 2) */
+  display:
+    -webkit-box;
+  -webkit-line-clamp: 2;
+  /* máximo 2 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Sombra y elevación al pasar el ratón */
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--uv-shadow-hover);
+}
+
+/* Imagen dentro de las cards */
+.product-card img {
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+/* Zoom suave en imagen al hover */
+.product-card:hover img {
+  transform: scale(1.03);
+}
+
+/* Título del producto */
+.product-card .card-body h5,
+.product-card .card-body h6 {
+  font-family: var(--uv-font-display-2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Para que el botón quede pegado abajo visualmente */
+.product-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+
+
+
+
+
+/* ===== CARRITO =====*/
+/* ===== CARRITO ===== */
+
+.cart-table .cart-item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cart-table .cart-item-text {
+  flex: 1;
+}
+
+.cart-table .cart-item-name {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cart-table .cart-item-thumb img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Versión móvil: convertir filas en tarjetas apiladas */
+@media (max-width: 576px) {
+  .cart-table thead {
+    display: none;
+  }
+
+  .cart-table tbody tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 0.75rem 0.75rem 0.5rem;
+  }
+
+  .cart-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: none;
+    /* quitar líneas horizontales de bootstrap */
+    padding: 0.25rem 0;
+  }
+
+  /* Primera celda (producto + imagen) ocupa toda la anchura */
+  .cart-table tbody td:first-child {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .cart-table .cart-item-main {
+    align-items: flex-start;
+  }
+
+  .cart-table .cart-item-thumb img {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Botones centrados en la parte de abajo */
+  .cart-table tbody td:last-child {
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/*RESPONSIVE*/
+
+
+/* Versión mobile: un pelín menos de “salto” en hover (por si hay cursor) */
+@media (max-width: 576px) {
+  .product-card:hover {
+    transform: translateY(-3px);
+  }
+}
+
+
+/* 🔸 A partir de tablet / escritorio: lado a lado */
+@media (min-width: 768px) {
+  #section_acercaDe {
+    flex-direction: row;
+    /* texto izquierda, logo derecha */
+    align-items: center;
+    gap: 3rem;
+  }
+
+  #section_acercaDe>div:first-child {
+    flex: 1.4;
+    /* un poco más ancho el texto */
+  }
+
+  #logo_acercaDe {
+    flex: 1;
+    justify-content: flex-end;
+    /* pegamos el logo hacia la derecha */
+  }
+
+  #logo_acercaDe img {
+    width: 100%;
+    max-width: 320px;
+    /* logo más grande en escritorio */
+  }
 }
 
 /* Versión escritorio: imagen izquierda, texto derecha, más ancho */
@@ -94,7 +521,9 @@ main h2 {
 }
 
 @media (max-width: 410px) {
-  html, body {
+
+  html,
+  body {
     min-width: 410px;
   }
 }

@@ -115,6 +115,20 @@ async function loadRebajas() {
                         alert(dataAdd.error || "No se pudo añadir al carrito.");
                     } else {
                         // Aquí puedes mostrar un mensajito de éxito si quieres
+                        const originalText = btn.textContent;
+                        const originalClasses = btn.className;
+
+                        btn.disabled = true;
+                        btn.textContent = "Añadido correctamente";
+                        btn.classList.remove("btn-dark");
+                        btn.classList.add("btn-success");
+
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.textContent = originalText;
+                            btn.className = originalClasses;
+                        }, 2000);
+
                     }
 
                 } catch (err) {

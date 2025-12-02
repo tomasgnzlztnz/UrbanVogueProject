@@ -191,9 +191,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             let raw = user.fecha_registro;
             if (typeof raw === "string") raw = raw.replace(" ", "T");
             const fecha = new Date(raw);
+            fechaNueva = raw.split("T")
             if (!isNaN(fecha.getTime())) {
-                pFecha.textContent = fecha.toLocaleString("es-ES");
+                //pFecha.textContent = fecha.toLocaleString("es-ES");
+                pFecha.textContent = fechaNueva[0];
             }
+            console.log("FECHA:::::::",fechaNueva[0]);
         }
 
     } catch (err) {

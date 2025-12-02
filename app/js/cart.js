@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (tbodyEl) tbodyEl.innerHTML = "";
 
-            items.forEach(item => {
+            /*items.forEach(item => {
                 const tr = document.createElement("tr");
 
                 const tallaActual = item.talla || "M";
@@ -94,7 +94,61 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
                 tbodyEl.appendChild(tr);
+            });*/
+            items.forEach(item => {
+                const tr = document.createElement("tr");
+
+                const tallaActual = item.talla || "M";
+                const imagen = item.imagen && item.imagen.trim() !== ""
+                    ? item.imagen
+                    : "/img/clothes/TH-shirt.jpg"; // fallback
+
+                tr.innerHTML = `
+                                    <td>
+                                        <div class="cart-item-main">
+                                            <div class="cart-item-text">
+                                                <div class="cart-item-name fw-semibold">
+                                                    ${item.nombre}
+                                                </div>
+                                                <div class="cart-item-size mt-1">
+                                                    <span class="text-muted small me-2">Talla:</span>
+                                                    <select class="form-select form-select-sm cart-size-select d-inline-block w-auto"
+                                                            data-item-id="${item.item_id}">
+                                                        <option value="S"  ${tallaActual === "S" ? "selected" : ""}>S</option>
+                                                        <option value="M"  ${tallaActual === "M" ? "selected" : ""}>M</option>
+                                                        <option value="L"  ${tallaActual === "L" ? "selected" : ""}>L</option>
+                                                        <option value="XL" ${tallaActual === "XL" ? "selected" : ""}>XL</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="cart-item-thumb ms-3">
+                                                <img src="${imagen}" alt="${item.nombre}">
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>${Number(item.precio).toFixed(2)} €</td>
+                                    <td>${item.cantidad}</td>
+                                    <td>${Number(item.total_linea).toFixed(2)} €</td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button class="btn btn-success btn-inc-item"
+                                                    title="Añadir una unidad"
+                                                    data-product-id="${item.product_id}">
+                                                Añadir
+                                            </button>
+                                            <button class="btn btn-danger btn-dec-item"
+                                                    title="Quitar una unidad"
+                                                    data-item-id="${item.item_id}">
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                `;
+
+                tbodyEl.appendChild(tr);
             });
+
 
 
 
@@ -241,11 +295,6 @@ document.addEventListener("DOMContentLoaded", () => {
             showError("Error al actualizar la talla.");
         }
     }
-
-
-
-
-
 
     // Eliminar un item del carrito
     async function removeItem(itemId) {

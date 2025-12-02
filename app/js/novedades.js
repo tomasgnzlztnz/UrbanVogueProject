@@ -94,7 +94,7 @@ async function loadNovedades() {
             container.appendChild(col);
         });
 
-        // 👉 activar navegación a detalle para estas cards
+        // Activar navegación a detalle para estas cards
         activarNavegacionDetalle(container);
 
         // Delegación de eventos para "Agregar al carrito"
@@ -129,7 +129,20 @@ async function loadNovedades() {
                     return;
                 }
 
-                // Aquí podrías mostrar un mensaje bonito de éxito si quieres
+                const originalText = btn.textContent;
+                const originalClasses = btn.className;
+
+                btn.disabled = true;
+                btn.textContent = "Añadido correctamente";
+                btn.classList.remove("btn-dark");
+                btn.classList.add("btn-success");
+
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    btn.className = originalClasses;
+                }, 2000);
+
 
             } catch (err) {
                 console.error('Error al añadir al carrito desde novedades:', err);

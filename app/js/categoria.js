@@ -1,5 +1,4 @@
 // app/js/categoria.js
-
 function showAlert(message, type = "danger") {
     const alertBox = document.getElementById("alertBox");
     if (!alertBox) return;
@@ -29,9 +28,11 @@ if (!categoriaId || isNaN(categoriaId)) {
     if (tituloEl) tituloEl.textContent = "Cargando categoría...";
 }
 
-
-// Función para llamar a la API de carrito
-async function addToCart(productId) {
+// ============================
+//  Añadir al carrito
+// ============================
+// Recibe el id del producto y el botón que se pulsó
+async function addToCart(productId, buttonEl) {
     try {
         const res = await fetch("/api/cart/add", {
             method: "POST",
@@ -42,6 +43,8 @@ async function addToCart(productId) {
             body: JSON.stringify({
                 productId: productId,
                 cantidad: 1
+                // Si quisieras enviar talla por defecto:
+                // talla: "M"
             })
         });
 
@@ -63,7 +66,25 @@ async function addToCart(productId) {
             return;
         }
 
-        showAlert("Producto añadido al carrito ✅", "success");
+        // Mensaje de alerta arriba
+        //showAlert("Producto añadido al carrito", "success");
+
+        // Feedback en el botón (si nos lo han pasado)
+        if (buttonEl) {
+            const originalText = buttonEl.textContent;
+            const originalClasses = buttonEl.className;
+
+            buttonEl.disabled = true;
+            buttonEl.textContent = "Añadido correctamente";
+            buttonEl.classList.remove("btn-dark");
+            buttonEl.classList.add("btn-success");
+
+            setTimeout(() => {
+                buttonEl.disabled = false;
+                buttonEl.textContent = originalText;
+                buttonEl.className = originalClasses;
+            }, 2000);
+        }
 
     } catch (err) {
         console.error("Error en addToCart():", err);
@@ -71,7 +92,9 @@ async function addToCart(productId) {
     }
 }
 
-// Navegación a detalle solo dentro de la lista
+// ============================
+//  Navegación a detalle
+// ============================
 function activarNavegacionDetalle() {
     const cards = listaEl.querySelectorAll(".product-card");
 
@@ -87,7 +110,9 @@ function activarNavegacionDetalle() {
     });
 }
 
-// 2. Llamar al backend para obtener productos de esa categoría
+// ============================
+//  Cargar productos por categoría
+// ============================
 async function cargarProductosPorCategoria() {
     if (!categoriaId || isNaN(categoriaId)) return;
 
@@ -126,11 +151,12 @@ async function cargarProductosPorCategoria() {
             const card = document.createElement("div");
             card.className = "col-12 col-sm-6 col-md-4 col-lg-3";
 
+            const imgSrc = prod.imagen || "https://via.placeholder.com/400x500";
+
+            /*
             card.innerHTML = `
                 <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
-                    <img src="${prod.imagen || 'https://via.placeholder.com/400x500'}"
-                         class="card-img-top"
-                         alt="${prod.nombre}">
+                    <img src="${imgSrc}" class="card-img-top" alt="${prod.nombre}">
                     <div class="card-body d-flex flex-column text-center">
                         <h5 class="fw-bold">${prod.nombre}</h5>
                         <p class="text-muted small mb-1">${prod.descripcion || ''}</p>
@@ -142,15 +168,34 @@ async function cargarProductosPorCategoria() {
                     </div>
                 </div>
             `;
+            */
+            card.innerHTML = `
+                                <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
+                                    <img src="${prod.imagen || 'https://via.placeholder.com/400x500'}"
+                                        class="card-img-top"
+                                        alt="${prod.nombre}">
+                                    <div class="card-body d-flex flex-column text-center">
+                                        <h5 class="fw-bold product-card-title">${prod.nombre}</h5>
+                                        <p class="text-muted small mb-1">${prod.descripcion || ''}</p>
+                                        <p class="fw-semibold mb-3">${Number(prod.precio).toFixed(2)} €</p>
+                                        <button class="btn btn-dark mt-auto w-100 btn-add-cart"
+                                                data-product-id="${prod.id}">
+                                            Añadir al carrito
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+
             listaEl.appendChild(card);
         });
 
+        // Listeners de "Añadir al carrito" SOLO en esta lista
         const botones = listaEl.querySelectorAll(".btn-add-cart");
         botones.forEach(btn => {
             btn.addEventListener("click", (e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // no dispare el click de la card
                 const productId = btn.getAttribute("data-product-id");
-                addToCart(productId);
+                addToCart(productId, btn); // 👈 le pasamos también el botón
             });
         });
 
@@ -164,7 +209,6 @@ async function cargarProductosPorCategoria() {
         `;
     }
 }
-
 
 // 3. Ejecutar al cargar
 cargarProductosPorCategoria();

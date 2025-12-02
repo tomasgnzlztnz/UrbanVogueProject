@@ -57,45 +57,33 @@ async function loadCategorias() {
         const categorias = await res.json();
 
         if (!Array.isArray(categorias) || categorias.length === 0) {
-            container.innerHTML = `
-                <div class="col-12 text-center">
-                    <p class="text-muted">De momento no hay categorías disponibles.</p>
-                </div>
-            `;
+            container.innerHTML = `<div class="col-12 text-center"><p class="text-muted">De momento no hay categorías disponibles.</p></div>`;
             return;
         }
 
         container.innerHTML = "";
 
         categorias.forEach(cat => {
-            // 👇 Omitir la categoría "Accesorios" en la página de Ropa
-            if (cat.nombre && cat.nombre.toLowerCase() === "accesorios") {
-                return; // saltamos esta categoría
+            // Omitir la categoría "Accesorios" en la página de Ropa porque ya tiene una sección propia.
+            //if (cat.nombre && cat.nombre.toLowerCase() === "accesorios") {
+            if (cat.nombre && cat.nombre.toLowerCase() != "accesorios") {   
+                const col = document.createElement('div');
+                col.className = "col-10 col-md-4";
+                col.innerHTML = `
+                <a href="/pages/categoria.html?cat=${cat.id}" class="text-decoration-none">
+                <div class="category-card p-4 shadow-sm text-center textsection-clothes">
+                <h3>${cat.nombre}</h3>
+                </div>
+                </a>
+                `;
+                container.appendChild(col);
             }
-
-            const col = document.createElement('div');
-            col.className = "col-10 col-md-4";
-
-            col.innerHTML = `
-        <a href="/pages/categoria.html?cat=${cat.id}" class="text-decoration-none">
-            <div class="category-card p-4 shadow-sm text-center rounded">
-                <i class='bx bx-category fs-1 mb-3'></i>
-                <h4 class="fw-bold">${cat.nombre}</h4>
-            </div>
-        </a>
-    `;
-
-            container.appendChild(col);
         });
 
 
     } catch (err) {
         console.error("Error al cargar categorías:", err);
-        container.innerHTML = `
-            <div class="col-12 text-center">
-                <p class="text-danger">Error al cargar las categorías.</p>
-            </div>
-        `;
+        container.innerHTML = `<div class="col-12 text-center"><p class="text-danger">Error al cargar las categorías.</p></div>`;
     }
 }
 
@@ -152,7 +140,6 @@ async function loadAllProducts() {
                 </div>
             `;
 
-            // 👈 aquí usamos *container*, no contenedorProductos
             container.appendChild(col);
         });
 
@@ -192,6 +179,24 @@ async function loadAllProducts() {
                 }
 
                 // Aquí podrías mostrar un mensaje de éxito si quieres
+                // Feedback visual en el botón: "Añadido correctamente"
+                const originalText = btn.textContent;
+                const originalClasses = btn.className;
+
+                // Cambiamos a estilo "éxito"
+                btn.disabled = true;
+                btn.textContent = "Añadido correctamente";
+                btn.classList.remove("btn-dark");
+                btn.classList.add("btn-success");
+
+                setTimeout(() => {
+                    // Volvemos al estado normal
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                    btn.className = originalClasses;
+                }, 2000);
+
+                //
 
             } catch (err) {
                 console.error('Error al añadir al carrito desde ropa:', err);
