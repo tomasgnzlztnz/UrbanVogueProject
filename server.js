@@ -16,7 +16,7 @@ const { sendNewsletterWelcomeEmail } = require("./mailer");
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000', // luego lo ajustamos según dónde sirvas el front
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // luego lo ajustamos según dónde sirvas el front
   credentials: true
 }));
 
@@ -35,15 +35,15 @@ app.use(
   })
 );
 
+// Servir archivos estáticos del frontend (carpeta /app)
+app.use(express.static(path.join(__dirname, 'app')));
+
 // Rutas de autenticación
 app.use('/api/auth', authRoutes);
 // Rutas de usuario (perfil)
 app.use('/api/user', userRoutes);
 // Rutas de admin
 app.use('/api/admin', adminRoutes);
-
-// Servir archivos estáticos del frontend (carpeta /app)
-app.use(express.static(path.join(__dirname, 'app')));
 
 // GET - Obtener todos los productos
 app.get("/productos", (req, res) => {
