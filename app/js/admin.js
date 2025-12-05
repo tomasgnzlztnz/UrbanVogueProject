@@ -715,6 +715,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const fecha = u.fecha_registro
                     ? new Date(u.fecha_registro).toLocaleString()
                     : "";
+                fechaNueva = u.fecha_registro.split("T")                    
 
                 const esAdmin = (u.rol === "admin");
                 const nuevoRol = esAdmin ? "cliente" : "admin";
@@ -726,7 +727,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <td>${u.nombre}</td>
                     <td>${u.email}</td>
                     <td>${u.rol}</td>
-                    <td>${fecha}</td>
+                    <td>${fechaNueva[0]}</td>
                     <td class="text-end">
                         <button class="btn btn-sm ${claseBoton} btn-user-rol"
                                 data-user-id="${u.id}"

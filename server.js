@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const path = require("path");
 const express = require("express");
 const db = require("./db");
@@ -23,7 +25,7 @@ app.use(cookieParser());
 
 app.use(
   session({
-    secret: "ahahahaha", // cadena para firmar la cookie
+    secret: process.env.SESSION_SECRET || "dev_secret_urbanvogue", 
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -557,118 +559,6 @@ app.post("/api/cart/clear", (req, res) => {
   });
 });
 
-// POST - Checkout: crear pedido a partir del carrito y vaciarlo (CÓDIGO ANTIGUO SIN CONFIRMACIÓN POR EMAIL)
-/*
-app.post("/api/cart/checkout", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "No has iniciado sesión." });
-  }
-
-  const userId = req.session.user.id;
-
-  // 1) Buscar carrito
-  const sqlCarrito = "SELECT id FROM carrito WHERE id_usuario = ? LIMIT 1";
-
-  db.query(sqlCarrito, [userId], (err, results) => {
-    if (err) {
-      console.error("Error al buscar carrito (checkout):", err);
-      return res.status(500).json({ error: "Error al procesar el pedido." });
-    }
-
-    if (results.length === 0) {
-      return res.status(400).json({ error: "Tu carrito está vacío." });
-    }
-
-    const carritoId = results[0].id;
-
-    // 2) Obtener items del carrito
-    const sqlItems = `
-  SELECT 
-    ci.id           AS item_id,
-    p.id            AS product_id,
-    p.precio        AS precio,
-    ci.cantidad     AS cantidad,
-    ci.talla        AS talla
-  FROM carrito_items ci
-  JOIN productos p ON ci.id_producto = p.id
-  WHERE ci.id_carrito = ?
-`;
-
-
-    db.query(sqlItems, [carritoId], (err2, items) => {
-      if (err2) {
-        console.error("Error al obtener items para checkout:", err2);
-        return res.status(500).json({ error: "Error al procesar el pedido." });
-      }
-
-      if (items.length === 0) {
-        return res.status(400).json({ error: "Tu carrito está vacío." });
-      }
-
-      const total = items.reduce(
-        (sum, it) => sum + Number(it.precio) * it.cantidad,
-        0
-      );
-
-      // 3) Crear pedido
-      const sqlInsertPedido = `
-        INSERT INTO pedidos (id_usuario, total, estado)
-        VALUES (?, ?, 'pendiente')
-      `;
-
-      db.query(sqlInsertPedido, [userId, total], (err3, resultPedido) => {
-        if (err3) {
-          console.error("Error al crear pedido:", err3);
-          return res.status(500).json({ error: "Error al crear el pedido." });
-        }
-
-        const pedidoId = resultPedido.insertId;
-
-        // 4) Insertar detalle_pedido
-        const sqlDetalle = `
-  INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, talla, precio_unitario)
-  VALUES ?
-`;
-
-        const values = items.map(it => [
-          pedidoId,
-          it.product_id,
-          it.cantidad,
-          it.talla || null,
-          it.precio
-        ]);
-
-
-        db.query(sqlDetalle, [values], (err4) => {
-          if (err4) {
-            console.error("Error al insertar detalle del pedido:", err4);
-            return res.status(500).json({ error: "Error al crear el detalle del pedido." });
-          }
-
-          // 5) Vaciar carrito
-          const sqlVaciar = "DELETE FROM carrito_items WHERE id_carrito = ?";
-
-          db.query(sqlVaciar, [carritoId], (err5) => {
-            if (err5) {
-              console.error("Error al vaciar carrito tras checkout:", err5);
-              return res.status(500).json({ error: "Pedido creado, pero error al vaciar el carrito." });
-            }
-
-            // 6) Respuesta OK
-            res.json({
-              success: true,
-              message: "Pedido creado correctamente.",
-              pedidoId,
-              total
-            });
-          });
-        });
-      });
-    });
-  });
-});
-*/
-
 // POST - Checkout: crear pedido a partir del carrito y vaciarlo + enviar email de confirmación
 app.post("/api/cart/checkout", (req, res) => {
   if (!req.session.user) {
@@ -999,5 +889,5 @@ app.post("/api/newsletter/subscribe", (req, res) => {
 
 
 // Servidor
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en marcha en http://localhost:${PORT}`));

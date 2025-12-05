@@ -23,7 +23,7 @@
     <!-- NAVBAR reutilizable -->
     <div id="navbarContainer"></div>
 
-    <main class="container my-5">
+    <main class="container my-5 admin-main">
         <h1 class="mb-4">Panel de Administración</h1>
 
         <!-- Mensajes generales -->
@@ -72,7 +72,7 @@
                             <div class="card-body">
                                 <h5 id="catFormTitle" class="card-title mb-3">Crear nueva categoría</h5>
 
-                                <form id="categoriaForm">
+                                <form id="categoriaForm" class="admin-form">
                                     <!-- Campo oculto para ID cuando estemos editando -->
                                     <input type="hidden" id="categoriaId">
 
@@ -141,7 +141,7 @@
                             <div class="card-body">
                                 <h5 id="prodFormTitle" class="card-title mb-3">Crear nuevo producto</h5>
 
-                                <form id="productoForm">
+                                <form id="productoForm" class="admin-form">
                                     <!-- ID oculto para modo edición -->
                                     <input type="hidden" id="productoId">
 

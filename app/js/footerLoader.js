@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const html = await res.text();
     footerContainer.innerHTML = html;
 
-    // 👇 cuando el footer ya está en el DOM, inicializamos el formulario
+    //Cuando el footer ya está en el DOM, inicializamos el formulario
     if (typeof initNewsletterForm === "function") {
       initNewsletterForm();
     }

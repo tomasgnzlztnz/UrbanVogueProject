@@ -1,50 +1,82 @@
 <!-- FOOTER -->
-<footer class=" text-white pt-5 pb-3 mt-5">
-    <div class="container text-center">
+<footer class="uv-footer text-white mt-5">
+  <div class="container py-4 py-md-5">
 
-        <!--<h5 class="mb-3 text-uppercase">Suscríbete y recibe notificaciones al instante</h5>
-            <form class="d-flex justify-content-center mb-4">
-                <input type="email" class="form-control w-50 me-2" placeholder="E-mail">
-                <button class="btn btn-outline-light px-4" type="submit">Enviar</button>
-            </form>-->
+    <!-- Bloque superior: Newsletter + Marca -->
+    <div class="row align-items-center gy-4">
 
-        <!-- SUSCRIPCIÓN NEWSLETTER -->
-        <section class="mt-4">
-            <h5 class="text-uppercase fw-bold mb-2">Suscríbete a UrbanVogue</h5>
-            <p class="small text-muted mb-2">
-                Recibe noticias sobre rebajas, lanzamientos y nuevas colecciones.
-            </p>
+      <!-- Newsletter -->
+      <div class="col-12 col-lg-6">
+        <section class="uv-footer-newsletter text-center text-lg-start">
+          <h5 class="uv-footer-title mb-3 text-uppercase">
+            Suscríbete y recibe notificaciones al instante
+          </h5>
 
-            <form id="newsletterForm" class="newsletter-form">
-                <div class="input-group">
-                    <input type="email" id="newsletterEmail" class="form-control" placeholder="Tu correo electrónico"
-                        required>
-                    <button class="btn btn-dark" type="submit">
-                        Suscribirme
-                    </button>
-                </div>
-                <div id="newsletterMessage" class="small mt-2"></div>
-            </form>
+          <form id="newsletterForm" class="uv-footer-form">
+            <div class="uv-footer-input-group">
+              <span class="uv-footer-input-icon">
+                <i class='bx bxs-envelope'></i>
+              </span>
+              <input
+                type="email"
+                id="newsletterEmail"
+                class="uv-footer-input"
+                placeholder="E-mail"
+                required
+              >
+            </div>
+
+            <button class="uv-footer-btn" type="submit">
+              <span class="uv-footer-btn-icon">
+                <i class='bx bxs-envelope'></i>
+              </span>
+              Enviar
+            </button>
+          </form>
+
+          <div id="newsletterMessage" class="uv-footer-message small mt-2"></div>
         </section>
-        <!-- FIN SUSCRIPCIÓN NEWSLETTER -->
+      </div>
 
+      <!-- Marca / RRSS -->
+      <div class="col-12 col-lg-6">
+        <div class="uv-footer-brand text-center text-lg-end">
+          <div class="uv-footer-social mb-3">
+            <a href="#" aria-label="Facebook">
+              <i class="bx bxl-facebook"></i>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <i class="bx bxl-instagram"></i>
+            </a>
+          </div>
 
-        <div class="d-flex flex-column flex-md-row justify-content-center mb-3 small">
-            <a href="#" class="text-white text-decoration-none mx-3">Política de Cookies</a>
-            <a href="#" class="text-white text-decoration-none mx-3">Condiciones de Venta</a>
-            <a href="#" class="text-white text-decoration-none mx-3">Política de Privacidad</a>
+          <div class="uv-footer-logo mb-1">
+            <img
+              src="/img/logotype/logo_urbanvogue_white.svg"
+              alt="Urban Vogue"
+            >
+          </div>
+
+          <small class="uv-footer-country text-uppercase">
+            España | ES
+          </small>
         </div>
-        <div class="d-flex flex-column align-items-center">
-            <div class="d-flex justify-content-center mb-2">
-                <a href="#" class="text-white mx-2 fs-5"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-white mx-2 fs-5"><i class="bi bi-instagram"></i></a>
-            </div>
-            <div class="header-menu">
-                <img src="/img/logotype/logo_urbanvogue_white.svg" alt="logotype-icon" class="header-menu-icon"
-                    style="max-width:300px;">
-            </div>
-            <small>España | ES</small>
-        </div>
-
+      </div>
     </div>
+
+    <!-- Separador -->
+    <hr class="uv-footer-divider my-4">
+
+    <!-- Enlaces legales -->
+    <div class="row">
+      <div class="col-12">
+        <div class="uv-footer-links">
+          <a href="/pages/sobre_nosotros.html">Política de cookies</a>
+          <a href="/pages/sobre_nosotros.html">Condiciones de venta</a>
+          <a href="/pages/sobre_nosotros.html">Política de privacidad</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </footer>

@@ -1,12 +1,13 @@
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false,
   auth: {
-    user: "tomasgnzlztnz@gmail.com",
-    pass: "iqkn aeoi wwxc ikdh",
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
   },
 });
 
@@ -20,7 +21,7 @@ async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }
   `).join("");
 
   await transporter.sendMail({
-    from: `"UrbanVogue" <tomasgnzlztnz@gmail.com>`,
+    from: process.env.MAIL_FROM || `"UrbanVogue" <${process.env.MAIL_USER}>`,
     to,
     subject: `Gracias por tu compra — Pedido Nº ${pedidoId}`,
     html: `
@@ -60,7 +61,7 @@ async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }
 
 async function sendNewsletterWelcomeEmail(toEmail) {
   await transporter.sendMail({
-    from: '"UrbanVogue" <tomasgnzlztnz@gmail.com>',
+    from: process.env.MAIL_FROM || `"UrbanVogue" <${process.env.MAIL_USER}>`,
     to: toEmail,
     subject: "Bienvenido a UrbanVogue — Te mantendremos al día",
     html: `
@@ -98,8 +99,8 @@ async function sendNewsletterWelcomeEmail(toEmail) {
 }
 
 
-//module.exports = { sendOrderConfirmationEmail };
 module.exports = {
   transporter,
   sendNewsletterWelcomeEmail,
+  sendOrderConfirmationEmail
 };
