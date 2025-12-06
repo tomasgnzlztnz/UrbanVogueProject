@@ -28,9 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Redirigiendo a admin...');
                 window.location.href = '/pages/admin.html';
                 return;
+            }else{
+                window.location.href = '/index.html';
             }
             // Aquí puedes redirigir a la página principal
-            window.location.href = '/index.html';
         } catch (err) {
             console.error('Error en el login:', err);
             if (errorBox) {

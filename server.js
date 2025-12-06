@@ -586,7 +586,7 @@ app.post("/api/cart/checkout", (req, res) => {
 
     const carritoId = results[0].id;
 
-    // 2) Obtener items del carrito (añadimos nombre y talla si la tuvieras en carrito_items)
+    // 2) Obtener items del carrito
     const sqlItems = `
       SELECT 
         ci.id           AS item_id,
@@ -594,7 +594,7 @@ app.post("/api/cart/checkout", (req, res) => {
         p.nombre        AS nombre,
         p.precio        AS precio,
         ci.cantidad     AS cantidad,
-        ci.talla        AS talla   -- si tu tabla carrito_items no tiene talla, quita esta línea
+        ci.talla        AS talla
       FROM carrito_items ci
       JOIN productos p ON ci.id_producto = p.id
       WHERE ci.id_carrito = ?
@@ -643,7 +643,7 @@ app.post("/api/cart/checkout", (req, res) => {
           it.precio,
         ]);
 
-        db.query(sqlDetalle, [values], async (err4) => {
+        db.query(sqlDetalle, [values], (err4) => {
           if (err4) {
             console.error("Error al insertar detalle del pedido:", err4);
             return res
@@ -654,47 +654,41 @@ app.post("/api/cart/checkout", (req, res) => {
           // 5) Vaciar carrito
           const sqlVaciar = "DELETE FROM carrito_items WHERE id_carrito = ?";
 
-          db.query(sqlVaciar, [carritoId], async (err5) => {
+          db.query(sqlVaciar, [carritoId], (err5) => {
             if (err5) {
-              console.error(
-                "Error al vaciar carrito tras checkout:",
-                err5
-              );
+              console.error("Error al vaciar carrito tras checkout:", err5);
               return res.status(500).json({
-                error:
-                  "Pedido creado, pero error al vaciar el carrito.",
+                error: "Pedido creado, pero error al vaciar el carrito.",
               });
             }
 
-            // 6) Intentar enviar el email de confirmación (NO rompemos si falla)
-            try {
-              if (userEmail) {
-                await sendOrderConfirmationEmail({
-                  to: userEmail,
-                  nombre: userNombre,
-                  pedidoId,
-                  total,
-                  items: items.map((it) => ({
-                    nombre: it.nombre,
-                    cantidad: it.cantidad,
-                    talla: it.talla || "M",
-                    precio: it.precio,
-                  })),
-                });
-              } else {
-                console.warn(
-                  "Usuario sin email, no se envía correo de confirmación."
+            // 6) Enviar el email de confirmación en segundo plano (sin bloquear la respuesta)
+            if (userEmail) {
+              sendOrderConfirmationEmail({
+                to: userEmail,
+                nombre: userNombre,
+                pedidoId,
+                total,
+                items: items.map((it) => ({
+                  nombre: it.nombre,
+                  cantidad: it.cantidad,
+                  talla: it.talla || "M",
+                  precio: it.precio,
+                })),
+              }).catch((emailErr) => {
+                console.error(
+                  "Error al enviar el correo de confirmación:",
+                  emailErr
                 );
-              }
-            } catch (emailErr) {
-              console.error(
-                "Error al enviar el correo de confirmación:",
-                emailErr
+                // No rompemos nada: el pedido ya está creado y respondido
+              });
+            } else {
+              console.warn(
+                "Usuario sin email, no se envía correo de confirmación."
               );
-              // NO hacemos return, el pedido ya está creado
             }
 
-            // 7) Respuesta OK al cliente
+            // 7) Respuesta OK al cliente (rápida, sin esperar al email)
             res.json({
               success: true,
               message: "Pedido creado correctamente.",
@@ -707,6 +701,7 @@ app.post("/api/cart/checkout", (req, res) => {
     });
   });
 });
+
 
 // POST - Cambiar talla de un ítem del carrito
 app.post("/api/cart/item/:itemId/size", (req, res) => {
