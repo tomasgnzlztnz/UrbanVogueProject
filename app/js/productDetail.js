@@ -218,7 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                alert("Producto añadido al carrito.");
+                //alert("Producto añadido al carrito.");
 
             } catch (err) {
                 console.error("Error al añadir al carrito:", err);

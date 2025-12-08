@@ -4,11 +4,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("destacadosContainer");
   if (!contenedor) return;
 
+  
+  function showRopaError(msg) {
+    const alertEl = document.getElementById("ropaError");
+    if (!alertEl) return;
+
+    alertEl.textContent =
+      msg || "Debes iniciar sesión para añadir productos al carrito.";
+    alertEl.classList.remove("d-none");
+
+    setTimeout(() => {
+      alertEl.classList.add("d-none");
+    }, 3000);
+  }
+
   // Navegación al detalle solo dentro de este contenedor
   function activarNavegacionDetalle() {
     const cards = contenedor.querySelectorAll(".product-card");
 
-    cards.forEach(card => {
+    cards.forEach((card) => {
       card.addEventListener("click", (e) => {
         // Si el clic viene del botón de carrito, no navegamos
         if (e.target.closest(".btn-add-cart")) return;
@@ -95,16 +109,18 @@ document.addEventListener("DOMContentLoaded", () => {
               }),
             });
 
+            // No logueado → mostramos alerta roja
             if (res.status === 401) {
-              alert("Debes iniciar sesión para añadir productos al carrito.");
-              window.location.href = "/pages/login.html";
+              showRopaError(
+                "Debes iniciar sesión para añadir productos al carrito."
+              );
               return;
             }
 
             const data = await res.json();
 
             if (!data.success) {
-              alert(data.error || "No se pudo añadir al carrito.");
+              showRopaError(data.error || "No se pudo añadir al carrito.");
               return;
             }
 
@@ -121,10 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
               btn.textContent = originalText;
               btn.className = originalClasses;
             }, 2000);
-
           } catch (err) {
             console.error("Error al añadir desde destacados:", err);
-            //alert("Error al añadir al carrito.");
+            showRopaError("Ha ocurrido un error al añadir el producto.");
           }
         });
       });
@@ -132,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
       activarNavegacionDetalle();
     } catch (err) {
       console.error("Error cargando destacados:", err);
+      showRopaError("Error al cargar los productos destacados.");
     }
   }
 

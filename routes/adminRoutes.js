@@ -583,26 +583,51 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
 //  GET - Listado de Newsletter
 // ===============================
 router.get("/newsletter/list", (req, res) => {
-  const sql = `
+    const sql = `
         SELECT id, email, fecha_suscripcion
         FROM newsletter_suscriptores
         ORDER BY fecha_suscripcion DESC
     `;
 
-  db.query(sql, (err, rows) => {
-    if (err) {
-      console.error("Error obteniendo newsletter:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Error al obtener los suscriptores"
-      });
+    db.query(sql, (err, rows) => {
+        if (err) {
+            console.error("Error obteniendo newsletter:", err);
+            return res.status(500).json({
+                success: false,
+                message: "Error al obtener los suscriptores"
+            });
+        }
+
+        return res.json({
+            success: true,
+            suscriptores: rows
+        });
+    });
+});
+
+// ELIMINAR un suscriptor del newsletter
+router.delete("/newsletter/:id", requireAdmin, (req, res) => {
+    const id = Number(req.params.id);
+    if (!id || isNaN(id)) {
+        return res.status(400).json({ error: "ID no válido" });
     }
 
-    return res.json({
-      success: true,
-      suscriptores: rows
+    const sql = "DELETE FROM newsletter_suscriptores WHERE id = ?";
+
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("Error al eliminar suscriptor:", err);
+            return res
+                .status(500)
+                .json({ error: "Error al eliminar el suscriptor." });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Suscriptor no encontrado." });
+        }
+
+        return res.json({ success: true, message: "Suscriptor eliminado." });
     });
-  });
 });
 
 

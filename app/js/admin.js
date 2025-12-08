@@ -36,6 +36,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const usersTableBody = document.getElementById("usuariosTableBody");
     const usersEmptyText = document.getElementById("usuariosVacio");
 
+    const newsletterTableBody = document.getElementById("newsletterTableBody");
+    const newsletterEmptyText = document.getElementById("newsletterVacio");
 
 
     // ========================================
@@ -715,7 +717,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const fecha = u.fecha_registro
                     ? new Date(u.fecha_registro).toLocaleString()
                     : "";
-                fechaNueva = u.fecha_registro.split("T")                    
+                fechaNueva = u.fecha_registro.split("T")
 
                 const esAdmin = (u.rol === "admin");
                 const nuevoRol = esAdmin ? "cliente" : "admin";
@@ -788,7 +790,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             showAdminSuccess(data.message || "Rol actualizado correctamente.");
             if (newRol == "cliente") {
                 console.log("Has degradado al usuario con:", id, "a rol:", newRol);
-                window.location.href = "/pages/login.html";
             }
             await cargarUsuarios();
 
@@ -802,65 +803,103 @@ document.addEventListener("DOMContentLoaded", async () => {
     //   NEWSLETTER – LISTADO
     // ==============================
     async function cargarSuscriptores() {
-        const tbody = document.getElementById("newsletterTableBody");
-        const vacio = document.getElementById("newsletterVacio");
-        if (!tbody) return;
+        if (!newsletterTableBody || !newsletterEmptyText) return;
 
         try {
             const res = await fetch("/api/admin/newsletter/list", {
                 credentials: "include"
             });
 
-            const text = await res.text();          // <<--- obtenemos texto crudo
+            const text = await res.text();          // texto crudo de la respuesta
             console.log("RAW NEWSLETTER RESPONSE:", text);
 
             let data;
             try {
-                data = JSON.parse(text);            // <<--- Intentamos parsear JSON
+                data = JSON.parse(text);            // intentamos parsear JSON
             } catch (err) {
                 console.error("❗La respuesta NO es JSON válido:", err);
-                tbody.innerHTML = "";
-                vacio.classList.remove("d-none");
+                newsletterTableBody.innerHTML = "";
+                newsletterEmptyText.classList.remove("d-none");
                 return;
             }
 
             if (!data.success) {
-                tbody.innerHTML = "";
-                vacio.classList.remove("d-none");
+                newsletterTableBody.innerHTML = "";
+                newsletterEmptyText.classList.remove("d-none");
                 return;
             }
 
-            const lista = data.suscriptores;
+            const lista = data.suscriptores || [];
 
-            tbody.innerHTML = "";
+            newsletterTableBody.innerHTML = "";
 
             if (lista.length === 0) {
-                vacio.classList.remove("d-none");
+                newsletterEmptyText.classList.remove("d-none");
                 return;
             }
 
-            vacio.classList.add("d-none");
+            newsletterEmptyText.classList.add("d-none");
 
             lista.forEach(sub => {
+                newFecha = sub.fecha_suscripcion.split("T")
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
-                <td>${sub.id}</td>
-                <td>${sub.email}</td>
-                <td>${new Date(sub.fecha_suscripcion).toLocaleString("es-ES")}</td>
-            `;
-                tbody.appendChild(tr);
+                    <td>${sub.id}</td>
+                    <td>${sub.email}</td>
+                    <td>${newFecha[0]}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger btn-news-delete"
+                                data-id="${sub.id}">
+                            Eliminar
+                        </button>
+                    </td>
+                `;
+                newsletterTableBody.appendChild(tr);
             });
 
         } catch (err) {
             console.error("Error cargando newsletter:", err);
-            tbody.innerHTML = "";
-            vacio.classList.remove("d-none");
+            newsletterTableBody.innerHTML = "";
+            newsletterEmptyText.classList.remove("d-none");
         }
     }
 
 
+    async function eliminarSuscriptor(id) {
+        if (!id) return;
 
+        clearAdminError();
 
+        try {
+            const res = await fetch(`/api/admin/newsletter/${id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+
+            if (res.status === 401) {
+                window.location.href = "/pages/login.html";
+                return;
+            } else if (res.status === 403) {
+                window.location.href = "/index.html";
+                return;
+            }
+
+            const data = await res.json();
+            console.log("DEBUG admin → eliminarSuscriptor:", data);
+
+            if (!data.success) {
+                showAdminError(data.message || "No se pudo eliminar el suscriptor.");
+                return;
+            }
+
+            showAdminSuccess("Suscriptor eliminado correctamente.");
+            await cargarSuscriptores();
+
+        } catch (err) {
+            console.error("Error al eliminar suscriptor:", err);
+            showAdminError("Error al eliminar el suscriptor.");
+        }
+    }
 
     // ========================================
     // Listeners
@@ -876,12 +915,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // Cargar categorías al entrar en la página
-    await cargarCategorias();
-
-
-
-    // PRODUCTOS - listeners
     if (prodForm) {
         prodForm.addEventListener("submit", guardarProducto);
     }
@@ -892,6 +925,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    // NEWSLETTER – listener para botones "Eliminar"
+
+    if (newsletterTableBody) {
+        newsletterTableBody.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".btn-news-delete");
+            if (!btn) return;
+
+            const id = btn.getAttribute("data-id");
+            // Sin confirmación, eliminación directa:
+            await eliminarSuscriptor(id);
+        });
+    }
+
+
+
+    // Cargar categorías al entrar en la página
+    await cargarCategorias();
     // Cargar categorías en el select de productos y la tabla de productos
     await cargarCategoriasEnSelectProductos();
     await cargarProductos();
