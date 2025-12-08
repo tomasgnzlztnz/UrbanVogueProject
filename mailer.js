@@ -1,29 +1,31 @@
-const nodemailer = require("nodemailer");
+// mailer.js usando Resend en vez de Nodemailer
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config(); 
+  require("dotenv").config();
 }
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+const { Resend } = require("resend");
 
+// La API key viene del .env / variables de Railway
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ------------------------------
+//  Email de confirmación de pedido
+// ------------------------------
 async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }) {
-  const htmlItems = items.map(i => `
+  const htmlItems = items
+    .map(
+      (i) => `
     <tr>
       <td style="padding:8px 0;">${i.nombre} ${i.talla ? `(Talla ${i.talla})` : ""}</td>
       <td style="padding:8px 0; text-align:center;">x${i.cantidad}</td>
       <td style="padding:8px 0; text-align:right;">${Number(i.precio).toFixed(2)}€</td>
     </tr>
-  `).join("");
+  `
+    )
+    .join("");
 
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM || `"UrbanVogue" <${process.env.MAIL_USER}>`,
+  await resend.emails.send({
+    from: process.env.MAIL_FROM || "UrbanVogue <onboarding@resend.dev>",
     to,
     subject: `Gracias por tu compra — Pedido Nº ${pedidoId}`,
     html: `
@@ -56,14 +58,16 @@ async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }
           — Gracias por confiar en <strong>UrbanVogue</strong>  
         </p>
       </div>
-    `
+    `,
   });
 }
 
-
+// ------------------------------
+//  Email de bienvenida newsletter
+// ------------------------------
 async function sendNewsletterWelcomeEmail(toEmail) {
-  await transporter.sendMail({
-    from: process.env.MAIL_FROM || `"UrbanVogue" <${process.env.MAIL_USER}>`,
+  await resend.emails.send({
+    from: process.env.MAIL_FROM || "UrbanVogue <onboarding@resend.dev>",
     to: toEmail,
     subject: "Bienvenido a UrbanVogue — Te mantendremos al día",
     html: `
@@ -96,13 +100,11 @@ async function sendNewsletterWelcomeEmail(toEmail) {
           — El equipo de <strong>UrbanVogue</strong>
         </p>
       </div>
-    `
+    `,
   });
 }
 
-
 module.exports = {
-  transporter,
   sendNewsletterWelcomeEmail,
-  sendOrderConfirmationEmail
+  sendOrderConfirmationEmail,
 };
