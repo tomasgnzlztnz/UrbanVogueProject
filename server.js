@@ -1,5 +1,5 @@
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config(); 
+  require("dotenv").config();
 }
 
 const path = require("path");
@@ -13,6 +13,10 @@ const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { sendOrderConfirmationEmail } = require("./mailer");
 const { sendNewsletterWelcomeEmail } = require("./mailer");
+const { sendContactFormEmail } = require("./mailer");
+const SHIPPING_THRESHOLD = 50;
+const SHIPPING_COST = 3.99;
+
 
 // Configuración de la app
 const app = express();
@@ -27,7 +31,7 @@ app.use(cookieParser());
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "dev_secret_urbanvogue", 
+    secret: process.env.SESSION_SECRET || "dev_secret_urbanvogue",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -397,7 +401,9 @@ app.get("/api/cart", (req, res) => {
       // Usuario sin carrito todavía
       return res.json({
         items: [],
-        total: 0
+        subtotal: 0,
+        shippingCost: 0,
+        total: 0,
       });
     }
 
@@ -405,31 +411,45 @@ app.get("/api/cart", (req, res) => {
 
     // Traemos los items y datos de producto
     const sqlItems = `
-  SELECT 
-    ci.id           AS item_id,
-    p.id            AS product_id,
-    p.nombre        AS nombre,
-    p.precio        AS precio,
-    ci.cantidad     AS cantidad,
-    ci.talla        AS talla,
-    (p.precio * ci.cantidad) AS total_linea
-  FROM carrito_items ci
-  JOIN productos p ON ci.id_producto = p.id
-  WHERE ci.id_carrito = ?
-`;
-
+      SELECT 
+        ci.id           AS item_id,
+        p.id            AS product_id,
+        p.nombre        AS nombre,
+        p.precio        AS precio,
+        ci.cantidad     AS cantidad,
+        ci.talla        AS talla,
+        (p.precio * ci.cantidad) AS total_linea
+      FROM carrito_items ci
+      JOIN productos p ON ci.id_producto = p.id
+      WHERE ci.id_carrito = ?
+    `;
 
     db.query(sqlItems, [carritoId], (err2, rows) => {
       if (err2) {
         console.error("Error al obtener items del carrito:", err2);
-        return res.status(500).json({ error: "Error al obtener los productos del carrito." });
+        return res
+          .status(500)
+          .json({ error: "Error al obtener los productos del carrito." });
       }
 
-      const total = rows.reduce((sum, item) => sum + Number(item.total_linea), 0);
+      // Subtotal de productos
+      const subtotal = rows.reduce(
+        (sum, item) => sum + Number(item.total_linea),
+        0
+      );
+
+      // Cálculo de gastos de envío
+      const shippingCost =
+        subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+
+      // Total final (productos + envío)
+      const total = subtotal + shippingCost;
 
       return res.json({
         items: rows,
-        total: total
+        subtotal,
+        shippingCost,
+        total,
       });
     });
   });
@@ -610,10 +630,18 @@ app.post("/api/cart/checkout", (req, res) => {
         return res.status(400).json({ error: "Tu carrito está vacío." });
       }
 
-      const total = items.reduce(
+      // Subtotal de productos
+      const subtotal = items.reduce(
         (sum, it) => sum + Number(it.precio) * it.cantidad,
         0
       );
+
+      // Envío según la regla
+      const shippingCost =
+        subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+
+      // Total final (lo que se cobra y se guarda en la tabla pedidos)
+      const total = subtotal + shippingCost;
 
       // 3) Crear pedido
       const sqlInsertPedido = `
@@ -668,7 +696,9 @@ app.post("/api/cart/checkout", (req, res) => {
                 to: userEmail,
                 nombre: userNombre,
                 pedidoId,
-                total,
+                total,          // total final (incluye envío)
+                subtotal,       // opcional, por si lo quieres usar en la plantilla
+                shippingCost,   // idem
                 items: items.map((it) => ({
                   nombre: it.nombre,
                   cantidad: it.cantidad,
@@ -693,7 +723,9 @@ app.post("/api/cart/checkout", (req, res) => {
               success: true,
               message: "Pedido creado correctamente.",
               pedidoId,
-              total,
+              total,        // este es el total final con envío
+              subtotal,
+              shippingCost,
             });
           });
         });
@@ -757,7 +789,6 @@ app.get("/categorias", (req, res) => {
 
 // ===============================
 //  BÚSQUEDA GLOBAL DE PRODUCTOS
-//  GET /api/search?q=texto
 // ===============================
 app.get("/api/search", (req, res) => {
   const q = (req.query.q || "").trim();
@@ -807,7 +838,6 @@ app.get("/api/search", (req, res) => {
 
 // ===============================
 //  NEWSLETTER: SUSCRIPCIÓN
-//  POST /api/newsletter/subscribe
 // ===============================
 app.post("/api/newsletter/subscribe", (req, res) => {
   const { email } = req.body;
@@ -884,6 +914,31 @@ app.post("/api/newsletter/subscribe", (req, res) => {
   });
 });
 
+// Formulario de contacto
+app.post("/api/contacto", async (req, res) => {
+  const { nombre, email, asunto, mensaje } = req.body || {};
+
+  if (!nombre || !email || !mensaje) {
+    return res.status(400).json({
+      success: false,
+      message: "Nombre, email y mensaje son obligatorios."
+    });
+  }
+
+  try {
+    await sendContactFormEmail({ nombre, email, asunto, mensaje });
+    res.json({
+      success: true,
+      message: "Mensaje enviado correctamente."
+    });
+  } catch (err) {
+    console.error("Error enviando correo de contacto:", err);
+    res.status(500).json({
+      success: false,
+      message: "No se pudo enviar el mensaje. Inténtalo de nuevo más tarde."
+    });
+  }
+});
 
 // Servidor
 const PORT = process.env.PORT || 3000;

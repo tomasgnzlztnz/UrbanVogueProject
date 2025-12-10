@@ -1,4 +1,3 @@
-// mailer.js usando Resend en vez de Nodemailer
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -7,10 +6,9 @@ const { Resend } = require("resend");
 
 // La API key viene del .env / variables de Railway
 const resend = new Resend(process.env.RESEND_API_KEY);
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "tomasgnzlztnz@gmail.com";
+// en Railway CONTACT_EMAIL="tomasgnzlztnz@gmail.com"
 
-// ------------------------------
-//  Email de confirmación de pedido
-// ------------------------------
 async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }) {
   const htmlItems = items
     .map(
@@ -62,9 +60,7 @@ async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }
   });
 }
 
-// ------------------------------
-//  Email de bienvenida newsletter
-// ------------------------------
+
 async function sendNewsletterWelcomeEmail(toEmail) {
   await resend.emails.send({
     from: process.env.MAIL_FROM || "UrbanVogue <onboarding@resend.dev>",
@@ -104,7 +100,33 @@ async function sendNewsletterWelcomeEmail(toEmail) {
   });
 }
 
+
+async function sendContactFormEmail({ nombre, email, asunto, mensaje }) {
+  const subject = `[Contacto] ${asunto || "Nuevo mensaje desde el formulario"}`;
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;padding:20px;color:#222;">
+      <h2>Nuevo mensaje de contacto</h2>
+      <p><strong>Nombre:</strong> ${nombre}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Asunto:</strong> ${asunto}</p>
+      <p><strong>Mensaje:</strong></p>
+      <p style="white-space:pre-line;">${mensaje}</p>
+    </div>
+  `;
+
+  await resend.emails.send({
+    from: process.env.MAIL_FROM || "UrbanVogue <onboarding@resend.dev>",
+    to: CONTACT_EMAIL,
+    reply_to: email,
+    subject,
+    html
+  });
+}
+
+
 module.exports = {
   sendNewsletterWelcomeEmail,
   sendOrderConfirmationEmail,
+  sendContactFormEmail,
 };

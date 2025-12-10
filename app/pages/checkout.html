@@ -26,18 +26,17 @@
 
         <h1 class="mb-4">Finalizar compra</h1>
 
-        <!-- Error general -->
         <div id="checkoutError" class="alert alert-danger d-none"></div>
 
-        <!-- CONTENIDO NORMAL DEL CHECKOUT -->
+
         <section id="checkoutContent">
 
             <div class="row g-4">
-                <!-- Columna izquierda: datos usuario + tarjeta -->
+
                 <div class="col-12 col-lg-7">
                     <form id="checkoutForm" novalidate>
 
-                        <!-- Datos personales -->
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <strong>Datos personales</strong>
@@ -67,7 +66,7 @@
                             </div>
                         </div>
 
-                        <!-- Datos de tarjeta -->
+
                         <div class="card mb-4">
                             <div class="card-header">
                                 <strong>Datos de la tarjeta (simulación)</strong>
@@ -108,7 +107,7 @@
                     </form>
                 </div>
 
-                <!-- Columna derecha: resumen del pedido -->
+
                 <div class="col-12 col-lg-5">
                     <div class="card">
                         <div class="card-header">
@@ -120,22 +119,32 @@
                                 Tu carrito está vacío.
                             </div>
 
-                            <ul id="checkoutItemsList" class="list-unstyled mb-3">
-                                <!-- Items del carrito se rellenan con JS -->
-                            </ul>
+                            <ul id="checkoutItemsList" class="list-unstyled mb-3"></ul>
+
+                            <div class="d-flex justify-content-between small">
+                                <span>Subtotal productos:</span>
+                                <span id="checkoutSubtotal">0,00 €</span>
+                            </div>
+                            <div class="d-flex justify-content-between small mb-2">
+                                <span>Gastos de envío:</span>
+                                <span id="checkoutShipping">0,00 €</span>
+                            </div>
+
+                            <hr>
 
                             <div class="d-flex justify-content-between">
                                 <span class="fw-semibold">Total:</span>
                                 <span id="checkoutTotal" class="fw-bold">0,00 €</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
 
         </section>
 
-        <!-- ESTADO DE ÉXITO -->
+
         <section id="checkoutSuccess" class="d-none text-center mt-5">
             <div class="card mx-auto" style="max-width: 420px;">
                 <div class="card-body">

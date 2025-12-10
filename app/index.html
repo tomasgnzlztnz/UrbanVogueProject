@@ -21,14 +21,78 @@
 
 
 </head>
+<!-- BANNER COOKIES -->
+<div id="cookieOverlay" class="cookie-overlay d-none">
+    <div class="cookie-modal">
+        <div class="cookie-inner">
+
+            <h2 class="cookie-title text-center text-uppercase mb-4">
+                Antes de ir a Urban Vogue
+            </h2>
+
+            <div class="cookie-body row gy-4">
+
+
+                <div class="col-12 col-md-6 border-md-end pe-md-4">
+                    <p class="fw-bold mb-2">Usamos cookies y datos para:</p>
+                    <ul class="mb-0">
+                        <li>Desarrollar y mejorar nuevos servicios.</li>
+                        <li>Medir el rendimiento de la web y de nuestras campañas.</li>
+                        <li>Mostrar contenido personalizado según tus ajustes.</li>
+                        <li>Mostrar anuncios personalizados en función de tus intereses.</li>
+                    </ul>
+                </div>
+
+
+                <div class="col-12 col-md-6 ps-md-4">
+                    <p class="fw-bold mb-2">
+                        Si eliges rechazar, no usaremos cookies para estos fines adicionales:
+                    </p>
+                    <ul class="mb-0">
+                        <li>El contenido y los anuncios no personalizados se basarán solo en lo que ves y tu ubicación
+                            aproximada.</li>
+                        <li>No usaremos cookies para crear perfiles detallados sobre ti.</li>
+                        <li>Seguiremos usando las cookies estrictamente necesarias para que la web funcione.</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="cookie-actions d-flex justify-content-center gap-3 mt-4">
+                <button id="btnCookiesReject" class="btn cookie-btn cookie-btn-secondary px-5 py-2">
+                    RECHAZAR
+                </button>
+                <button id="btnCookiesAccept" class="btn cookie-btn cookie-btn-primary px-5 py-2">
+                    ACEPTAR
+                </button>
+            </div>
+
+
+            <div class="cookie-footer text-center mt-4">
+                <div class="cookie-social mb-3">
+                    <i class='bx bxl-facebook fs-3 me-3'></i>
+                    <i class='bx bxl-instagram fs-3'></i>
+                </div>
+                <div class="fw-bold fs-4 text-uppercase">
+                    <img src="/img/logotype/logo_urbanvogue_black.svg" alt="logotype-icon" style="max-width:400px;">
+                </div>
+                <div class="small mt-1">
+                    España | €
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <body>
 
-    <!-- NAVBAR -->
+    
     <div id="navbarContainer"></div>
 
     <main>
-        <!--  BANNER PPAL-->
+        
         <section class="hero-section text-center container-fluid d-flex align-items-center justify-content-center">
             <div class="text-center text-white">
                 <h1 class="fw-bold mb-3">Nueva Colección 2025</h1>
@@ -45,9 +109,8 @@
 
         <br>
         <hr>
-        <!-- PRODUCTS SECTION -->
+        
         <div class="album py-5 bg-light">
-            <!-- Mensaje de error al intentar agregar sin estar logueado -->
             <div id="ropaError" class="alert alert-danger text-center d-none" role="alert">
                 Debes iniciar sesión para añadir productos al carrito.
             </div>
@@ -55,9 +118,7 @@
 
             <div class="container">
                 <h2 class="text-center mb-5 fw-semibold">Productos Destacados</h2>
-                <div id="destacadosContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-                    <!-- Aquí se insertarán las cards con JS -->
-                </div>
+                <div id="destacadosContainer" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4"></div>
             </div>
         </div>
 
@@ -75,6 +136,7 @@
     <script src="/js/footerLoader.js"></script>
     <script src="/js/newsletter.js"></script>
     <script src="js/destacados.js"></script>
+    <script src="js/cookies.js"></script>
 
 </body>
 

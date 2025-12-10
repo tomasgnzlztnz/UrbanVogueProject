@@ -89,6 +89,86 @@ main h2 {
   z-index: 2;
 }
 
+/* ─────────────────────────
+   BANNER COOKIES
+   ───────────────────────── */
+
+.cookie-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.cookie-modal {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.cookie-inner {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+}
+
+.cookie-title {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.cookie-btn {
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cookie-btn-primary {
+  background-color: #333;
+  color: #fff;
+  border: none;
+}
+
+.cookie-btn-primary:hover {
+  background-color: #000;
+  color: #fff;
+}
+
+.cookie-btn-secondary {
+  background-color: #d5d5d5;
+  color: #000;
+  border: none;
+}
+
+.cookie-btn-secondary:hover {
+  background-color: #c3c3c3;
+  color: #000;
+}
+
+/* Línea vertical entre columnas solo en escritorio */
+@media (min-width: 768px) {
+  .border-md-end {
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Ajustes en móvil: más compacto */
+@media (max-width: 767.98px) {
+  .cookie-inner {
+    padding: 1.8rem 1.2rem;
+  }
+
+  .cookie-title {
+    font-size: 1.4rem;
+  }
+}
+
+
+
 /* ===== ACERCA DE NOSOTROS ===== */
 #section_acercaDe {
   padding: 2rem 0;
@@ -113,6 +193,18 @@ main h2 {
   width: 70%;
   max-width: 260px;
   height: auto;
+}
+
+
+#section_contacto div label {
+  font-size: 1rem;
+}
+
+#section_contacto button {
+  background-color: black;
+  color: white;
+  border: none;
+  font-size: 1rem;
 }
 
 /* =======================================
@@ -447,6 +539,10 @@ main h2 {
 @media (min-width: 992px) {
   .admin-main .card {
     border-radius: 0;
+  }
+
+  #section_contacto div.card-body {
+    margin: 5rem;
   }
 }
 

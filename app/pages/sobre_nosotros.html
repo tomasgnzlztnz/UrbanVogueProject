@@ -23,7 +23,7 @@
     <!-- NAVBAR reutilizable -->
     <div id="navbarContainer"></div>
 
-    <main class="container py-5">
+    <main class="container py-5 sobrenosotros_main">
 
         <!-- ACERCA DE NOSOTROS -->
         <section id="section_acercaDe" class="mb-5">
@@ -163,6 +163,58 @@
             </div>
         </section>
 
+        <!-- CONTACTO -->
+        <section id="section_contacto" class="mb-5">
+
+            <h2 class="mb-4 text-uppercase">Contacta con nosotros</h2>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+
+                    <div id="contactAlert" class="alert d-none" role="alert"></div>
+
+                    <form id="contactForm">
+                        <div class="row">
+                        
+                            <div class="col-12 col-lg-6 mb-3">
+                                <label class="form-label small text-uppercase">
+                                    <i class='bx bx-user me-1'></i> Nombre y apellidos
+                                </label>
+                                <input type="text" class="form-control" id="contactNombre" required>
+                            </div>
+
+                        
+                            <div class="col-12 col-lg-6 mb-3">
+                                <label class="form-label small text-uppercase">
+                                    <i class='bx bx-envelope me-1'></i> Email
+                                </label>
+                                <input type="email" class="form-control" id="contactEmail" required>
+                            </div>
+                        </div>
+
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-uppercase">Asunto</label>
+                            <input type="text" class="form-control" id="contactAsunto" required>
+                        </div>
+
+                        
+                        <div class="mb-3">
+                            <label class="form-label small text-uppercase">Comentarios... *</label>
+                            <textarea class="form-control" id="contactMensaje" rows="5" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn w-100 py-2" id="contactSubmitBtn">
+                            ENVIAR
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </section>
+
+
     </main>
 
     <!-- FOOTER reutilizable -->
@@ -176,6 +228,7 @@
     <script src="/js/navbarLoader.js"></script>
     <script src="/js/footerLoader.js"></script>
     <script src="/js/newsletter.js"></script>
+    <script src="/js/contacto.js"></script>
 
 </body>
 

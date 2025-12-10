@@ -1,5 +1,3 @@
-// /js/checkout.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const errorEl        = document.getElementById("checkoutError");
     const contentEl      = document.getElementById("checkoutContent");
@@ -23,6 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const successOrderIdEl    = document.getElementById("successOrderId");
     const successOrderTotalEl = document.getElementById("successOrderTotal");
+
+    const subtotalEl = document.getElementById("checkoutSubtotal");
+    const shippingEl = document.getElementById("checkoutShipping");
+
+    const SHIPPING_THRESHOLD = 50;   // a partir de aquí, envío gratis
+    const SHIPPING_COST = 3.99;      // coste de envío si no llega al mínimo
 
     function showError(msg) {
         if (!errorEl) return;
@@ -61,6 +65,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Cargar carrito para mostrar resumen
+
+        // Cargar carrito para mostrar resumen
     async function loadCartSummary() {
         try {
             const res = await fetch("/api/cart", {
@@ -78,11 +84,26 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("DEBUG checkout → cart:", data);
 
             const items = data.items || [];
-            const total = Number(data.total || 0);
+            
+            // Por compatibilidad: si el backend ya envía subtotal/shipping/total los usamos.
+            // Si no, los calculamos aquí.
+            let subtotal = Number(
+                data.subtotal !== undefined ? data.subtotal : (data.total || 0)
+            );
+            let shippingCost = Number(
+                data.shippingCost !== undefined
+                    ? data.shippingCost
+                    : (subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST)
+            );
+            let total = Number(
+                data.total !== undefined ? data.total : (subtotal + shippingCost)
+            );
 
             if (items.length === 0) {
                 if (emptyCartEl) emptyCartEl.classList.remove("d-none");
                 if (itemsListEl) itemsListEl.innerHTML = "";
+                if (subtotalEl) subtotalEl.textContent = "0,00 €";
+                if (shippingEl) shippingEl.textContent = "0,00 €";
                 if (totalEl) totalEl.textContent = "0,00 €";
                 return;
             }
@@ -115,6 +136,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
+            if (subtotalEl) {
+                subtotalEl.textContent = `${subtotal.toFixed(2)} €`;
+            }
+            if (shippingEl) {
+                shippingCost = Number.isNaN(shippingCost) ? 0 : shippingCost;
+                //shippingEl.textContent = `${shippingCost.toFixed(2)} €`;
+                 shippingEl.textContent = shippingCost === 0 ? "GRATIS" : `${shippingCost.toFixed(2)} €`;
+            }
             if (totalEl) {
                 totalEl.textContent = `${total.toFixed(2)} €`;
             }
@@ -124,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             showError("Error al cargar el resumen del pedido.");
         }
     }
+
 
     // Validar el formulario (datos personales + tarjeta)
     function validateForm() {
