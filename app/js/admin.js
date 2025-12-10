@@ -385,6 +385,46 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // ========================================
+    // Cargar lista de imágenes para productos
+    // ========================================
+    async function cargarImagenesEnSelect() {
+        const select = document.getElementById("productoImagen");
+        if (!select) return;
+
+        try {
+            const res = await fetch("/api/admin/imagenes", {
+                method: "GET",
+                credentials: "include"
+            });
+
+            const data = await res.json();
+            if (!data.success) return;
+
+            const imagenes = data.imagenes || [];
+
+            // limpiar select
+            select.innerHTML = "";
+            const optDefault = document.createElement("option");
+            optDefault.value = "";
+            optDefault.textContent = "-- Sin imagen --";
+            select.appendChild(optDefault);
+
+            imagenes.forEach(img => {
+                const opt = document.createElement("option");
+                opt.value = `/img/clothes/${img}`;  // ruta real usada en frontend
+                opt.textContent = img;
+                select.appendChild(opt);
+            });
+
+        } catch (err) {
+            console.error("Error cargando imágenes:", err);
+        }
+    }
+
+
+
+
     async function cargarProductos() {
         clearAdminError();
 
@@ -948,6 +988,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Cargar usuarios en el panel de usuarios
     await cargarUsuarios();
     await cargarSuscriptores();
+    await cargarImagenesEnSelect();
 
 
 });

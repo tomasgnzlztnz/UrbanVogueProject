@@ -1,7 +1,8 @@
-// routes/adminRoutes.js
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
+
+
 
 // Middleware: solo admins
 function requireAdmin(req, res, next) {
@@ -22,9 +23,8 @@ function requireAdmin(req, res, next) {
     next();
 }
 
-// ================================
+
 //  CATEGORÍAS (ADMIN)
-// ================================
 
 // GET /api/admin/categorias  → listar todas
 router.get("/categorias", requireAdmin, (req, res) => {
@@ -98,8 +98,6 @@ router.post("/categorias", requireAdmin, (req, res) => {
         });
     });
 });
-
-
 
 // PUT /api/admin/categorias/:id  → actualizar
 router.put("/categorias/:id", requireAdmin, (req, res) => {
@@ -195,10 +193,7 @@ router.delete("/categorias/:id", requireAdmin, (req, res) => {
     });
 });
 
-
-// ================================
 //  PRODUCTOS (ADMIN)
-// ================================
 
 // GET /api/admin/productos → listar todos los productos con nombre de categoría
 router.get("/productos", requireAdmin, (req, res) => {
@@ -579,9 +574,7 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
     });
 });
 
-// ===============================
 //  GET - Listado de Newsletter
-// ===============================
 router.get("/newsletter/list", (req, res) => {
     const sql = `
         SELECT id, email, fecha_suscripcion
@@ -630,6 +623,33 @@ router.delete("/newsletter/:id", requireAdmin, (req, res) => {
     });
 });
 
+// ===================== LISTAR IMÁGENES =====================
+
+const fs = require("fs");
+const path = require("path");
+
+router.get("/imagenes", requireAdmin, (req, res) => {
+    const imagesDir = path.join(__dirname, "..", "app", "img", "clothes");
+
+    fs.readdir(imagesDir, (err, files) => {
+        if (err) {
+            console.error("Error leyendo carpeta de imágenes:", err);
+            return res.status(500).json({
+                success: false,
+                message: "No se pudo leer la carpeta de imágenes."
+            });
+        }
+
+        const validImages = files.filter(f =>
+            /\.(png|jpe?g|webp|gif|svg)$/i.test(f)
+        );
+
+        res.json({
+            success: true,
+            imagenes: validImages
+        });
+    });
+});
 
 
 

@@ -182,10 +182,12 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="productoImagen" class="form-label">Imagen (URL o nombre de
-                                            archivo)</label>
-                                        <input type="text" class="form-control" id="productoImagen"
-                                            placeholder="/img/clothes/TH-shirt.jpg">
+                                        <label for="productoImagen" class="form-label">Imagen</label>
+                                        <!--<input type="text" class="form-control" id="productoImagen"placeholder="/img/clothes/TH-shirt.jpg">-->
+                                        <select class="form-select" id="productoImagen">
+                                            <option value="">-- Selecciona una imagen --</option>
+                                        </select>
+
                                     </div>
 
                                     <div class="mb-3">
@@ -286,7 +288,8 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Suscriptores del Newsletter</h5>
 
-                        <p class="text-muted">Aquí puedes ver todos los correos que se han suscrito para recibir novedades.</p>
+                        <p class="text-muted">Aquí puedes ver todos los correos que se han suscrito para recibir
+                            novedades.</p>
 
                         <!-- Tabla -->
                         <div class="table-responsive">
