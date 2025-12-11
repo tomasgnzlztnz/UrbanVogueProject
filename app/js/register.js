@@ -1,13 +1,12 @@
-// app/js/register.js
 
 document.addEventListener("DOMContentLoaded", () => {
-    const form            = document.getElementById("registerForm");
-    const inputNombre     = document.getElementById("name");
-    const inputEmail      = document.getElementById("email");
-    const inputPassword   = document.getElementById("password");
-    const inputPassword2  = document.getElementById("confirmPassword");
+    const form = document.getElementById("registerForm");
+    const inputNombre = document.getElementById("name");
+    const inputEmail = document.getElementById("email");
+    const inputPassword = document.getElementById("password");
+    const inputPassword2 = document.getElementById("confirmPassword");
 
-    const errorEl   = document.getElementById("registerError");
+    const errorEl = document.getElementById("registerError");
     const successEl = document.getElementById("registerSuccess");
 
     function showError(msg) {
@@ -38,12 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const nombre    = inputNombre ? inputNombre.value.trim() : "";
-        const email     = inputEmail ? inputEmail.value.trim() : "";
-        const password  = inputPassword ? inputPassword.value : "";
+        const nombre = inputNombre ? inputNombre.value.trim() : "";
+        const email = inputEmail ? inputEmail.value.trim() : "";
+        const password = inputPassword ? inputPassword.value : "";
         const password2 = inputPassword2 ? inputPassword2.value : "";
 
-        // Validaciones simples en el front
+
         if (!nombre || !email || !password || !password2) {
             showError("Por favor, rellena todos los campos.");
             return;
@@ -69,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     nombre,
                     email,
                     password
-                    // Si más adelante añades dirección/teléfono en el form, los envías también aquí
+
                 })
             });
 
@@ -83,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             showSuccess("Cuenta creada correctamente. Redirigiendo al login...");
 
-            // Redirigir al login después de 2 segundos
+
             setTimeout(() => {
                 window.location.href = "/pages/login.html";
             }, 5000);

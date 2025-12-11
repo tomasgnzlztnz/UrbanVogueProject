@@ -4,7 +4,7 @@ const db = require("../db");
 
 
 
-// Middleware: solo admins
+
 function requireAdmin(req, res, next) {
     if (!req.session || !req.session.user) {
         return res.status(401).json({
@@ -24,9 +24,7 @@ function requireAdmin(req, res, next) {
 }
 
 
-//  CATEGORÍAS (ADMIN)
 
-// GET /api/admin/categorias  → listar todas
 router.get("/categorias", requireAdmin, (req, res) => {
     const sql = "SELECT id, nombre, descripcion FROM categorias ORDER BY id DESC";
 
@@ -46,7 +44,7 @@ router.get("/categorias", requireAdmin, (req, res) => {
     });
 });
 
-// POST /api/admin/categorias  → crear nueva
+
 router.post("/categorias", requireAdmin, (req, res) => {
     const { nombre, descripcion } = req.body;
 
@@ -59,7 +57,7 @@ router.post("/categorias", requireAdmin, (req, res) => {
 
     const nombreLimpio = nombre.trim();
 
-    // 1) Comprobar si ya existe una categoría con ese nombre
+
     const checkSql = "SELECT id FROM categorias WHERE nombre = ?";
 
     db.query(checkSql, [nombreLimpio], (err, results) => {
@@ -78,7 +76,7 @@ router.post("/categorias", requireAdmin, (req, res) => {
             });
         }
 
-        // 2) Si no existe, la creamos
+
         const insertSql = "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)";
 
         db.query(insertSql, [nombreLimpio, descripcion || null], (err, result) => {
@@ -99,7 +97,7 @@ router.post("/categorias", requireAdmin, (req, res) => {
     });
 });
 
-// PUT /api/admin/categorias/:id  → actualizar
+
 router.put("/categorias/:id", requireAdmin, (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion } = req.body;
@@ -113,7 +111,7 @@ router.put("/categorias/:id", requireAdmin, (req, res) => {
 
     const nombreLimpio = nombre.trim();
 
-    // 1) Ver si ya hay otra categoría con ese nombre
+
     const checkSql = "SELECT id FROM categorias WHERE nombre = ? AND id <> ?";
 
     db.query(checkSql, [nombreLimpio, id], (err, results) => {
@@ -132,7 +130,7 @@ router.put("/categorias/:id", requireAdmin, (req, res) => {
             });
         }
 
-        // 2) Si no hay conflicto, actualizamos
+
         const updateSql = `
             UPDATE categorias
             SET nombre = ?, descripcion = ?
@@ -164,7 +162,7 @@ router.put("/categorias/:id", requireAdmin, (req, res) => {
 });
 
 
-// DELETE /api/admin/categorias/:id  → borrar
+
 router.delete("/categorias/:id", requireAdmin, (req, res) => {
     const { id } = req.params;
 
@@ -193,9 +191,7 @@ router.delete("/categorias/:id", requireAdmin, (req, res) => {
     });
 });
 
-//  PRODUCTOS (ADMIN)
 
-// GET /api/admin/productos → listar todos los productos con nombre de categoría
 router.get("/productos", requireAdmin, (req, res) => {
     const sql = `
         SELECT 
@@ -230,7 +226,7 @@ router.get("/productos", requireAdmin, (req, res) => {
     });
 });
 
-// POST /api/admin/productos → crear producto
+
 router.post("/productos", requireAdmin, (req, res) => {
     const { nombre, descripcion, precio, stock, talla, color, imagen, id_categoria } = req.body;
 
@@ -248,7 +244,7 @@ router.post("/productos", requireAdmin, (req, res) => {
         });
     }
 
-    // ✅ Categoría obligatoria
+
     if (!id_categoria) {
         return res.status(400).json({
             success: false,
@@ -260,12 +256,12 @@ router.post("/productos", requireAdmin, (req, res) => {
     const precioNum = Number(precio);
     const stockNum = stock ? Number(stock) : 0;
 
-    // ✅ Imagen por defecto si no viene nada
+
     const imagenFinal = (imagen && imagen.trim() !== "")
         ? imagen.trim()
         : "/img/clothes/TH-shirt.jpg";
 
-    // ✅ Comprobar que no existe ya un producto con el mismo nombre
+
     const checkSql = "SELECT id FROM productos WHERE nombre = ?";
 
     db.query(checkSql, [nombreLimpio], (err, results) => {
@@ -284,7 +280,7 @@ router.post("/productos", requireAdmin, (req, res) => {
             });
         }
 
-        // Si no hay duplicado → insertar
+
         const insertSql = `
             INSERT INTO productos
                 (nombre, descripcion, precio, stock, talla, color, imagen, id_categoria)
@@ -322,7 +318,7 @@ router.post("/productos", requireAdmin, (req, res) => {
     });
 });
 
-// PUT /api/admin/productos/:id → actualizar producto
+
 router.put("/productos/:id", requireAdmin, (req, res) => {
     const { id } = req.params;
     const { nombre, descripcion, precio, stock, talla, color, imagen, id_categoria } = req.body;
@@ -341,7 +337,7 @@ router.put("/productos/:id", requireAdmin, (req, res) => {
         });
     }
 
-    // ✅ Categoría obligatoria también al editar
+
     if (!id_categoria) {
         return res.status(400).json({
             success: false,
@@ -353,12 +349,12 @@ router.put("/productos/:id", requireAdmin, (req, res) => {
     const precioNum = Number(precio);
     const stockNum = stock ? Number(stock) : 0;
 
-    // ✅ Imagen por defecto si viene vacía
+
     const imagenFinal = (imagen && imagen.trim() !== "")
         ? imagen.trim()
         : "/img/clothes/TH-shirt.jpg";
 
-    // ✅ Comprobar si ya hay OTRO producto con ese nombre
+
     const checkSql = "SELECT id FROM productos WHERE nombre = ? AND id <> ?";
 
     db.query(checkSql, [nombreLimpio, id], (err, results) => {
@@ -377,7 +373,7 @@ router.put("/productos/:id", requireAdmin, (req, res) => {
             });
         }
 
-        // Si no hay conflicto → actualizar
+
         const updateSql = `
             UPDATE productos
             SET 
@@ -431,7 +427,7 @@ router.put("/productos/:id", requireAdmin, (req, res) => {
 });
 
 
-// DELETE /api/admin/productos/:id → borrar producto
+
 router.delete("/productos/:id", requireAdmin, (req, res) => {
     const { id } = req.params;
 
@@ -460,7 +456,7 @@ router.delete("/productos/:id", requireAdmin, (req, res) => {
     });
 });
 
-// +1 stock
+
 router.post("/productos/:id/increment", async (req, res) => {
     const id = req.params.id;
 
@@ -471,7 +467,7 @@ router.post("/productos/:id/increment", async (req, res) => {
         });
 });
 
-// -1 stock
+
 router.post("/productos/:id/decrement", async (req, res) => {
     const id = req.params.id;
 
@@ -483,9 +479,7 @@ router.post("/productos/:id/decrement", async (req, res) => {
 });
 
 
-// ===================== USUARIOS =====================
 
-// GET /api/admin/usuarios  → listar usuarios
 router.get('/usuarios', requireAdmin, (req, res) => {
     const sql = `
         SELECT id, nombre, email, rol, fecha_registro
@@ -509,10 +503,10 @@ router.get('/usuarios', requireAdmin, (req, res) => {
     });
 });
 
-// POST /api/admin/usuarios/:id/rol  → cambiar rol
+
 router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
     const userId = req.params.id;
-    const { rol } = req.body; // "admin" o "cliente"
+    const { rol } = req.body;
 
     if (!rol || !['admin', 'cliente'].includes(rol)) {
         return res.status(400).json({
@@ -521,7 +515,7 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
         });
     }
 
-    // 1) Miramos cuántos admins hay
+
     const countAdminsSql = `
         SELECT 
             SUM(CASE WHEN rol = 'admin' THEN 1 ELSE 0 END) AS total_admins
@@ -539,7 +533,7 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
 
         const totalAdmins = countRows[0].total_admins || 0;
 
-        // 2) Si vamos a pasar a cliente, comprobamos que no sea el único admin
+
         if (rol === 'cliente' && totalAdmins <= 1) {
             return res.status(400).json({
                 success: false,
@@ -547,7 +541,7 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
             });
         }
 
-        // 3) Actualizamos rol
+
         const updateSql = `UPDATE usuarios SET rol = ? WHERE id = ?`;
 
         db.query(updateSql, [rol, userId], (err2, result) => {
@@ -574,7 +568,7 @@ router.post('/usuarios/:id/rol', requireAdmin, (req, res) => {
     });
 });
 
-//  GET - Listado de Newsletter
+
 router.get("/newsletter/list", (req, res) => {
     const sql = `
         SELECT id, email, fecha_suscripcion
@@ -598,7 +592,7 @@ router.get("/newsletter/list", (req, res) => {
     });
 });
 
-// ELIMINAR un suscriptor del newsletter
+
 router.delete("/newsletter/:id", requireAdmin, (req, res) => {
     const id = Number(req.params.id);
     if (!id || isNaN(id)) {
@@ -623,7 +617,7 @@ router.delete("/newsletter/:id", requireAdmin, (req, res) => {
     });
 });
 
-// ===================== LISTAR IMÁGENES =====================
+
 
 const fs = require("fs");
 const path = require("path");

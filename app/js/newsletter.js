@@ -1,8 +1,6 @@
-// /js/newsletter.js
-
 function initNewsletterForm() {
   const form = document.getElementById("newsletterForm");
-  if (!form) return; // por si en alguna página no hay footer con newsletter
+  if (!form) return;
 
   const input = document.getElementById("newsletterEmail");
   const messageEl = document.getElementById("newsletterMessage");
@@ -11,7 +9,7 @@ function initNewsletterForm() {
     if (!messageEl) return;
     messageEl.textContent = text;
 
-    // Colores simples según tipo
+    
     if (type === "success") {
       messageEl.classList.remove("text-danger");
       messageEl.classList.add("text-success");
@@ -59,8 +57,7 @@ function initNewsletterForm() {
   });
 }
 
-// Si el footer se carga dinámico con footerLoader, llamamos a initNewsletterForm() DESPUÉS.
+
 document.addEventListener("DOMContentLoaded", () => {
-  // Por si en alguna página el footer está ya en el HTML
   initNewsletterForm();
 });

@@ -1,11 +1,9 @@
-// app/js/novedades.js
-
 document.addEventListener('DOMContentLoaded', () => {
     loadNovedades();
 });
 
 function showNovedadesError(msg) {
-    const alertEl = document.getElementById('ropaError'); // si usas otro id en novedades, cámbialo aquí
+    const alertEl = document.getElementById('ropaError');
     if (!alertEl) return;
 
     alertEl.textContent = msg || 'Debes iniciar sesión para añadir productos al carrito.';
@@ -16,13 +14,13 @@ function showNovedadesError(msg) {
     }, 3000);
 }
 
-// Navegación a detalle SOLO para las cards de novedades
+
 function activarNavegacionDetalle(container) {
     const cards = container.querySelectorAll(".product-card");
 
     cards.forEach(card => {
         card.addEventListener("click", (e) => {
-            // IMPORTANTE: aquí usamos la MISMA clase que en el botón
+
             if (e.target.closest(".btn-add-cart")) return;
 
             const id = card.getAttribute("data-product-id");
@@ -94,10 +92,10 @@ async function loadNovedades() {
             container.appendChild(col);
         });
 
-        // Activar navegación a detalle para estas cards
+
         activarNavegacionDetalle(container);
 
-        // Delegación de eventos para "Agregar al carrito"
+
         container.addEventListener('click', async (e) => {
             const btn = e.target.closest('.btn-add-cart');
             if (!btn) return;

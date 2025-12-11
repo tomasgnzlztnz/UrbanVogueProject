@@ -1,5 +1,3 @@
-// app/js/cart.js
-
 document.addEventListener("DOMContentLoaded", () => {
     const errorEl = document.getElementById("cartError");
     const emptyEl = document.getElementById("cartEmpty");
@@ -22,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Cargar carrito desde la API
+
     async function loadCart() {
         clearError();
 
@@ -33,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (res.status === 401) {
-                // No logueado → login
+
                 window.location.href = "/pages/login.html";
                 return;
             }
@@ -56,52 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (tbodyEl) tbodyEl.innerHTML = "";
 
-            /*items.forEach(item => {
-                const tr = document.createElement("tr");
-
-                const tallaActual = item.talla || "M";
-
-                tr.innerHTML = `
-        <td>${item.nombre}</td>
-
-        <td>
-            <select class="form-select form-select-sm cart-size-select"
-                    data-item-id="${item.item_id}">
-                <option value="S"  ${tallaActual === "S" ? "selected" : ""}>S</option>
-                <option value="M"  ${tallaActual === "M" ? "selected" : ""}>M</option>
-                <option value="L"  ${tallaActual === "L" ? "selected" : ""}>L</option>
-                <option value="XL" ${tallaActual === "XL" ? "selected" : ""}>XL</option>
-            </select>
-        </td>
-
-        <td>${Number(item.precio).toFixed(2)} €</td>
-        <td>${item.cantidad}</td>
-        <td>${Number(item.total_linea).toFixed(2)} €</td>
-        <td class="text-end">
-            <div class="btn-group btn-group-sm" role="group">
-                <button class="btn btn-success btn-inc-item"
-                        title="Añadir una unidad"
-                        data-product-id="${item.product_id}">
-                    Añadir
-                </button>
-                <button class="btn btn-danger btn-dec-item"
-                        title="Quitar una unidad"
-                        data-item-id="${item.item_id}">
-                    Eliminar
-                </button>
-            </div>
-        </td>
-    `;
-
-                tbodyEl.appendChild(tr);
-            });*/
             items.forEach(item => {
                 const tr = document.createElement("tr");
 
                 const tallaActual = item.talla || "M";
                 const imagen = item.imagen && item.imagen.trim() !== ""
                     ? item.imagen
-                    : "/img/clothes/TH-shirt.jpg"; // fallback
+                    : "/img/clothes/TH-shirt.jpg";
 
                 tr.innerHTML = `
                                     <td>
@@ -157,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 totalEl.textContent = `${Number(total).toFixed(2)} €`;
             }
 
-            // Asignar eventos a los botones de eliminar
+
             // Botones de +1
             const incButtons = document.querySelectorAll(".btn-inc-item");
             incButtons.forEach(btn => {
@@ -183,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Sumar 1 unidad usando la misma ruta que el catálogo
+
     async function incrementItem(productId) {
         try {
             const res = await fetch("/api/cart/add", {
@@ -220,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Restar 1 unidad usando la nueva ruta /decrement
+
     async function decrementItem(itemId) {
         try {
             const res = await fetch(`/api/cart/item/${itemId}/decrement`, {
@@ -249,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Selects de talla
+
     const sizeSelects = document.querySelectorAll(".cart-size-select");
     sizeSelects.forEach(select => {
         select.addEventListener("change", () => {
@@ -259,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Cambiar talla de un ítem del carrito
+
     async function updateItemSize(itemId, talla) {
         clearError();
 
@@ -286,9 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Si quieres recargar el carrito entero (por si cambia algo más)
-            // await loadCart();
-            // De momento, no hace falta recargar porque solo cambia texto/estado del select
 
         } catch (err) {
             console.error("Error en updateItemSize:", err);
@@ -296,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Eliminar un item del carrito
+
     async function removeItem(itemId) {
         try {
             const res = await fetch(`/api/cart/item/${itemId}`, {
@@ -324,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Vaciar carrito
+
     async function clearCart() {
         try {
             const res = await fetch("/api/cart/clear", {
@@ -352,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Checkout (simular pago)
+
     async function checkout() {
         try {
             const res = await fetch("/api/cart/checkout", {
@@ -373,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Aquí puedes redirigir a una página de "gracias" si quieres
+
             alert(`Pedido realizado correctamente. Total: ${Number(data.total).toFixed(2)} €`);
 
             await loadCart();
@@ -383,23 +339,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Eventos de botones de la parte inferior
+
     if (btnClear) {
         btnClear.addEventListener("click", () => {
             clearCart();
         });
     }
 
-    // Go to Purchase Process
+
     if (btnPay) {
         btnPay.addEventListener("click", () => {
-            //checkout();
+
             window.location.href = "/pages/checkout.html";
         });
     }
 
-    // Cargar carrito al entrar en la página
-    //loadCart();
     if (contentEl) {
         loadCart();
     }

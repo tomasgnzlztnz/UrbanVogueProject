@@ -18,11 +18,11 @@ const SHIPPING_THRESHOLD = 50;
 const SHIPPING_COST = 3.99;
 
 
-// Configuración de la app
+
 const app = express();
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000', // luego lo ajustamos según dónde sirvas el front
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   credentials: true
 }));
 
@@ -35,23 +35,23 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // en desarrollo (http). En producción debe ser true con HTTPS
-      maxAge: 1000 * 60 * 60 * 2 // 2 horas
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 2
     }
   })
 );
 
-// Servir archivos estáticos del frontend (carpeta /app)
+
 app.use(express.static(path.join(__dirname, 'app')));
 
-// Rutas de autenticación
+
 app.use('/api/auth', authRoutes);
-// Rutas de usuario (perfil)
+
 app.use('/api/user', userRoutes);
-// Rutas de admin
+
 app.use('/api/admin', adminRoutes);
 
-// GET - Obtener todos los productos
+
 app.get("/productos", (req, res) => {
   const sql = "SELECT * FROM productos";
   db.query(sql, (err, results) => {
@@ -64,7 +64,7 @@ app.get("/productos", (req, res) => {
   });
 });
 
-// POST - Agregar un nuevo producto
+
 app.post("/productos", (req, res) => {
   const { nombre, descripcion, precio, stock, id_categoria } = req.body;
 
@@ -83,7 +83,7 @@ app.post("/productos", (req, res) => {
   });
 });
 
-// PUT - Editar un producto existente
+
 app.put("/productos/:id", (req, res) => {
   const { id } = req.params;
   const { nombre, descripcion, precio, stock, id_categoria } = req.body;
@@ -106,7 +106,7 @@ app.put("/productos/:id", (req, res) => {
   });
 });
 
-// DELETE - Eliminar un producto
+
 app.delete("/productos/:id", (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM productos WHERE id = ?";
@@ -123,7 +123,7 @@ app.delete("/productos/:id", (req, res) => {
   });
 });
 
-// GET - Obtener productos por categoría (por ID de categoría)
+
 app.get("/productos/categoria/:idCategoria", (req, res) => {
   const idCategoria = Number(req.params.idCategoria);
 
@@ -150,7 +150,7 @@ app.get("/productos/categoria/:idCategoria", (req, res) => {
   });
 });
 
-// GET - Productos de Novedades (últimos 14 días)
+
 app.get("/productos/novedades", (req, res) => {
   const sql = `
     SELECT *
@@ -170,9 +170,9 @@ app.get("/productos/novedades", (req, res) => {
   });
 });
 
-// GET - Productos en rebajas: 5 más baratos por categoría
+
 app.get("/productos/rebajas", (req, res) => {
-  // Lista de categorías que queremos mostrar
+
   const categorias = ["Camisetas", "Sudaderas", "Pantalones", "Accesorios"];
 
   const resultados = [];
@@ -191,7 +191,6 @@ app.get("/productos/rebajas", (req, res) => {
     db.query(sql, [nombreCat], (err, rows) => {
       if (err) {
         console.error("Error al obtener productos de rebajas:", err);
-        // Para simplificar, si una categoría falla devolvemos error general
         return res.status(500).json({ error: "Error al obtener productos de rebajas." });
       }
 
@@ -202,7 +201,7 @@ app.get("/productos/rebajas", (req, res) => {
 
       pendientes--;
 
-      // Cuando hayamos terminado todas las consultas…
+
       if (pendientes === 0) {
         res.json(resultados);
       }
@@ -210,9 +209,9 @@ app.get("/productos/rebajas", (req, res) => {
   });
 });
 
-// GET - Productos destacados: el de mayor stock por categoría (sin accesorios)
+
 app.get("/productos/destacados", (req, res) => {
-  // Categorías que queremos considerar para destacados
+
   const categorias = ["Camisetas", "Sudaderas", "Pantalones"];
 
   const resultados = [];
@@ -236,7 +235,7 @@ app.get("/productos/destacados", (req, res) => {
           .json({ error: "Error al obtener productos destacados." });
       }
 
-      // Puede que alguna categoría no tenga productos aún
+
       resultados.push({
         categoria: nombreCat,
         producto: rows[0] || null,
@@ -251,7 +250,7 @@ app.get("/productos/destacados", (req, res) => {
   });
 });
 
-// POST - Añadir producto al carrito del usuario logueado
+
 app.post("/api/cart/add", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "Debes iniciar sesión para usar el carrito." });
@@ -290,7 +289,7 @@ app.post("/api/cart/add", (req, res) => {
   });
 });
 
-// Función auxiliar para insertar/actualizar el ítem en carrito_items
+
 function agregarItemCarrito(idCarrito, idProducto, cantidad, tallaSeleccionada, res) {
   const sqlStock = "SELECT stock FROM productos WHERE id = ?";
 
@@ -319,13 +318,13 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, tallaSeleccionada, 
         return res.status(500).json({ error: "Error al buscar el producto en el carrito." });
       }
 
-      // Normalizamos la talla: si no viene nada, usamos "M"
+
       const tallaFinal = tallaSeleccionada && tallaSeleccionada.trim() !== ""
         ? tallaSeleccionada.trim()
         : "M";
 
       if (results.length === 0) {
-        // No existe aún -> insertar
+
         const nuevaCantidad = cantidad;
 
         if (nuevaCantidad > stockDisponible) {
@@ -349,7 +348,7 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, tallaSeleccionada, 
         });
 
       } else {
-        // Ya existe → sumamos cantidad y, si se ha enviado talla, la actualizamos
+
         const item = results[0];
         const cantidadActual = item.cantidad;
         const nuevaCantidad = cantidadActual + cantidad;
@@ -380,7 +379,7 @@ function agregarItemCarrito(idCarrito, idProducto, cantidad, tallaSeleccionada, 
   });
 }
 
-// GET - Obtener el carrito del usuario logueado
+
 app.get("/api/cart", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -388,7 +387,7 @@ app.get("/api/cart", (req, res) => {
 
   const userId = req.session.user.id;
 
-  // Buscamos el carrito de ese usuario
+
   const sqlCarrito = "SELECT id FROM carrito WHERE id_usuario = ? LIMIT 1";
 
   db.query(sqlCarrito, [userId], (err, results) => {
@@ -398,7 +397,7 @@ app.get("/api/cart", (req, res) => {
     }
 
     if (results.length === 0) {
-      // Usuario sin carrito todavía
+
       return res.json({
         items: [],
         subtotal: 0,
@@ -409,7 +408,7 @@ app.get("/api/cart", (req, res) => {
 
     const carritoId = results[0].id;
 
-    // Traemos los items y datos de producto
+
     const sqlItems = `
       SELECT 
         ci.id           AS item_id,
@@ -432,17 +431,17 @@ app.get("/api/cart", (req, res) => {
           .json({ error: "Error al obtener los productos del carrito." });
       }
 
-      // Subtotal de productos
+
       const subtotal = rows.reduce(
         (sum, item) => sum + Number(item.total_linea),
         0
       );
 
-      // Cálculo de gastos de envío
+
       const shippingCost =
         subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
 
-      // Total final (productos + envío)
+
       const total = subtotal + shippingCost;
 
       return res.json({
@@ -455,7 +454,7 @@ app.get("/api/cart", (req, res) => {
   });
 });
 
-// DELETE ALL PRODUCTS INDIVIDUALLY - Eliminar un producto concreto del carrito(elimina todos los productos de ese tipo)
+
 app.delete("/api/cart/item/:itemId", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -464,7 +463,7 @@ app.delete("/api/cart/item/:itemId", (req, res) => {
   const userId = req.session.user.id;
   const itemId = req.params.itemId;
 
-  // Nos aseguramos de que el item pertenece al carrito de este usuario
+
   const sql = `
     DELETE ci FROM carrito_items ci
     JOIN carrito c ON ci.id_carrito = c.id
@@ -485,7 +484,7 @@ app.delete("/api/cart/item/:itemId", (req, res) => {
   });
 });
 
-// POST - Decrementar en 1 la cantidad de un item del carrito
+
 app.post("/api/cart/item/:itemId/decrement", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -494,7 +493,7 @@ app.post("/api/cart/item/:itemId/decrement", (req, res) => {
   const userId = req.session.user.id;
   const itemId = req.params.itemId;
 
-  // Comprobar que el item pertenece al carrito del usuario
+
   const sqlBuscar = `
     SELECT ci.id, ci.cantidad
     FROM carrito_items ci
@@ -516,7 +515,7 @@ app.post("/api/cart/item/:itemId/decrement", (req, res) => {
     const item = results[0];
 
     if (item.cantidad > 1) {
-      // Resta 1 unidad
+
       const sqlUpdate = `
         UPDATE carrito_items
         SET cantidad = cantidad - 1
@@ -535,7 +534,7 @@ app.post("/api/cart/item/:itemId/decrement", (req, res) => {
         });
       });
     } else {
-      // Si la cantidad era 1 → eliminar la fila
+
       const sqlDelete = `
         DELETE FROM carrito_items
         WHERE id = ?
@@ -556,7 +555,7 @@ app.post("/api/cart/item/:itemId/decrement", (req, res) => {
   });
 });
 
-// POST - Vaciar todo el carrito del usuario logueado
+
 app.post("/api/cart/clear", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -564,7 +563,7 @@ app.post("/api/cart/clear", (req, res) => {
 
   const userId = req.session.user.id;
 
-  // Borramos todos los items de SU carrito
+
   const sql = `
     DELETE ci FROM carrito_items ci
     JOIN carrito c ON ci.id_carrito = c.id
@@ -581,7 +580,7 @@ app.post("/api/cart/clear", (req, res) => {
   });
 });
 
-// POST - Checkout: crear pedido a partir del carrito y vaciarlo + enviar email de confirmación
+
 app.post("/api/cart/checkout", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -591,7 +590,7 @@ app.post("/api/cart/checkout", (req, res) => {
   const userEmail = req.session.user.email;
   const userNombre = req.session.user.nombre;
 
-  // 1) Buscar carrito
+
   const sqlCarrito = "SELECT id FROM carrito WHERE id_usuario = ? LIMIT 1";
 
   db.query(sqlCarrito, [userId], (err, results) => {
@@ -606,7 +605,7 @@ app.post("/api/cart/checkout", (req, res) => {
 
     const carritoId = results[0].id;
 
-    // 2) Obtener items del carrito
+
     const sqlItems = `
       SELECT 
         ci.id           AS item_id,
@@ -630,20 +629,20 @@ app.post("/api/cart/checkout", (req, res) => {
         return res.status(400).json({ error: "Tu carrito está vacío." });
       }
 
-      // Subtotal de productos
+
       const subtotal = items.reduce(
         (sum, it) => sum + Number(it.precio) * it.cantidad,
         0
       );
 
-      // Envío según la regla
+
       const shippingCost =
         subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
 
-      // Total final (lo que se cobra y se guarda en la tabla pedidos)
+
       const total = subtotal + shippingCost;
 
-      // 3) Crear pedido
+
       const sqlInsertPedido = `
         INSERT INTO pedidos (id_usuario, total, estado)
         VALUES (?, ?, 'pendiente')
@@ -657,7 +656,7 @@ app.post("/api/cart/checkout", (req, res) => {
 
         const pedidoId = resultPedido.insertId;
 
-        // 4) Insertar detalle_pedido
+
         const sqlDetalle = `
           INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, talla, precio_unitario)
           VALUES ?
@@ -667,7 +666,7 @@ app.post("/api/cart/checkout", (req, res) => {
           pedidoId,
           it.product_id,
           it.cantidad,
-          it.talla || "M", // talla por defecto si no hubiera
+          it.talla || "M",
           it.precio,
         ]);
 
@@ -679,7 +678,7 @@ app.post("/api/cart/checkout", (req, res) => {
               .json({ error: "Error al crear el detalle del pedido." });
           }
 
-          // 5) Vaciar carrito
+
           const sqlVaciar = "DELETE FROM carrito_items WHERE id_carrito = ?";
 
           db.query(sqlVaciar, [carritoId], (err5) => {
@@ -690,15 +689,15 @@ app.post("/api/cart/checkout", (req, res) => {
               });
             }
 
-            // 6) Enviar el email de confirmación en segundo plano (sin bloquear la respuesta)
+
             if (userEmail) {
               sendOrderConfirmationEmail({
                 to: userEmail,
                 nombre: userNombre,
                 pedidoId,
-                total,          // total final (incluye envío)
-                subtotal,       // opcional, por si lo quieres usar en la plantilla
-                shippingCost,   // idem
+                total,
+                subtotal,
+                shippingCost,
                 items: items.map((it) => ({
                   nombre: it.nombre,
                   cantidad: it.cantidad,
@@ -710,7 +709,7 @@ app.post("/api/cart/checkout", (req, res) => {
                   "Error al enviar el correo de confirmación:",
                   emailErr
                 );
-                // No rompemos nada: el pedido ya está creado y respondido
+
               });
             } else {
               console.warn(
@@ -718,12 +717,12 @@ app.post("/api/cart/checkout", (req, res) => {
               );
             }
 
-            // 7) Respuesta OK al cliente (rápida, sin esperar al email)
+
             res.json({
               success: true,
               message: "Pedido creado correctamente.",
               pedidoId,
-              total,        // este es el total final con envío
+              total,
               subtotal,
               shippingCost,
             });
@@ -735,7 +734,7 @@ app.post("/api/cart/checkout", (req, res) => {
 });
 
 
-// POST - Cambiar talla de un ítem del carrito
+
 app.post("/api/cart/item/:itemId/size", (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: "No has iniciado sesión." });
@@ -768,7 +767,7 @@ app.post("/api/cart/item/:itemId/size", (req, res) => {
   });
 });
 
-// LISTAR TODAS LAS CATEGORÍAS (público)
+
 app.get("/categorias", (req, res) => {
   const sql = `
     SELECT id, nombre, descripcion
@@ -782,18 +781,16 @@ app.get("/categorias", (req, res) => {
       return res.status(500).json({ error: "Error al obtener las categorías." });
     }
 
-    res.json(rows); // array de { id, nombre, descripcion }
+    res.json(rows);
   });
 });
 
 
-// ===============================
-//  BÚSQUEDA GLOBAL DE PRODUCTOS
-// ===============================
+
 app.get("/api/search", (req, res) => {
   const q = (req.query.q || "").trim();
 
-  // Si la query está vacía, devolvemos lista vacía
+
   if (q.length === 0) {
     return res.json({
       success: true,
@@ -801,7 +798,7 @@ app.get("/api/search", (req, res) => {
     });
   }
 
-  // Búsqueda parcial (LIKE %q%) en nombre y descripción
+
   const like = `%${q}%`;
 
   const sql = `
@@ -836,13 +833,11 @@ app.get("/api/search", (req, res) => {
 });
 
 
-// ===============================
-//  NEWSLETTER: SUSCRIPCIÓN
-// ===============================
+
 app.post("/api/newsletter/subscribe", (req, res) => {
   const { email } = req.body;
 
-  // Validación básica de email
+
   if (!email || typeof email !== "string") {
     return res.status(400).json({
       success: false,
@@ -852,7 +847,7 @@ app.post("/api/newsletter/subscribe", (req, res) => {
 
   const emailLimpio = email.trim().toLowerCase();
 
-  // RegEx sencillito, no perfecto pero suficiente para un TFG
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(emailLimpio)) {
     return res.status(400).json({
@@ -861,7 +856,7 @@ app.post("/api/newsletter/subscribe", (req, res) => {
     });
   }
 
-  // 1) Comprobar si ya existe ese email
+
   const checkSql = "SELECT id FROM newsletter_suscriptores WHERE email = ?";
 
   db.query(checkSql, [emailLimpio], (err, rows) => {
@@ -874,14 +869,14 @@ app.post("/api/newsletter/subscribe", (req, res) => {
     }
 
     if (rows.length > 0) {
-      // Ya estaba suscrito → no es un error grave
+
       return res.json({
         success: true,
         message: "Este correo ya estaba suscrito a las novedades."
       });
     }
 
-    // 2) Insertar nuevo suscriptor
+
     const insertSql = `
       INSERT INTO newsletter_suscriptores (email)
       VALUES (?)
@@ -896,13 +891,13 @@ app.post("/api/newsletter/subscribe", (req, res) => {
         });
       }
 
-      // 3) Intentamos enviar email de bienvenida (sin bloquear la respuesta)
+
       (async () => {
         try {
           await sendNewsletterWelcomeEmail(emailLimpio);
         } catch (errMail) {
           console.error("Error enviando email de newsletter:", errMail);
-          // No rompemos nada si falla el correo: el usuario ya está guardado
+
         }
       })();
 
@@ -914,7 +909,7 @@ app.post("/api/newsletter/subscribe", (req, res) => {
   });
 });
 
-// Formulario de contacto
+
 app.post("/api/contacto", async (req, res) => {
   const { nombre, email, asunto, mensaje } = req.body || {};
 
@@ -940,6 +935,6 @@ app.post("/api/contacto", async (req, res) => {
   }
 });
 
-// Servidor
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor en marcha en http://localhost:${PORT}`));

@@ -1,32 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const errorEl        = document.getElementById("checkoutError");
-    const contentEl      = document.getElementById("checkoutContent");
+    const errorEl = document.getElementById("checkoutError");
+    const contentEl = document.getElementById("checkoutContent");
     const successSection = document.getElementById("checkoutSuccess");
 
-    const inputNombre    = document.getElementById("inputNombre");
-    const inputEmail     = document.getElementById("inputEmail");
+    const inputNombre = document.getElementById("inputNombre");
+    const inputEmail = document.getElementById("inputEmail");
     const inputDireccion = document.getElementById("inputDireccion");
-    const inputTelefono  = document.getElementById("inputTelefono");
+    const inputTelefono = document.getElementById("inputTelefono");
 
     const inputCardNumber = document.getElementById("inputCardNumber");
     const inputCardExpiry = document.getElementById("inputCardExpiry");
-    const inputCardCvv    = document.getElementById("inputCardCvv");
+    const inputCardCvv = document.getElementById("inputCardCvv");
 
-    const itemsListEl    = document.getElementById("checkoutItemsList");
-    const totalEl        = document.getElementById("checkoutTotal");
-    const emptyCartEl    = document.getElementById("checkoutCartEmpty");
+    const itemsListEl = document.getElementById("checkoutItemsList");
+    const totalEl = document.getElementById("checkoutTotal");
+    const emptyCartEl = document.getElementById("checkoutCartEmpty");
 
-    const checkoutForm   = document.getElementById("checkoutForm");
-    const btnConfirm     = document.getElementById("btnConfirmPayment");
+    const checkoutForm = document.getElementById("checkoutForm");
+    const btnConfirm = document.getElementById("btnConfirmPayment");
 
-    const successOrderIdEl    = document.getElementById("successOrderId");
+    const successOrderIdEl = document.getElementById("successOrderId");
     const successOrderTotalEl = document.getElementById("successOrderTotal");
 
     const subtotalEl = document.getElementById("checkoutSubtotal");
     const shippingEl = document.getElementById("checkoutShipping");
 
-    const SHIPPING_THRESHOLD = 50;   // a partir de aquí, envío gratis
-    const SHIPPING_COST = 3.99;      // coste de envío si no llega al mínimo
+    const SHIPPING_THRESHOLD = 50;
+    const SHIPPING_COST = 3.99;
 
     function showError(msg) {
         if (!errorEl) return;
@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
         errorEl.classList.add("d-none");
     }
 
-    // Cargar datos del usuario logueado
+
     async function loadUser() {
         try {
-            const data = await fetchCurrentUser(); // viene de auth.js
+            const data = await fetchCurrentUser();
             console.log("DEBUG checkout → user:", data);
 
             if (!data || !data.autenticado) {
@@ -53,10 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const u = data.usuario || {};
 
-            if (inputNombre)    inputNombre.value    = u.nombre || "";
-            if (inputEmail)     inputEmail.value     = u.email  || "";
+            if (inputNombre) inputNombre.value = u.nombre || "";
+            if (inputEmail) inputEmail.value = u.email || "";
             if (inputDireccion) inputDireccion.value = u.direccion || "";
-            if (inputTelefono)  inputTelefono.value  = u.telefono  || "";
+            if (inputTelefono) inputTelefono.value = u.telefono || "";
 
         } catch (err) {
             console.error("Error cargando usuario en checkout:", err);
@@ -64,9 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Cargar carrito para mostrar resumen
 
-        // Cargar carrito para mostrar resumen
     async function loadCartSummary() {
         try {
             const res = await fetch("/api/cart", {
@@ -75,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (res.status === 401) {
-                // Sin sesión → login
                 window.location.href = "/pages/login.html";
                 return;
             }
@@ -84,9 +81,8 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("DEBUG checkout → cart:", data);
 
             const items = data.items || [];
-            
-            // Por compatibilidad: si el backend ya envía subtotal/shipping/total los usamos.
-            // Si no, los calculamos aquí.
+
+
             let subtotal = Number(
                 data.subtotal !== undefined ? data.subtotal : (data.total || 0)
             );
@@ -141,8 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (shippingEl) {
                 shippingCost = Number.isNaN(shippingCost) ? 0 : shippingCost;
-                //shippingEl.textContent = `${shippingCost.toFixed(2)} €`;
-                 shippingEl.textContent = shippingCost === 0 ? "GRATIS" : `${shippingCost.toFixed(2)} €`;
+                shippingEl.textContent = shippingCost === 0 ? "GRATIS" : `${shippingCost.toFixed(2)} €`;
             }
             if (totalEl) {
                 totalEl.textContent = `${total.toFixed(2)} €`;
@@ -155,20 +150,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // Validar el formulario (datos personales + tarjeta)
+
     function validateForm() {
         clearError();
         const errors = [];
 
-        const nombre    = inputNombre?.value.trim()    || "";
+        const nombre = inputNombre?.value.trim() || "";
         const direccion = inputDireccion?.value.trim() || "";
-        const telefono  = inputTelefono?.value.trim()  || "";
+        const telefono = inputTelefono?.value.trim() || "";
 
         const cardNumber = (inputCardNumber?.value || "").replace(/\s+/g, "");
         const cardExpiry = inputCardExpiry?.value.trim() || "";
-        const cardCvv    = inputCardCvv?.value.trim()    || "";
+        const cardCvv = inputCardCvv?.value.trim() || "";
 
-        // Datos personales básicos
+
         if (!nombre) {
             errors.push("El nombre es obligatorio.");
         }
@@ -181,25 +176,25 @@ document.addEventListener("DOMContentLoaded", () => {
             errors.push("El teléfono es obligatorio.");
         }
 
-        // Número de tarjeta: 16 dígitos
+
         if (!/^\d{16}$/.test(cardNumber)) {
             errors.push("El número de tarjeta debe tener 16 dígitos.");
         }
 
-        // Caducidad: MM/AA y no caducada
+
         const expiryMatch = /^(\d{2})\/(\d{2})$/.exec(cardExpiry);
         if (!expiryMatch) {
             errors.push("La fecha de caducidad debe tener formato MM/AA.");
         } else {
             const mm = parseInt(expiryMatch[1], 10);
-            const yy = parseInt(expiryMatch[2], 10); // 00-99
+            const yy = parseInt(expiryMatch[2], 10);
 
             if (mm < 1 || mm > 12) {
                 errors.push("El mes de caducidad debe estar entre 01 y 12.");
             } else {
                 const now = new Date();
-                const currentYear = now.getFullYear() % 100; // dos dígitos
-                const currentMonth = now.getMonth() + 1;     // 1-12
+                const currentYear = now.getFullYear() % 100;
+                const currentMonth = now.getMonth() + 1;
 
                 if (yy < currentYear || (yy === currentYear && mm < currentMonth)) {
                     errors.push("La tarjeta está caducada.");
@@ -207,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // CVV: 3 dígitos
+
         if (!/^\d{3}$/.test(cardCvv)) {
             errors.push("El CVV debe tener 3 dígitos.");
         }
@@ -220,11 +215,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
-    // Actualizar perfil del usuario (opcional pero queda profesional)
+
     async function updateUserProfile() {
-        const nombre    = inputNombre?.value.trim()    || "";
+        const nombre = inputNombre?.value.trim() || "";
         const direccion = inputDireccion?.value.trim() || "";
-        const telefono  = inputTelefono?.value.trim()  || "";
+        const telefono = inputTelefono?.value.trim() || "";
 
         try {
             const res = await fetch("/api/user/me", {
@@ -243,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
             console.log("updateUserProfile:", data);
 
-            // Si falla, no bloqueamos el pago, solo mostramos aviso
+
             if (!data.success) {
                 console.warn("No se pudo actualizar el perfil:", data);
             }
@@ -252,15 +247,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Procesar el pago → /api/cart/checkout
+
     async function processPayment() {
         clearError();
 
         try {
-            // 1) Opcionalmente actualizamos datos del usuario
+
             await updateUserProfile();
 
-            // 2) Creamos el pedido a partir del carrito
+
             const res = await fetch("/api/cart/checkout", {
                 method: "POST",
                 credentials: "include"
@@ -279,9 +274,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // 3) Mostrar pantalla de éxito
+
             const pedidoId = data.pedidoId;
-            const total    = Number(data.total || 0);
+            const total = Number(data.total || 0);
 
             if (successOrderIdEl) {
                 successOrderIdEl.textContent = pedidoId || "-";
@@ -290,10 +285,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 successOrderTotalEl.textContent = `${total.toFixed(2)} €`;
             }
 
-            if (contentEl)      contentEl.classList.add("d-none");
+            if (contentEl) contentEl.classList.add("d-none");
             if (successSection) successSection.classList.remove("d-none");
 
-            // 4) Redirigir a home tras 10 segundos
+
             setTimeout(() => {
                 window.location.href = "/index.html";
             }, 10000);
@@ -304,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Listener del formulario
+
     if (checkoutForm) {
         checkoutForm.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -313,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Desactivar botón mientras se procesa
+
             if (btnConfirm) {
                 btnConfirm.disabled = true;
                 btnConfirm.textContent = "Procesando pago...";
@@ -321,9 +316,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             await processPayment();
 
-            // Si hubo error, reactivamos el botón (si se ha mostrado éxito ya no importa)
+
             if (btnConfirm && !successSection.classList.contains("d-none")) {
-                // en éxito no reactivamos
+
             } else if (btnConfirm) {
                 btnConfirm.disabled = false;
                 btnConfirm.textContent = "Confirmar pago";
@@ -331,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Inicialización
     (async () => {
         await loadUser();
         await loadCartSummary();

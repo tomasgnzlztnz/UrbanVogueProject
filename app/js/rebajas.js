@@ -1,10 +1,7 @@
-// app/js/rebajas.js
-
-// Contenedor de cards y alerta reutilizada
 const cardsContainer = document.getElementById('rebajasContainer');
 const ropaError = document.getElementById('ropaError');
 
-// Función para mostrar el mensaje de "debes iniciar sesión"
+
 function showLoginRequiredMessage() {
     if (!ropaError) return;
     ropaError.textContent = "Debes iniciar sesión para añadir productos al carrito.";
@@ -16,7 +13,7 @@ function showLoginRequiredMessage() {
     }, 3000);
 }
 
-// Navegación a detalle solo dentro de rebajasContainer
+
 function activarNavegacionDetalle() {
     if (!cardsContainer) return;
 
@@ -44,7 +41,7 @@ async function loadRebajas() {
         if (!cardsContainer) return;
         cardsContainer.innerHTML = "";
 
-        // data = [ { categoria: "...", productos: [...] }, ... ]
+
         data.forEach(grupo => {
             const listaProductos = grupo.productos || [];
 
@@ -84,11 +81,11 @@ async function loadRebajas() {
             });
         });
 
-        // Botones "Agregar al carrito" solo dentro de rebajasContainer
+
         const buttons = cardsContainer.querySelectorAll(".btn-add-cart");
         buttons.forEach(btn => {
             btn.addEventListener("click", async (e) => {
-                e.stopPropagation(); // que no dispare la navegación de la card
+                e.stopPropagation();
 
                 const productId = btn.getAttribute("data-product-id");
 
@@ -114,7 +111,7 @@ async function loadRebajas() {
                     if (!dataAdd.success) {
                         alert(dataAdd.error || "No se pudo añadir al carrito.");
                     } else {
-                        // Aquí puedes mostrar un mensajito de éxito si quieres
+
                         const originalText = btn.textContent;
                         const originalClasses = btn.className;
 
@@ -145,7 +142,7 @@ async function loadRebajas() {
     }
 }
 
-// Llamada inicial
+
 document.addEventListener("DOMContentLoaded", () => {
     loadRebajas();
 });

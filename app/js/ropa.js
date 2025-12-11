@@ -1,4 +1,3 @@
-// app/js/ropa.js
 
 document.addEventListener('DOMContentLoaded', () => {
     loadCategorias();
@@ -12,20 +11,19 @@ function showRopaError(msg) {
     alertEl.textContent = msg || 'Debes iniciar sesión para añadir productos al carrito.';
     alertEl.classList.remove('d-none');
 
-    // Ocultar a los 3 segundos
+
     setTimeout(() => {
         alertEl.classList.add('d-none');
     }, 3000);
 }
 
-// Navegación a la vista de detalle
+
 function activarNavegacionDetalle() {
     const cards = document.querySelectorAll(".product-card");
 
     cards.forEach(card => {
         card.addEventListener("click", (e) => {
-            // Si el click viene del botón "Agregar al carrito",
-            // NO navegamos al detalle
+
             if (e.target.closest(".btn-add-cart")) {
                 return;
             }
@@ -64,9 +62,8 @@ async function loadCategorias() {
         container.innerHTML = "";
 
         categorias.forEach(cat => {
-            // Omitir la categoría "Accesorios" en la página de Ropa porque ya tiene una sección propia.
-            //if (cat.nombre && cat.nombre.toLowerCase() === "accesorios") {
-            if (cat.nombre && cat.nombre.toLowerCase() != "accesorios") {   
+
+            if (cat.nombre && cat.nombre.toLowerCase() != "accesorios") {
                 const col = document.createElement('div');
                 col.className = "col-10 col-md-4";
                 col.innerHTML = `
@@ -143,7 +140,7 @@ async function loadAllProducts() {
             container.appendChild(col);
         });
 
-        // Delegación de eventos: clic en "Agregar al carrito"
+
         container.addEventListener('click', async (e) => {
             const btn = e.target.closest('.btn-add-cart');
             if (!btn) return;
@@ -164,7 +161,7 @@ async function loadAllProducts() {
                     })
                 });
 
-                // No logueado → mostramos mensaje y NO redirigimos
+
                 if (res.status === 401) {
                     showRopaError('Debes iniciar sesión para añadir productos al carrito.');
                     return;
@@ -178,25 +175,24 @@ async function loadAllProducts() {
                     return;
                 }
 
-                // Aquí podrías mostrar un mensaje de éxito si quieres
-                // Feedback visual en el botón: "Añadido correctamente"
+
                 const originalText = btn.textContent;
                 const originalClasses = btn.className;
 
-                // Cambiamos a estilo "éxito"
+
                 btn.disabled = true;
                 btn.textContent = "Añadido correctamente";
                 btn.classList.remove("btn-dark");
                 btn.classList.add("btn-success");
 
                 setTimeout(() => {
-                    // Volvemos al estado normal
+
                     btn.disabled = false;
                     btn.textContent = originalText;
                     btn.className = originalClasses;
                 }, 2000);
 
-                //
+
 
             } catch (err) {
                 console.error('Error al añadir al carrito desde ropa:', err);
@@ -204,7 +200,7 @@ async function loadAllProducts() {
             }
         });
 
-        // Activar la navegación a detalle una vez pintadas las cards
+
         activarNavegacionDetalle();
 
     } catch (err) {

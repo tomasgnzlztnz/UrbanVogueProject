@@ -1,10 +1,9 @@
-// app/js/admin.js
 
 document.addEventListener("DOMContentLoaded", async () => {
     const adminError = document.getElementById("adminError");
     const adminSuccess = document.getElementById("adminSuccess");
 
-    // Elementos del panel de categorías
+
     const catForm = document.getElementById("categoriaForm");
     const catIdInput = document.getElementById("categoriaId");
     const catNombreInput = document.getElementById("categoriaNombre");
@@ -15,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const catTableBody = document.getElementById("categoriasTableBody");
     const catEmptyText = document.getElementById("categoriasVacio");
 
-    // Elementos del panel de PRODUCTOS
+
     const prodForm = document.getElementById("productoForm");
     const prodIdInput = document.getElementById("productoId");
     const prodNombreInput = document.getElementById("productoNombre");
@@ -32,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const prodTableBody = document.getElementById("productosTableBody");
     const prodEmptyText = document.getElementById("productosVacio");
 
-    // Elementos del panel de USUARIOS
+
     const usersTableBody = document.getElementById("usuariosTableBody");
     const usersEmptyText = document.getElementById("usuariosVacio");
 
@@ -40,9 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const newsletterEmptyText = document.getElementById("newsletterVacio");
 
 
-    // ========================================
-    // Utils de mensajes
-    // ========================================
+
     function showAdminError(msg) {
         if (!adminError) return;
         adminError.textContent = msg;
@@ -66,11 +63,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 2500);
     }
 
-    // ========================================
-    // 1. Comprobar que el usuario es admin
-    // ========================================
+
     try {
-        const data = await fetchCurrentUser(); // de auth.js
+        const data = await fetchCurrentUser();
         console.log("DEBUG admin → usuario:", data);
 
         if (!data.autenticado || !data.usuario) {
@@ -79,7 +74,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (data.usuario.rol !== "admin") {
-            // si no es admin, lo mandamos al home
             window.location.href = "/index.html";
             return;
         }
@@ -89,9 +83,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // ========================================
-    // 2. Funciones de CATEGORÍAS
-    // ========================================
 
     async function cargarCategorias() {
         clearAdminError();
@@ -155,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     catTableBody.appendChild(tr);
                 });
 
-                // Añadir eventos a botones de editar
+
                 const editButtons = catTableBody.querySelectorAll(".btn-cat-edit");
                 editButtons.forEach(btn => {
                     btn.addEventListener("click", () => {
@@ -167,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     });
                 });
 
-                // Añadir eventos a botones de eliminar
+
                 const deleteButtons = catTableBody.querySelectorAll(".btn-cat-delete");
                 deleteButtons.forEach(btn => {
                     btn.addEventListener("click", () => {
@@ -256,10 +247,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             showAdminSuccess(id ? "Categoría actualizada." : "Categoría creada.");
             resetFormularioCategoria();
 
-            // Recargar lista de categorías del panel de categorías
+
             await cargarCategorias();
 
-            // Y también recargar el <select> de categorías en PRODUCTOS
+
             await cargarCategoriasEnSelectProductos();
 
         } catch (err) {
@@ -295,13 +286,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // ✅ Mensaje de confirmación justo debajo de los paneles
+
             showAdminSuccess("Categoría eliminada correctamente.");
 
-            // Refrescar tabla de categorías
+
             await cargarCategorias();
 
-            // 🔁 Refrescar <select> de categorías en productos
+
             await cargarCategoriasEnSelectProductos();
 
         } catch (err) {
@@ -310,38 +301,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ========================================
-    // 3. PRODUCTOS - helpers
-    // ========================================
+
 
     function validateProductForm(nombre, precio, stock, categoria) {
         let ok = true;
 
-        // Limpia clase de error previa
+
         document.getElementById("productoNombre").classList.remove("is-invalid");
         document.getElementById("productoPrecio").classList.remove("is-invalid");
         document.getElementById("productoStock").classList.remove("is-invalid");
         document.getElementById("productoCategoria").classList.remove("is-invalid");
 
-        // Validar nombre
+
         if (!nombre || nombre.trim().length < 2) {
             document.getElementById("productoNombre").classList.add("is-invalid");
             ok = false;
         }
 
-        // Validar precio
+
         if (isNaN(precio) || precio <= 0) {
             document.getElementById("productoPrecio").classList.add("is-invalid");
             ok = false;
         }
 
-        // Validar stock
+
         if (isNaN(stock) || stock < 0) {
             document.getElementById("productoStock").classList.add("is-invalid");
             ok = false;
         }
 
-        // Validar categoría
+
         if (!categoria) {
             document.getElementById("productoCategoria").classList.add("is-invalid");
             ok = false;
@@ -350,7 +339,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return ok;
     }
 
-    // Rellena el <select> de categorías del formulario de productos
+
     async function cargarCategoriasEnSelectProductos() {
         if (!prodCategoriaSelect) return;
 
@@ -367,7 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             prodCategoriaSelect.innerHTML = "";
 
-            // Opción "sin categoría"
+
             const optDefault = document.createElement("option");
             optDefault.value = "";
             optDefault.textContent = "Sin categoría";
@@ -385,9 +374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ========================================
-    // Cargar lista de imágenes para productos
-    // ========================================
+
     async function cargarImagenesEnSelect() {
         const select = document.getElementById("productoImagen");
         if (!select) return;
@@ -403,7 +390,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const imagenes = data.imagenes || [];
 
-            // limpiar select
+
             select.innerHTML = "";
             const optDefault = document.createElement("option");
             optDefault.value = "";
@@ -412,7 +399,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             imagenes.forEach(img => {
                 const opt = document.createElement("option");
-                opt.value = `/img/clothes/${img}`;  // ruta real usada en frontend
+                opt.value = `/img/clothes/${img}`;
                 opt.textContent = img;
                 select.appendChild(opt);
             });
@@ -465,7 +452,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             productos.forEach(p => {
                 const tr = document.createElement("tr");
-                //<td>${p.stock}</td>
+
                 tr.innerHTML = `
                     <td>${p.id}</td>
                     <td>${p.nombre}</td>
@@ -493,7 +480,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 prodTableBody.appendChild(tr);
             });
 
-            // 🔽 Después de pintar la tabla, asignamos eventos a + y -
+
             const incButtons = prodTableBody.querySelectorAll(".btn-stock-inc");
             incButtons.forEach(btn => {
                 btn.addEventListener("click", async () => {
@@ -503,7 +490,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             method: "POST",
                             credentials: "include"
                         });
-                        await cargarProductos(); // recargar lista
+                        await cargarProductos();
                     } catch (err) {
                         console.error("Error incrementando stock:", err);
                         showAdminError("Error al incrementar stock.");
@@ -520,7 +507,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                             method: "POST",
                             credentials: "include"
                         });
-                        await cargarProductos(); // recargar lista
+                        await cargarProductos();
                     } catch (err) {
                         console.error("Error decrementando stock:", err);
                         showAdminError("Error al decrementar stock.");
@@ -531,7 +518,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-            // Botones de editar
+
             const editButtons = prodTableBody.querySelectorAll(".btn-prod-edit");
             editButtons.forEach(btn => {
                 btn.addEventListener("click", () => {
@@ -541,7 +528,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 });
             });
 
-            // Botones de eliminar
+
             const deleteButtons = prodTableBody.querySelectorAll(".btn-prod-delete");
             deleteButtons.forEach(btn => {
                 btn.addEventListener("click", () => {
@@ -613,7 +600,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const precioNum = parseFloat(precioStr);
         const stockNum = parseInt(stockStr);
 
-        // 🛑 Validación front con la función nueva
+
         const ok = validateProductForm(nombre, precioNum, stockNum, id_categoria);
         if (!ok) {
             showAdminError("Revisa los campos marcados en rojo.");
@@ -711,9 +698,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ========================================
-    // 4. USUARIOS
-    // ========================================
+
 
     async function cargarUsuarios() {
         if (!usersTableBody || !usersEmptyText) return;
@@ -782,7 +767,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 usersTableBody.appendChild(tr);
             });
 
-            // Añadir eventos a los botones de cambio de rol
+
             const roleButtons = usersTableBody.querySelectorAll(".btn-user-rol");
             roleButtons.forEach(btn => {
                 btn.addEventListener("click", async () => {
@@ -839,9 +824,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ==============================
-    //   NEWSLETTER – LISTADO
-    // ==============================
     async function cargarSuscriptores() {
         if (!newsletterTableBody || !newsletterEmptyText) return;
 
@@ -850,12 +832,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 credentials: "include"
             });
 
-            const text = await res.text();          // texto crudo de la respuesta
+            const text = await res.text();
             console.log("RAW NEWSLETTER RESPONSE:", text);
 
             let data;
             try {
-                data = JSON.parse(text);            // intentamos parsear JSON
+                data = JSON.parse(text);
             } catch (err) {
                 console.error("❗La respuesta NO es JSON válido:", err);
                 newsletterTableBody.innerHTML = "";
@@ -941,9 +923,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ========================================
-    // Listeners
-    // ========================================
+
 
     if (catForm) {
         catForm.addEventListener("submit", guardarCategoria);
@@ -965,7 +945,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // NEWSLETTER – listener para botones "Eliminar"
+
 
     if (newsletterTableBody) {
         newsletterTableBody.addEventListener("click", async (e) => {
@@ -973,19 +953,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!btn) return;
 
             const id = btn.getAttribute("data-id");
-            // Sin confirmación, eliminación directa:
             await eliminarSuscriptor(id);
         });
     }
 
 
 
-    // Cargar categorías al entrar en la página
+
     await cargarCategorias();
-    // Cargar categorías en el select de productos y la tabla de productos
     await cargarCategoriasEnSelectProductos();
     await cargarProductos();
-    // Cargar usuarios en el panel de usuarios
     await cargarUsuarios();
     await cargarSuscriptores();
     await cargarImagenesEnSelect();

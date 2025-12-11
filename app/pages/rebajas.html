@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=410, initial-scale=1.0">
@@ -15,9 +16,10 @@
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/footer.css">
 </head>
+
 <body>
 
-    <!-- NAVBAR reutilizable -->
+
     <div id="navbarContainer"></div>
 
     <main class="container my-5" id="txt_rebajas">
@@ -26,28 +28,25 @@
             Descubre los mejores precios en tus prendas favoritas.
         </p>
 
-        <!-- Mensaje de error al intentar agregar sin estar logueado -->
+
         <div id="ropaError" class="alert alert-danger text-center d-none" role="alert">
             Debes iniciar sesión para añadir productos al carrito.
         </div>
 
-        <!-- GRID de productos rebajados -->
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-4" id="rebajasContainer">
-            <!-- Aquí se insertan las cards con JS -->
-        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-4" id="rebajasContainer"></div>
     </main>
 
-    <!-- FOOTER reutilizable -->
+
     <div id="footerContainer"></div>
 
-    <!-- JS Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JS de la app -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/navbarLoader.js"></script>
     <script src="/js/footerLoader.js"></script>
     <script src="/js/newsletter.js"></script>
     <script src="../js/rebajas.js"></script>
 </body>
+
 </html>

@@ -1,5 +1,3 @@
-// /js/footerLoader.js
-
 document.addEventListener("DOMContentLoaded", async () => {
   const footerContainer = document.getElementById("footerContainer");
   if (!footerContainer) return;
@@ -9,7 +7,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const html = await res.text();
     footerContainer.innerHTML = html;
 
-    //Cuando el footer ya está en el DOM, inicializamos el formulario
     if (typeof initNewsletterForm === "function") {
       initNewsletterForm();
     }

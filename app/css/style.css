@@ -43,7 +43,7 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-/* main, hero, cards, etc */
+
 main {
   font-family: "Bebas Neue", sans-serif;
   font-weight: 400;
@@ -64,9 +64,8 @@ main h2 {
   transition: all 0.3s ease;
 }
 
-/* HERO */
+
 :root {
-  /*--hero-bg: url('https://objetos-xlk.estaticos-marca.com/uploads/2025/09/17/68ca83450963f.png');*/
   --hero-bg: url('/img/clothes/banner-image.jpg');
 
 }
@@ -151,14 +150,14 @@ main h2 {
   color: #000;
 }
 
-/* Línea vertical entre columnas solo en escritorio */
+
 @media (min-width: 768px) {
   .border-md-end {
     border-right: 1px solid rgba(0, 0, 0, 0.3);
   }
 }
 
-/* Ajustes en móvil: más compacto */
+
 @media (max-width: 767.98px) {
   .cookie-inner {
     padding: 1.8rem 1.2rem;
@@ -176,12 +175,10 @@ main h2 {
   padding: 2rem 0;
   display: flex;
   flex-direction: column;
-  /* 🔹 móvil: texto arriba, logo debajo */
   gap: 2rem;
 }
 
 #section_acercaDe>div:first-child {
-  /* bloque de texto */
   flex: 1;
 }
 
@@ -218,7 +215,7 @@ main h2 {
   margin-inline: auto;
 }
 
-/* Título "Mi perfil" */
+
 .page-profile h1 {
   font-size: 1.6rem;
   letter-spacing: 0.06em;
@@ -226,7 +223,7 @@ main h2 {
   margin-bottom: 1.5rem;
 }
 
-/* Tarjeta principal */
+
 .page-profile .card {
   border: none;
   border-radius: 0;
@@ -240,7 +237,7 @@ main h2 {
   margin-bottom: 1.5rem;
 }
 
-/* Labels del formulario */
+
 .page-profile .form-label {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -248,7 +245,7 @@ main h2 {
   color: #555;
 }
 
-/* Inputs tipo “solo línea inferior” */
+
 .page-profile .form-control {
   border: none;
   border-bottom: 1px solid #ddd;
@@ -264,7 +261,7 @@ main h2 {
   box-shadow: none;
 }
 
-/* Campos solo texto (email, rol, fecha) */
+
 .page-profile .form-control-plaintext {
   border-bottom: 1px solid #eee;
   padding-left: 0;
@@ -272,7 +269,7 @@ main h2 {
   font-size: 0.9rem;
 }
 
-/* Botón guardar */
+
 .page-profile #profileForm button[type="submit"] {
   padding-inline: 2rem;
   letter-spacing: 0.08em;
@@ -280,21 +277,21 @@ main h2 {
   font-size: 0.8rem;
 }
 
-/* Bloques de alertas un poco más integrados */
+
 .page-profile #profileError,
 .page-profile #profileSuccess {
   border-radius: 0;
   font-size: 0.85rem;
 }
 
-/* Título “Mis pedidos” */
+
 .page-profile section h2 {
   font-size: 1rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-/* Acordeón de pedidos: más fino */
+
 .page-profile .accordion-button {
   font-size: 0.85rem;
 }
@@ -309,15 +306,9 @@ main h2 {
 
 
 
-/* ===== Detalle de producto ===== */
-
-#productDetailCard {
-  /* ya tiene d-flex + justify-content-center en el HTML */
-}
 
 .product-detail-card {
   max-width: 420px;
-  /* igual que tu diseño original en móvil */
   width: 100%;
   border-radius: 0;
 }
@@ -343,7 +334,7 @@ main h2 {
     color var(--uv-transition-fast);
 }
 
-/* Botón principal oscuro (lo usas muchísimo) */
+
 .btn-dark {
   background-color: var(--uv-black);
   border-color: var(--uv-black);
@@ -357,7 +348,7 @@ main h2 {
   box-shadow: var(--uv-shadow-soft);
 }
 
-/* Outline dark */
+
 .btn-outline-dark {
   border-radius: var(--uv-radius-sm);
   border-width: 1.5px;
@@ -371,7 +362,7 @@ main h2 {
   box-shadow: var(--uv-shadow-soft);
 }
 
-/* Estado “success” que usas para “Añadido correctamente” */
+
 .btn-success {
   border-radius: var(--uv-radius-sm);
   box-shadow: var(--uv-shadow-soft);
@@ -382,7 +373,7 @@ main h2 {
   box-shadow: none;
 }
 
-/* ===== ROPA HEADERS ===== */
+
 .textsection-clothes {
   color: var(--uv-bg);
   background-color: #024959;
@@ -390,7 +381,7 @@ main h2 {
   border-radius: 5px;
 }
 
-/* ===== SECTION REBAJAS =====*/
+
 #txt_rebajas {
   color: white;
   text-transform: uppercase;
@@ -404,7 +395,7 @@ main h2 {
 
 }
 
-/* ===== SECTION PRODUCT DETAILS RECOMENDADOS =====*/
+
 .related-products-section h3 {
   font-family: var(--uv-heading-font, "Bebas Neue", system-ui, -apple-system, sans-serif);
   letter-spacing: 0.12em;
@@ -412,7 +403,7 @@ main h2 {
 }
 
 
-/* ===== CARDS DE PRODUCTO ===== */
+
 .product-card {
   border-radius: var(--uv-radius-lg);
   overflow: hidden;
@@ -423,38 +414,36 @@ main h2 {
     box-shadow var(--uv-transition-med);
 }
 
-/* Títulos de productos: máximo 2 líneas, el resto se corta con ... */
+
 .product-card-title {
   font-size: 1rem;
   line-height: 1.2;
   min-height: 2.4rem;
-  /* 2 líneas de alto (1.2 * 2) */
   display:
     -webkit-box;
   -webkit-line-clamp: 2;
-  /* máximo 2 líneas */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Sombra y elevación al pasar el ratón */
+
 .product-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--uv-shadow-hover);
 }
 
-/* Imagen dentro de las cards */
+
 .product-card img {
   object-fit: cover;
   transition: transform 0.35s ease;
 }
 
-/* Zoom suave en imagen al hover */
+
 .product-card:hover img {
   transform: scale(1.03);
 }
 
-/* Título del producto */
+
 .product-card .card-body h5,
 .product-card .card-body h6 {
   font-family: var(--uv-font-display-2);
@@ -462,7 +451,7 @@ main h2 {
   text-transform: uppercase;
 }
 
-/* Para que el botón quede pegado abajo visualmente */
+
 .product-card .card-body {
   display: flex;
   flex-direction: column;
@@ -471,10 +460,10 @@ main h2 {
 
 
 .card-img-top {
-    width: 100%;
-    height: 400px;     /* <-- AJUSTA LA ALTURA QUE QUIERAS */
-    object-fit: cover;
-    object-position: center;
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
 }
 
 
@@ -488,13 +477,13 @@ main h2 {
    PANEL DE ADMIN - RESPONSIVE
    ========================= */
 
-/* Ajustes generales del main en admin */
+
 .admin-main {
-  /* para que respire un poco en pantallas pequeñas */
+
   padding-inline: 1rem;
 }
 
-/* Tabs de administración: que no “revienten” en móvil */
+
 #adminTabs .nav-link {
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -502,18 +491,18 @@ main h2 {
 
 @media (max-width: 767.98px) {
 
-  /* Reducir un poco el tamaño de las pestañas en móvil */
+
   #adminTabs .nav-link {
     font-size: 0.8rem;
     padding: 0.4rem 0.6rem;
   }
 
-  /* Que las tarjetas no queden aplastadas */
+
   .admin-main .card {
     margin-bottom: 1.25rem;
   }
 
-  /* Formularios más compactos en móvil */
+
   .admin-form .form-control,
   .admin-form .form-select,
   .admin-form textarea {
@@ -525,7 +514,7 @@ main h2 {
     font-size: 0.8rem;
   }
 
-  /* Tablas: scroll horizontal si no caben */
+
   .admin-main .table-responsive {
     max-width: 100%;
     overflow-x: auto;
@@ -534,18 +523,15 @@ main h2 {
   .admin-main table.table {
     font-size: 0.8rem;
     white-space: nowrap;
-    /* que no se partan las celdas raras */
   }
 
-  /* Botones de acciones más compactos */
+
   .admin-main .btn {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
   }
 }
 
-/* En pantallas grandes sigue todo normal, 
-   solo un poquito más de aire a las tarjetas */
 @media (min-width: 992px) {
   .admin-main .card {
     border-radius: 0;
@@ -584,7 +570,7 @@ main h2 {
   border-radius: 6px;
 }
 
-/* Versión móvil: convertir filas en tarjetas apiladas */
+
 @media (max-width: 576px) {
   .cart-table thead {
     display: none;
@@ -603,11 +589,10 @@ main h2 {
     justify-content: space-between;
     align-items: center;
     border-top: none;
-    /* quitar líneas horizontales de bootstrap */
     padding: 0.25rem 0;
   }
 
-  /* Primera celda (producto + imagen) ocupa toda la anchura */
+
   .cart-table tbody td:first-child {
     display: block;
     margin-bottom: 0.5rem;
@@ -622,7 +607,7 @@ main h2 {
     height: 80px;
   }
 
-  /* Botones centrados en la parte de abajo */
+
   .cart-table tbody td:last-child {
     justify-content: flex-end;
     margin-top: 0.25rem;
@@ -641,7 +626,7 @@ main h2 {
 /*RESPONSIVE*/
 
 
-/* Versión mobile: un pelín menos de “salto” en hover (por si hay cursor) */
+
 @media (max-width: 576px) {
   .product-card:hover {
     transform: translateY(-3px);
@@ -649,34 +634,31 @@ main h2 {
 }
 
 
-/* 🔸 A partir de tablet / escritorio: lado a lado */
+
 @media (min-width: 768px) {
   #section_acercaDe {
     flex-direction: row;
-    /* texto izquierda, logo derecha */
+
     align-items: center;
     gap: 3rem;
   }
 
   #section_acercaDe>div:first-child {
     flex: 1.4;
-    /* un poco más ancho el texto */
   }
 
   #logo_acercaDe {
     flex: 1;
     justify-content: flex-end;
-    /* pegamos el logo hacia la derecha */
   }
 
   #logo_acercaDe img {
     width: 100%;
     max-width: 320px;
-    /* logo más grande en escritorio */
   }
 }
 
-/* Versión escritorio: imagen izquierda, texto derecha, más ancho */
+
 @media (min-width: 992px) {
   #productDetailCard {
     max-width: 1100px;
@@ -694,7 +676,7 @@ main h2 {
 
   .product-detail-card #btnAddToCartDetail {
     align-self: flex-start;
-    /* botón alineado a la izquierda en desktop */
+
   }
 }
 

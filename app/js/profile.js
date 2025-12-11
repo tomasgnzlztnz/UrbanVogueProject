@@ -1,18 +1,17 @@
-// /js/profile.js
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const errorEl   = document.getElementById("profileError");
+    const errorEl = document.getElementById("profileError");
     const successEl = document.getElementById("profileSuccess");
 
-    const inputNombre    = document.getElementById("profileNombre");
-    const pEmail         = document.getElementById("profileEmail");
-    const pRol           = document.getElementById("profileRole");
+    const inputNombre = document.getElementById("profileNombre");
+    const pEmail = document.getElementById("profileEmail");
+    const pRol = document.getElementById("profileRole");
     const inputDireccion = document.getElementById("profileDireccion");
-    const inputTelefono  = document.getElementById("profileTelefono");
-    const pFecha         = document.getElementById("profileFecha");
-    const form           = document.getElementById("profileForm");
+    const inputTelefono = document.getElementById("profileTelefono");
+    const pFecha = document.getElementById("profileFecha");
+    const form = document.getElementById("profileForm");
 
-    const ordersEmptyEl     = document.getElementById("ordersEmpty");
+    const ordersEmptyEl = document.getElementById("ordersEmpty");
     const ordersAccordionEl = document.getElementById("ordersAccordion");
 
     function showError(msg) {
@@ -40,9 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let originalUser = null;
 
-    // ============================
-    // CARGAR PEDIDOS DEL USUARIO
-    // ============================
+
     async function loadOrders() {
         if (!ordersAccordionEl || !ordersEmptyEl) return;
 
@@ -67,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const pedidos = data.pedidos || [];
 
-            // Si no hay pedidos
+
             if (pedidos.length === 0) {
                 ordersEmptyEl.classList.remove("d-none");
                 ordersAccordionEl.innerHTML = "";
@@ -79,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             pedidos.forEach((pedido, index) => {
                 const collapseId = `pedidoCollapse${pedido.id}`;
-                const headingId  = `pedidoHeading${pedido.id}`;
+                const headingId = `pedidoHeading${pedido.id}`;
 
                 const fechaStr = (() => {
                     if (!pedido.fecha) return "";
@@ -91,12 +88,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 })();
 
                 const totalNum = Number(pedido.total || 0);
-                const estado   = pedido.estado || "pendiente";
+                const estado = pedido.estado || "pendiente";
 
-                // Construir listado de productos del pedido
+
                 let itemsHtml = "";
                 (pedido.items || []).forEach(item => {
-                    const tallaTxt    = item.talla ? ` (Talla ${item.talla})` : "";
+                    const tallaTxt = item.talla ? ` (Talla ${item.talla})` : "";
                     const subtotalNum = Number(item.subtotal || 0);
 
                     itemsHtml += `
@@ -160,11 +157,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // ============================
-    // 1. CARGAR DATOS DEL USUARIO
-    // ============================
+
     try {
-        const data = await fetchCurrentUser(); // función de auth.js
+        const data = await fetchCurrentUser();
 
         console.log("DEBUG profile → usuario:", data);
 
@@ -175,28 +170,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const user = data.usuario;
 
-        // Guardamos copia original para comparar luego
+
         originalUser = {
-            nombre:    user.nombre    || "",
+            nombre: user.nombre || "",
             direccion: user.direccion || "",
-            telefono:  user.telefono  || ""
+            telefono: user.telefono || ""
         };
 
-        if (inputNombre)    inputNombre.value    = originalUser.nombre;
-        if (pEmail)         pEmail.textContent   = user.email || "";
-        if (pRol)           pRol.textContent     = user.rol   || "";
+        if (inputNombre) inputNombre.value = originalUser.nombre;
+        if (pEmail) pEmail.textContent = user.email || "";
+        if (pRol) pRol.textContent = user.rol || "";
         if (inputDireccion) inputDireccion.value = originalUser.direccion;
-        if (inputTelefono)  inputTelefono.value  = originalUser.telefono;
+        if (inputTelefono) inputTelefono.value = originalUser.telefono;
         if (pFecha && user.fecha_registro) {
             let raw = user.fecha_registro;
             if (typeof raw === "string") raw = raw.replace(" ", "T");
             const fecha = new Date(raw);
             fechaNueva = raw.split("T")
             if (!isNaN(fecha.getTime())) {
-                //pFecha.textContent = fecha.toLocaleString("es-ES");
                 pFecha.textContent = fechaNueva[0];
             }
-            console.log("FECHA:::::::",fechaNueva[0]);
+            console.log("FECHA:::::::", fechaNueva[0]);
         }
 
     } catch (err) {
@@ -205,24 +199,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // ============================
-    // 2. CARGAR PEDIDOS DEL USUARIO
-    // ============================
     await loadOrders();
 
-    // ============================
-    // 3. GUARDAR CAMBIOS DEL PERFIL
-    // ============================
+
     if (form) {
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
             clearError();
 
-            const nombre    = inputNombre    ? inputNombre.value.trim()    : "";
+            const nombre = inputNombre ? inputNombre.value.trim() : "";
             const direccion = inputDireccion ? inputDireccion.value.trim() : "";
-            const telefono  = inputTelefono  ? inputTelefono.value.trim()  : "";
+            const telefono = inputTelefono ? inputTelefono.value.trim() : "";
 
-            // Validación: nombre obligatorio
+
             if (!nombre) {
                 showError("El nombre no puede estar vacío.");
                 return;
@@ -233,11 +222,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            // Comprobar si realmente ha cambiado algo
+
             const hasChanges =
-                nombre    !== originalUser.nombre ||
+                nombre !== originalUser.nombre ||
                 direccion !== originalUser.direccion ||
-                telefono  !== originalUser.telefono;
+                telefono !== originalUser.telefono;
 
             if (!hasChanges) {
                 showError("No has modificado ningún dato.");
@@ -271,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                // Actualizamos también la copia local para próximas veces
+
                 originalUser = { nombre, direccion, telefono };
 
                 showSuccess("Perfil actualizado correctamente.");

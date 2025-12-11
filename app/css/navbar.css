@@ -1,12 +1,10 @@
-/* ===== NAVBAR / HEADER ===== */
-
 .header-style {
   display: flex;
   align-items: center;
   padding: 1rem;
 }
 
-/* columnas del header */
+
 .header-search-desktop,
 .header-menu,
 .header-icons {
@@ -15,7 +13,7 @@
   align-items: center;
 }
 
-/* izquierda: buscador */
+
 .header-search-desktop {
   justify-content: flex-start;
 }
@@ -26,7 +24,7 @@
   cursor: pointer;
 }
 
-/* centro: logo */
+
 .header-menu {
   justify-content: center;
 }
@@ -35,7 +33,7 @@
   max-width: 220px;
 }
 
-/* derecha: iconos */
+
 .header-icons {
   justify-content: flex-end;
   gap: 0.75rem;
@@ -53,7 +51,7 @@
   text-decoration: none;
 }
 
-/* Links del navbar */
+
 .navbar-nav .nav-link {
   color: #000;
   font-size: 0.95rem;
@@ -62,38 +60,35 @@
 
 .navbar-nav .nav-link:hover {
   text-decoration: underline;
-  
+
 }
 
-/* Botón hamburguesa */
+
 .navbar-toggler {
   border: none;
 }
+
 .navbar-toggler:focus {
   box-shadow: none;
   color: #111;
 }
 
-/* Icono admin en rojo */
-li#navAdminItem > a {
+
+li#navAdminItem>a {
   color: red;
   text-decoration: underline;
 }
-
-/* ==========================
-   OVERLAY BUSCADOR GLOBAL
-   ========================== */
 
 .search-overlay {
   position: fixed;
   inset: 0;
   background-color: #ffffff;
-  z-index: 2000;             /* por encima del navbar y mini-carrito */
+  z-index: 2000;
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
   transition: transform 0.35s ease, opacity 0.35s ease;
-  overflow-y: auto;          /* 👈 ahora el contenido puede hacer scroll vertical */
+  overflow-y: auto;
 }
 
 .search-overlay--visible {
@@ -105,10 +100,10 @@ li#navAdminItem > a {
 .search-overlay-inner {
   padding-top: 1.5rem;
   padding-bottom: 2rem;
-  min-height: 100vh;         /* para que el contenido mínimo llegue a altura de pantalla */
+  min-height: 100vh;
 }
 
-/* fila superior */
+
 .search-overlay-top {
   border-bottom: 1px solid #e5e5e5;
   padding-bottom: .5rem;
@@ -118,7 +113,7 @@ li#navAdminItem > a {
   max-height: 40px;
 }
 
-/* input */
+
 .search-overlay-input-wrapper {
   max-width: 600px;
   width: 100%;
@@ -145,15 +140,12 @@ li#navAdminItem > a {
   margin-top: 4px;
 }
 
-/* botón cerrar */
+
 .search-overlay-close-btn {
   color: #000;
   font-size: 2rem;
 }
 
-/* ==========================
-   BÚSQUEDAS POPULARES
-   ========================== */
 
 .search-popular-title {
   font-weight: 700;
@@ -161,21 +153,21 @@ li#navAdminItem > a {
   text-transform: uppercase;
 }
 
-/* contenedor de las cards populares */
+
 .search-overlay-popular .row {
   display: flex;
   justify-content: center;
   border: solid rgb(210, 204, 204) 1px;
 }
 
-/* columna de cada card en escritorio */
+
 .search-overlay-popular .col-12.col-md-4 {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* texto arriba de cada card */
+
 .search-popular-label {
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -183,31 +175,28 @@ li#navAdminItem > a {
   font-size: 0.9rem;
 }
 
-/* carta popular (tamaño compacto) */
+
 .search-popular-card {
   width: 100%;
   max-width: 200px;
-  height: 120px;          /* altura fija para que todas sean iguales */
+  height: 120px;
   overflow: hidden;
   border-radius: 6px;
   border: 1px solid #ddd;
 }
 
-/* imagen dentro de la card */
+
 .search-popular-card img {
   width: 100%;
   height: 100%;
-  object-fit: cover;      /* recorta la imagen manteniendo proporción */
+  object-fit: cover;
   display: block;
 }
 
-/* ==========================
-   MINI CARRITO (MODAL PEQUEÑO)
-   ========================== */
 
 .mini-cart-modal .mini-cart-dialog {
   position: fixed;
-  top: 70px;        /* ajusta si el header es más alto/bajo */
+  top: 70px;
   right: 16px;
   margin: 0;
   max-width: 360px;
@@ -216,7 +205,7 @@ li#navAdminItem > a {
 
 .mini-cart-modal .modal-content {
   border-radius: 0.5rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 576px) {
@@ -235,7 +224,6 @@ li#navAdminItem > a {
    RESPONSIVE
    ========================== */
 
-/* MÓVIL: overlay a pantalla completa + cards en 2 columnas */
 @media (max-width: 767.98px) {
   .search-overlay-inner {
     padding-left: 1.25rem;
@@ -258,7 +246,7 @@ li#navAdminItem > a {
     margin-top: 0.5rem;
   }
 
-  /* grid 2x2 para las cards */
+
   .search-overlay-popular .row {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -266,7 +254,7 @@ li#navAdminItem > a {
 
   .search-popular-card {
     max-width: 100%;
-    height: 7rem;        /* un poco más pequeña en móvil */
+    height: 7rem;
   }
 
   .search-popular-label {
@@ -274,25 +262,25 @@ li#navAdminItem > a {
   }
 }
 
-/* ESCRITORIO: 3 cards, algo más grandes y separadas */
+
 @media (min-width: 768px) {
 
   .search-popular-card {
     max-width: 20rem;
     height: 10rem;
-    
+
   }
 
   .search-overlay-popular .row {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
   }
 
 }
 
 /* =========================
-   MENÚ MÓVIL URBAN VOGUE
+   MENÚ MÓVIL 
    ========================= */
 @media (max-width: 991.98px) {
   .uv-mobile-menu {
@@ -355,4 +343,3 @@ li#navAdminItem > a {
     height: auto;
   }
 }
-

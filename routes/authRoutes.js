@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 const db = require('../db');
 
-// LOGIN - POST /api/auth/login
+
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
@@ -38,8 +38,6 @@ router.post("/login", (req, res) => {
 
         const user = results[0];
 
-        // 💡 Aquí usamos bcrypt para comparar la contraseña que escribe el usuario
-        // con el hash guardado en la BD
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
                 console.error("Error al comparar contraseña:", err);
@@ -56,7 +54,7 @@ router.post("/login", (req, res) => {
                 });
             }
 
-            // Si la contraseña coincide, guardamos los datos en la sesión
+
             req.session.user = {
                 id: user.id,
                 nombre: user.nombre,
@@ -86,11 +84,11 @@ router.post("/login", (req, res) => {
 });
 
 
-// REGISTER - POST /api/auth/register
+
 router.post("/register", (req, res) => {
     const { nombre, email, password, direccion, telefono } = req.body;
 
-    // Validaciones básicas
+
     if (!nombre || !email || !password) {
         return res.status(400).json({
             success: false,
@@ -105,7 +103,6 @@ router.post("/register", (req, res) => {
         });
     }
 
-    // 1) Comprobar si ya existe un usuario con ese email
     const checkSql = "SELECT id FROM usuarios WHERE email = ?";
     db.query(checkSql, [email], (err, results) => {
         if (err) {
@@ -123,7 +120,7 @@ router.post("/register", (req, res) => {
             });
         }
 
-        // 2) Si no existe, ciframos la contraseña
+
         bcrypt.hash(password, 10, (err, hash) => {
             if (err) {
                 console.error("Error al cifrar contraseña:", err);
@@ -133,7 +130,7 @@ router.post("/register", (req, res) => {
                 });
             }
 
-            // 3) Insertar en la base de datos
+
             const insertSql = `
                 INSERT INTO usuarios (nombre, email, password, direccion, telefono, rol)
                 VALUES (?, ?, ?, ?, ?, 'cliente')
@@ -162,7 +159,7 @@ router.post("/register", (req, res) => {
 });
 
 
-// ROLL USER BACK
+
 router.get('/me', (req, res) => {
     if (!req.session.user) {
         return res.json({
@@ -177,7 +174,7 @@ router.get('/me', (req, res) => {
     });
 });
 
-// LOGOUT
+
 router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -188,7 +185,7 @@ router.post('/logout', (req, res) => {
             });
         }
 
-        res.clearCookie('connect.sid'); // nombre por defecto de la cookie de sesión
+        res.clearCookie('connect.sid');
         return res.json({
             success: true,
             message: "Sesión cerrada correctamente"

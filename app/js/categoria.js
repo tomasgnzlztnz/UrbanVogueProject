@@ -1,4 +1,3 @@
-// app/js/categoria.js
 function showAlert(message, type = "danger") {
     const alertBox = document.getElementById("alertBox");
     if (!alertBox) return;
@@ -14,24 +13,21 @@ function showAlert(message, type = "danger") {
     }, 3000);
 }
 
-// 1. Obtener categoría desde la URL (?cat=ID)
+
 const params = new URLSearchParams(window.location.search);
-const categoriaId = Number(params.get("cat")); // ahora es un ID numérico
+const categoriaId = Number(params.get("cat")); 
 
 const tituloEl = document.getElementById("categoriaTitulo");
 const listaEl = document.getElementById("listaProductos");
 
-// Si no hay categoría en la URL
+
 if (!categoriaId || isNaN(categoriaId)) {
     if (tituloEl) tituloEl.textContent = "Productos";
 } else {
     if (tituloEl) tituloEl.textContent = "Cargando categoría...";
 }
 
-// ============================
-//  Añadir al carrito
-// ============================
-// Recibe el id del producto y el botón que se pulsó
+
 async function addToCart(productId, buttonEl) {
     try {
         const res = await fetch("/api/cart/add", {
@@ -43,8 +39,6 @@ async function addToCart(productId, buttonEl) {
             body: JSON.stringify({
                 productId: productId,
                 cantidad: 1
-                // Si quisieras enviar talla por defecto:
-                // talla: "M"
             })
         });
 
@@ -66,10 +60,7 @@ async function addToCart(productId, buttonEl) {
             return;
         }
 
-        // Mensaje de alerta arriba
-        //showAlert("Producto añadido al carrito", "success");
-
-        // Feedback en el botón (si nos lo han pasado)
+        
         if (buttonEl) {
             const originalText = buttonEl.textContent;
             const originalClasses = buttonEl.className;
@@ -92,9 +83,7 @@ async function addToCart(productId, buttonEl) {
     }
 }
 
-// ============================
-//  Navegación a detalle
-// ============================
+
 function activarNavegacionDetalle() {
     const cards = listaEl.querySelectorAll(".product-card");
 
@@ -110,9 +99,7 @@ function activarNavegacionDetalle() {
     });
 }
 
-// ============================
-//  Cargar productos por categoría
-// ============================
+
 async function cargarProductosPorCategoria() {
     if (!categoriaId || isNaN(categoriaId)) return;
 
@@ -143,7 +130,7 @@ async function cargarProductosPorCategoria() {
             return;
         }
 
-        // Usamos el nombre de categoría que viene del backend
+        
         const nombreCat = productos[0].categoria_nombre || "Categoría";
         if (tituloEl) tituloEl.textContent = nombreCat;
 
@@ -153,22 +140,6 @@ async function cargarProductosPorCategoria() {
 
             const imgSrc = prod.imagen || "https://via.placeholder.com/400x500";
 
-            /*
-            card.innerHTML = `
-                <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
-                    <img src="${imgSrc}" class="card-img-top" alt="${prod.nombre}">
-                    <div class="card-body d-flex flex-column text-center">
-                        <h5 class="fw-bold">${prod.nombre}</h5>
-                        <p class="text-muted small mb-1">${prod.descripcion || ''}</p>
-                        <p class="fw-semibold mb-3">${Number(prod.precio).toFixed(2)} €</p>
-                        <button class="btn btn-dark mt-auto w-100 btn-add-cart"
-                                data-product-id="${prod.id}">
-                            Añadir al carrito
-                        </button>
-                    </div>
-                </div>
-            `;
-            */
             card.innerHTML = `
                                 <div class="card shadow-sm border-0 h-100 product-card" data-product-id="${prod.id}">
                                     <img src="${prod.imagen || 'https://via.placeholder.com/400x500'}"
@@ -189,13 +160,13 @@ async function cargarProductosPorCategoria() {
             listaEl.appendChild(card);
         });
 
-        // Listeners de "Añadir al carrito" SOLO en esta lista
+        
         const botones = listaEl.querySelectorAll(".btn-add-cart");
         botones.forEach(btn => {
             btn.addEventListener("click", (e) => {
-                e.stopPropagation(); // no dispare el click de la card
+                e.stopPropagation(); 
                 const productId = btn.getAttribute("data-product-id");
-                addToCart(productId, btn); // 👈 le pasamos también el botón
+                addToCart(productId, btn); 
             });
         });
 
@@ -210,5 +181,5 @@ async function cargarProductosPorCategoria() {
     }
 }
 
-// 3. Ejecutar al cargar
+
 cargarProductosPorCategoria();

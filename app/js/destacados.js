@@ -1,10 +1,8 @@
-// app/js/destacados.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const contenedor = document.getElementById("destacadosContainer");
   if (!contenedor) return;
 
-  
+
   function showRopaError(msg) {
     const alertEl = document.getElementById("ropaError");
     if (!alertEl) return;
@@ -18,13 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
   }
 
-  // Navegación al detalle solo dentro de este contenedor
+
   function activarNavegacionDetalle() {
     const cards = contenedor.querySelectorAll(".product-card");
 
     cards.forEach((card) => {
       card.addEventListener("click", (e) => {
-        // Si el clic viene del botón de carrito, no navegamos
         if (e.target.closest(".btn-add-cart")) return;
 
         const id = card.getAttribute("data-product-id");
@@ -62,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       data.forEach((entry) => {
         const prod = entry.producto;
-        if (!prod) return; // categoría sin productos
+        if (!prod) return;
 
         const col = document.createElement("div");
         col.className = "col";
@@ -88,11 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
         contenedor.appendChild(col);
       });
 
-      // Listeners para "Agregar al carrito"
+
       const botones = contenedor.querySelectorAll(".btn-add-cart");
       botones.forEach((btn) => {
         btn.addEventListener("click", async (e) => {
-          e.stopPropagation(); // por si acaso, para que no dispare el click de la card
+          e.stopPropagation();
 
           const productId = btn.getAttribute("data-product-id");
 
@@ -109,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }),
             });
 
-            // No logueado → mostramos alerta roja
+
             if (res.status === 401) {
               showRopaError(
                 "Debes iniciar sesión para añadir productos al carrito."

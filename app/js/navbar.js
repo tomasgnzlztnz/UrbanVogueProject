@@ -1,12 +1,11 @@
-// navbar.js
 (async () => {
-    // ICONOS DESKTOP
+
     const homeDesktop = document.getElementById('iconHome');
     const userDesktop = document.getElementById('iconUser');
     const cartDesktop = document.getElementById('iconCart');
     const logoutDesktop = document.getElementById('logoutIcon');
 
-    // ICONOS MÓVIL
+
     const homeMobile = document.getElementById('iconHomeMobile');
     const userMobile = document.getElementById('iconUserMobile');
     const cartMobile = document.getElementById('iconCartMobile');
@@ -14,27 +13,24 @@
 
     const adminItem = document.getElementById('navAdminItem');
 
-    // SEARCH (desktop + mobile + overlay)
+
     const searchDesktop = document.getElementById('iconSearchDesktop');
-    const searchMobile = document.getElementById('iconSearchMobile'); // asegúrate de poner este id en el icono móvil
+    const searchMobile = document.getElementById('iconSearchMobile');
 
     const searchOverlay = document.getElementById('searchOverlay');
     const searchInput = document.getElementById('searchInput');
     const searchClose = document.getElementById('searchClose');
     const searchResults = document.getElementById('searchResults');
-    const searchPopularWrapper = document.getElementById('searchPopularWrapper'); // 👈 nuevo
+    const searchPopularWrapper = document.getElementById('searchPopularWrapper');
 
 
-    // Utilidad para asignar el mismo handler a varios elementos
+
     function onClick(elements, handler) {
         elements
             .filter(Boolean)
             .forEach(el => el.addEventListener('click', handler));
     }
 
-    // ==============================
-    //  MINI CARRITO (DESKTOP + MOBIL)
-    // ==============================
 
     async function openMiniCart() {
         const modalEl = document.getElementById('miniCartModal');
@@ -42,12 +38,10 @@
         const totalEl = document.getElementById('miniCartTotal');
 
         if (!modalEl || !contentEl || !totalEl) {
-            // Fallback → carrito normal
             window.location.href = '/pages/cart.html';
             return;
         }
 
-        // Estado inicial mientras carga
         contentEl.innerHTML = `
             <p class="text-center text-muted mb-0">Cargando carrito...</p>
         `;
@@ -59,7 +53,6 @@
             });
 
             if (res.status === 401) {
-                // Sesión caducada → login
                 window.location.href = '/pages/login.html';
                 return;
             }
@@ -114,14 +107,10 @@
             `;
         }
 
-        // Mostrar modal (Bootstrap 5)
         const modal = new bootstrap.Modal(modalEl);
         modal.show();
     }
 
-    // ==============================
-    //  SEARCH OVERLAY (front)
-    // ==============================
 
     let searchTimeout = null;
 
@@ -138,7 +127,6 @@
             searchResults.innerHTML = "";
         }
 
-        // 👇 al abrir, mostramos las búsquedas populares
         if (searchPopularWrapper) {
             searchPopularWrapper.classList.remove("d-none");
         }
@@ -203,7 +191,6 @@
 
         searchResults.innerHTML = html;
 
-        // Navegación a la página de producto al hacer click en la card
         const cards = searchResults.querySelectorAll(".search-result-card");
         cards.forEach(card => {
             card.addEventListener("click", () => {
@@ -217,7 +204,6 @@
     async function performSearch(query) {
         const q = query.trim();
 
-        // Si no hay texto, limpiamos resultados y mostramos populares
         if (!q || q.length === 0) {
             renderSearchResults([], q);
 
@@ -228,7 +214,6 @@
             return;
         }
 
-        // Si hay texto, ocultamos las búsquedas populares
         if (searchPopularWrapper) {
             searchPopularWrapper.classList.add("d-none");
         }
@@ -259,13 +244,13 @@
     function setupSearchOverlay() {
         if (!searchOverlay || !searchInput) return;
 
-        // Abrir overlay con iconos
+
         onClick([searchDesktop, searchMobile], (e) => {
             e.preventDefault();
             openSearchOverlay();
         });
 
-        // Cerrar overlay
+
         if (searchClose) {
             searchClose.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -273,14 +258,14 @@
             });
         }
 
-        // Cerrar con ESC
+
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 closeSearchOverlay();
             }
         });
 
-        // Input: debounce de 300ms
+
         searchInput.addEventListener("input", (e) => {
             const value = e.target.value;
 
@@ -291,7 +276,7 @@
             }, 300);
         });
 
-        // Búsquedas populares: rellenar input y buscar
+
         const quickCards = document.querySelectorAll(".search-quick");
         quickCards.forEach(card => {
             card.addEventListener("click", () => {
@@ -305,70 +290,63 @@
         });
     }
 
-    // Llamamos a la configuración del buscador
+
     setupSearchOverlay();
 
-    // ==============================
-    //  NAVEGACIÓN BÁSICA / SESIÓN
-    // ==============================
-
-    // HOME → siempre lleva al inicio
     onClick([homeDesktop, homeMobile], (e) => {
         e.preventDefault();
         window.location.href = '/index.html';
     });
 
     try {
-        const data = await fetchCurrentUser(); // { autenticado, usuario }
+        const data = await fetchCurrentUser();
         console.log('DEBUG navbar: estado sesión →', data);
 
-        // ESCENARIO 1: NO LOGUEADO
+
         if (!data.autenticado) {
-            // usuario → login
+
             onClick([userDesktop, userMobile], (e) => {
                 e.preventDefault();
                 window.location.href = '/pages/login.html';
             });
 
-            // carrito → login
+
             onClick([cartDesktop, cartMobile], (e) => {
                 e.preventDefault();
                 window.location.href = '/pages/login.html';
             });
 
-            // ocultar logout
+
             [logoutDesktop, logoutMobile].forEach(el => {
                 if (el) el.classList.add('d-none');
             });
 
-            // ocultar admin
+
             if (adminItem) adminItem.classList.add('d-none');
 
             return;
         }
 
-        // ESCENARIO 2: LOGUEADO (CLIENTE O ADMIN)
 
-        // usuario → perfil
         onClick([userDesktop, userMobile], (e) => {
             e.preventDefault();
             window.location.href = '/pages/profile.html';
         });
 
-        // carrito → mini-carrito (modal)
+
         onClick([cartDesktop, cartMobile], async (e) => {
             e.preventDefault();
             await openMiniCart();
         });
 
-        // mostrar logout
+
         [logoutDesktop, logoutMobile].forEach(el => {
             if (!el) return;
             el.classList.remove('d-none');
             el.addEventListener('click', async (e) => {
                 e.preventDefault();
                 try {
-                    await logout();  // función de auth.js
+                    await logout();
                     window.location.href = '/index.html';
                 } catch (err) {
                     console.error('Error al cerrar sesión:', err);
@@ -376,7 +354,7 @@
             });
         });
 
-        // ESCENARIO 3: ADMIN
+
         if (adminItem) {
             if (data.usuario && data.usuario.rol === 'admin') {
                 adminItem.classList.remove('d-none');

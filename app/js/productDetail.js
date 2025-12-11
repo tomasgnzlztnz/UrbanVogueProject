@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const imageEl = document.getElementById("productImage");
     const btnAdd = document.getElementById("btnAddToCartDetail");
 
-    // 👉 nuevo: contenedor de productos relacionados
+
     const relatedContainer = document.getElementById("relatedProducts");
 
     let isLogged = false;
@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 3000);
     }
 
-    // 👉 función auxiliar para pintar productos relacionados
+
     function renderRelatedProducts(allProducts, product) {
         if (!relatedContainer || !product) return;
 
-        // Quitamos el producto actual de la lista
+        
         const others = allProducts.filter(p => Number(p.id) !== Number(product.id));
 
         if (others.length === 0) {
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // Mezclamos un poco el array y cogemos 4
+
         const shuffled = [...others].sort(() => Math.random() - 0.5);
         const seleccion = shuffled.slice(0, 4);
 
@@ -99,11 +99,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             relatedContainer.appendChild(col);
         });
 
-        // Click en las cards → ir al detalle
+
         const cards = relatedContainer.querySelectorAll(".product-card");
         cards.forEach(card => {
             card.addEventListener("click", (e) => {
-                // Permitimos que se haga click en cualquier parte de la card
                 const id = card.getAttribute("data-product-id");
                 if (!id) return;
                 window.location.href = `/pages/producto.html?id=${id}`;
@@ -111,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    // 1. ID del producto en la URL
+
     const params = new URLSearchParams(window.location.search);
     const productId = params.get("id");
 
@@ -120,16 +119,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 2. Comprobar usuario logueado
+
     try {
-        const data = await fetchCurrentUser(); // de auth.js
+        const data = await fetchCurrentUser();
         isLogged = !!(data && data.autenticado);
         console.log("DEBUG detalle producto → usuario logueado:", isLogged);
     } catch (err) {
         console.error("Error comprobando usuario:", err);
     }
 
-    // 3. Cargar todos los productos y localizar el actual
+
     let todosLosProductos = [];
     try {
         clearError();
@@ -149,7 +148,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        // 4. Pintar datos en la vista
+
         if (titleEl) {
             titleEl.textContent = (currentProduct.nombre || "").toUpperCase();
         }
@@ -172,7 +171,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             imageEl.alt = currentProduct.nombre || "Producto UrbanVogue";
         }
 
-        // 👉 aquí pintamos los productos extra
+
         renderRelatedProducts(todosLosProductos, currentProduct);
 
     } catch (err) {
@@ -181,7 +180,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    // 5. Botón "AGREGAR AL CARRITO"
+
     if (btnAdd) {
         btnAdd.addEventListener("click", async () => {
             if (!currentProduct) return;
@@ -218,7 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     return;
                 }
 
-                //alert("Producto añadido al carrito.");
+
 
             } catch (err) {
                 console.error("Error al añadir al carrito:", err);

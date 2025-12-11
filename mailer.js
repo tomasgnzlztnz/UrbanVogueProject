@@ -4,10 +4,10 @@ if (process.env.NODE_ENV !== "production") {
 
 const { Resend } = require("resend");
 
-// La API key viene del .env / variables de Railway
+
 const resend = new Resend(process.env.RESEND_API_KEY);
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "tomasgnzlztnz@gmail.com";
-// en Railway CONTACT_EMAIL="tomasgnzlztnz@gmail.com"
+
 
 async function sendOrderConfirmationEmail({ to, nombre, pedidoId, total, items }) {
   const htmlItems = items
